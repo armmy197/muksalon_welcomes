@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ร้านเสริมสวยมุกซาลอน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Kanit', 'Sukhumvit Set', 'Sarabun', sans-serif;
+        }
+        
+        body {
+            background-color: #f9f0ff;
+            color: #4a154b;
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* ปุ่มล็อกอินด่วน */
+        .quick-login {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .quick-login-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #4a154b;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 1001;
+        }
+        
+        .quick-login-btn:hover {
+            transform: scale(1.1);
+            background: #6a1b6d;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #d291bc 0%, #ffdfd3 100%);
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header-content {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .cute-float {
+            animation: float 3s ease-in-out infinite;
+            color: #4a154b;
+            font-size: 1.8rem;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .admin-panel {
+            text-align: center;
+        }
+        
+        .login-btn {
+            background: #06C755;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .login-btn:hover {
+            background: #05a848;
+            transform: translateY(-2px);
+        }
+        
+        .line-icon {
+            background: white;
+            color: #06C755;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .admin-only {
+            display: none;
+            margin-top: 10px;
+        }
+        
+        .logged-in .admin-only {
+            display: block;
+        }
+        
+        .logout-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 8px;
+            font-size: 0.8rem;
+        }
+        
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: center;
+            background: white;
+            padding: 10px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        nav button {
+            background: none;
+            border: none;
+            padding: 8px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #4a154b;
+            border-radius: 20px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        nav button:hover, nav button.active {
+            background: #4a154b;
+            color: white;
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #4a154b;
+            cursor: pointer;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* Pages */
+        .page {
+            display: none;
+            padding: 20px 0;
+            animation: fadeIn 0.5s;
+        }
+        
+        .activePage {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .box {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            max-width: 800px;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .box h2 {
+            color: #4a154b;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #ffdfd3;
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .box h3 {
+            color: #6a1b6d;
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background: #d291bc;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: #b76e94;
+            transform: translateY(-2px);
+        }
+        
+        .delete-btn {
+            background: #ff4757;
+        }
+        
+        .delete-btn:hover {
+            background: #ff2e43;
+        }
+        
+        .service-item, .holiday-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .message {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #4a154b;
+            padding: 15px;
+        }
+        
+        /* Review Stars */
+        .stars {
+            color: #ffc107;
+            font-size: 1.5rem;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .stars span {
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 2px;
+        }
+        
+        .stars span:hover, .stars span.active {
+            transform: scale(1.2);
+            text-shadow: 0 0 5px rgba(255, 193, 7, 0.8);
+        }
+        
+        /* Review Modal */
+        .review-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        
+        .review-modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            z-index: 1001;
+        }
+        
+        /* Gmail Configuration */
+        .gmail-config {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .instructions {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .instructions ol {
+            text-align: left;
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .config-section {
+            margin: 12px 0;
+            text-align: left;
+        }
+        
+        .config-section label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .test-result {
+            margin-top: 12px;
+            padding: 8px;
+            border-radius: 5px;
+            display: none;
+            font-size: 0.9rem;
+        }
+        
+        .test-result.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .test-result.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        /* Booking Items */
+        .booking-item {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 12px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 4px solid #d291bc;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .booking-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .booking-content {
+            margin-bottom: 12px;
+        }
+
+        .booking-content p {
+            margin: 6px 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .booking-content strong {
+            color: #4a154b;
+            display: inline-block;
+            min-width: 70px;
+        }
+
+        .services-section {
+            margin: 8px 0;
+        }
+
+        .services-list {
+            background: #f9f0ff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 4px 0;
+            list-style-type: none;
+        }
+
+        .services-list li {
+            padding: 4px 0;
+            border-bottom: 1px dashed #e0e0e0;
+            position: relative;
+            padding-left: 18px;
+            font-size: 0.85rem;
+        }
+
+        .services-list li:before {
+            content: "•";
+            color: #d291bc;
+            position: absolute;
+            left: 0;
+            font-size: 16px;
+        }
+
+        .services-list li:last-child {
+            border-bottom: none;
+        }
+
+        .booking-actions {
+            text-align: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #ff4757, #ff2e43);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: auto;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #ff2e43, #ff1e36);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+        }
+
+        /* การแจ้งเตือน */
+        .notification {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 250px;
+            max-width: 90%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: slideInRight 0.3s ease;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #06C755, #05a848);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ff4757, #ff2e43);
+        }
+
+        .notification button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            width: 18px;
+            height: 18px;
+            width: auto;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: #f00;
+            top: -10px;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        /* Floating Icons */
+        .floating-icon {
+            position: fixed;
+            font-size: 20px;
+            z-index: -1;
+            opacity: 0.7;
+            animation: floatAround 20s infinite linear;
+        }
+
+        @keyframes floatAround {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(100px, 100px) rotate(90deg);
+            }
+            50% {
+                transform: translate(200px, 50px) rotate(180deg);
+            }
+            75% {
+                transform: translate(100px, 150px) rotate(270deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+
+        /* Background Effects */
+        .bg-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .rotating-bg {
+            background: linear-gradient(45deg, #ffdfd3, #d291bc, #f9f0ff, #ffdfd3);
+            background-size: 400% 400%;
+            animation: gradientRotate 15s ease infinite;
+        }
+
+        @keyframes gradientRotate {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .progress-step {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            z-index: 2;
+            font-size: 0.8rem;
+        }
+        
+        .progress-step.active {
+            background: #d291bc;
+        }
+        
+        .progress-step.completed {
+            background: #4a154b;
+        }
+        
+        .progress-bar::before {
+            content: "";
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ddd;
+            z-index: 1;
+        }
+        
+        .step-label {
+            position: absolute;
+            top: 30px;
+            font-size: 0.7rem;
+            text-align: center;
+            width: 80px;
+            left: -30px;
+            display: none;
+        }
+
+        /* Security Badge */
+        .security-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Service Selection */
+        .service-selection {
+            margin: 12px 0;
+        }
+        
+        .service-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 6px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .service-option:hover {
+            background: #f9f0ff;
+            border-color: #d291bc;
+        }
+        
+        .service-option input {
+            margin-right: 8px;
+            width: auto;
+        }
+        
+        .service-option label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Button Groups */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .button-group button {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+            
+            header {
+                padding: 20px 0;
+            }
+            
+            .cute-float {
+                font-size: 2.2rem;
+            }
+            
+            nav button {
+                padding: 10px 20px;
+                margin: 0 10px;
+                font-size: 1rem;
+            }
+            
+            .page {
+                padding: 30px 0;
+            }
+            
+            .box {
+                padding: 25px;
+                margin: 20px auto;
+            }
+            
+            .box h2 {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+            
+            button {
+                width: auto;
+            }
+            
+            .button-group {
+                flex-wrap: nowrap;
+            }
+            
+            .step-label {
+                display: block;
+            }
+            
+            .progress-step {
+                width: 30px;
+                height: 30px;
+                font-size: 1rem;
+            }
+            
+            .progress-bar::before {
+                top: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .cute-float {
+                font-size: 1.5rem;
+            }
+            
+            .login-btn {
+                padding: 8px 15px;
+                font-size: 0.8rem;
+            }
+            
+            .box {
+                padding: 15px;
+                margin: 10px auto;
+            }
+            
+            .booking-item {
+                padding: 12px;
+            }
+            
+            .notification {
+                min-width: calc(100% - 30px);
+                right: 15px;
+                left: 15px;
+            }
+            
+            .security-badge {
+                bottom: 70px;
+                left: 10px;
+                right: 10px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            nav {
+                flex-direction: column;
+                position: fixed;
+                top: 0;
+                right: -280px;
+                height: 100vh;
+                width: 280px;
+                padding-top: 70px;
+                transition: right 0.3s ease;
+                z-index: 100;
+                background: white;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            }
+            
+            nav.active {
+                right: 0;
+            }
+            
+            nav button {
+                width: 100%;
+                margin: 5px 0;
+                text-align: left;
+                padding: 12px 20px;
+                border-radius: 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .overlay.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-effect rotating-bg"></div>
+    
+    <!-- Floating Icons -->
+    <div id="floatingIcons"></div>
+    
+    <!-- Confetti Container -->
+    <div id="confettiContainer"></div>
+    
+    <!-- Security Badge -->
+    <div class="security-badge">
+        <i class="fas fa-shield-alt" style="color: #4a154b;"></i>
+        <span>ระบบปลอดภัย | ข้อมูลถูกเก็บเป็นความลับ</span>
+    </div>
+    
+    <!-- ปุ่มล็อกอินด่วน -->
+    <div class="quick-login">
+        <button class="quick-login-btn" onclick="quickLogin()">🔑</button>
+    </div>
+
+    <header>
+        <div class="container">
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+            <div class="header-content">
+                <h1 class="cute-float">ร้านเสริมสวยมุกซาลอน 💖</h1>
+                <p style="color: white; font-size: 1rem; margin-top: 5px;">ยินดีให้บริการด้วยความรักและ professionalism</p>
+            </div>
+            <div class="admin-panel">
+                <button id="loginBtn" class="login-btn" onclick="loginWithLine()">
+                    <span class="line-icon">L</span> ล็อคอินสำหรับเจ้าของร้าน
+                </button>
+                <div id="adminMenu" class="admin-only">
+                    <button onclick="showPage('manage')">จัดการร้าน</button>
+                    <button class="logout-btn" onclick="logout()">ล็อกเอาท์</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="overlay" onclick="toggleMobileMenu()"></div>
+
+    <nav id="mainNav">
+        <button class="active" onclick="showPage('home')">หน้าหลัก</button>
+        <button onclick="showPage('booking')">จองคิว</button>
+        <button onclick="showPage('promo')">โปรโมชัน</button>
+        <button onclick="showPage('reviews')">รีวิว</button>
+    </nav>
+
+    <div class="container">
+        <!-- หน้า Home -->
+        <div id="home" class="page activePage">
+            <div class="box">
+                <h2>บริการของทางร้าน</h2>
+                <ul id="servicesList" style="text-align:left; list-style-type: none; padding: 0;"></ul>
+                <div class="admin-only">
+                    <h3>จัดการบริการ</h3>
+                    <input type="text" id="newServiceName" placeholder="ชื่อบริการ">
+                    <input type="text" id="newServicePrice" placeholder="ราคา">
+                    <button onclick="addService()">เพิ่มบริการ</button>
+                </div>
+
+                <h3>วันหยุดของร้าน</h3>
+                <ul id="holidayList" style="color:red; text-align:left; list-style-type: none; padding: 0;"></ul>
+                <div class="admin-only">
+                    <input type="date" id="newHoliday">
+                    <button onclick="addHoliday()">เพิ่มวันหยุด</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- หน้า Booking -->
+        <div id="booking" class="page">
+            <div class="box">
+                <div class="progress-bar">
+                    <div class="progress-step active">1<span class="step-label">ข้อมูลลูกค้า</span></div>
+                    <div class="progress-step">2<span class="step-label">เลือกบริการ</span></div>
+                    <div class="progress-step">3<span class="step-label">วันและเวลา</span></div>
+                    <div class="progress-step">4<span class="step-label">ยืนยันการจอง</span></div>
+                </div>
+            </div>
+
+            <div class="box" id="formBox">
+                <h2>กรอกข้อมูลลูกค้า 👤</h2>
+                <input type="text" id="name" placeholder="ชื่อของคุณ">
+                <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์">
+                <div class="button-group">
+                    <button onclick="goToServiceSelection()">ถัดไป</button>
+                </div>
+            </div>
+
+            <div class="box" id="serviceBox" style="display:none;">
+                <h2>เลือกบริการ 💇‍♀️</h2>
+                <div id="serviceSelection" class="service-selection"></div>
+                <div class="button-group">
+                    <button onclick="goToCalendar()">ถัดไป</button>
+                </div>
+            </div>
+
+            <div class="box" id="calendarBox" style="display:none;">
+                <h2>เลือกวันและเวลา 📅</h2>
+                <input type="date" id="date">
+                <select id="time"></select>
+                <div class="button-group">
+                    <button onclick="reviewBooking()">ถัดไป</button>
+                </div>
+            </div>
+
+            <div class="box" id="confirmBox" style="display:none;">
+                <h2>ข้อมูลการจอง ✅</h2>
+                <div id="bookingInfo"></div>
+                <div class="button-group">
+                    <button onclick="lockBooking()">ยืนยันการจอง</button>
+                    <button onclick="editBooking()">แก้ไข</button>
+                    <button onclick="cancelBooking()" class="delete-btn">ยกเลิกการจอง</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- หน้าโปรโมชัน -->
+        <div id="promo" class="page">
+            <div class="box">
+                <h2>โปรโมชั่น</h2>
+                <div id="promoContent"></div>
+
+                <div class="admin-only">
+                    <h3>จัดการโปรโมชัน</h3>
+                    <input type="text" id="promoTitle" placeholder="หัวข้อโปรโมชัน">
+                    <textarea id="promoDescription" placeholder="รายละเอียดโปรโมชัน" rows="3"></textarea>
+                    <input type="file" id="promoImageFile" accept="image/*">
+                    <button onclick="addPromo()">เพิ่มโปรโมชัน</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- หน้ารีวิว -->
+        <div id="reviews" class="page">
+            <div class="box">
+                <h2>รีวิวจากลูกค้า</h2>
+                <div id="reviewsList"></div>
+            </div>
+        </div>
+
+        <!-- หน้าจัดการร้าน -->
+        <div id="manage" class="page">
+            <div class="box">
+                <h2>จัดการร้าน</h2>
+                <div class="button-group">
+                    <button onclick="showPage('home')">จัดการบริการและวันหยุด</button>
+                    <button onclick="showPage('promo')">จัดการโปรโมชัน</button>
+                </div>
+
+                <div class="box">
+                    <h2>ตั้งค่าแจ้งเตือนอีเมล</h2>
+                    <div class="gmail-config">
+                        <div class="instructions">
+                            <h3>ขั้นตอนการตั้งค่า EmailJS</h3>
+                            <ol>
+                                <li>ไปที่ <a href="https://www.emailjs.com/" target="_blank">EmailJS</a> และสร้างบัญชี</li>
+                                <li>เพิ่มบริการอีเมล (Gmail)</li>
+                                <li>สร้างเทมเพลตอีเมล</li>
+                                <li>คัดลอก Public Key, Service ID และ Template ID วางในช่องด้านล่าง</li>
+                            </ol>
+                        </div>
+
+                        <div class="config-section">
+                            <label for="emailJSPublicKey">EmailJS Public Key:</label>
+                            <input type="text" id="emailJSPublicKey" placeholder="ใส่ Public Key">
+                        </div>
+
+                        <div class="config-section">
+                            <label for="emailJSServiceID">EmailJS Service ID:</label>
+                            <input type="text" id="emailJSServiceID" placeholder="ใส่ Service ID">
+                        </div>
+
+                        <div class="config-section">
+                            <label for="emailJSTemplateID">EmailJS Template ID:</label>
+                            <input type="text" id="emailJSTemplateID" placeholder="ใส่ Template ID">
+                        </div>
+
+                        <div class="config-section">
+                            <label for="adminEmail">อีเมลผู้รับการแจ้งเตือน:</label>
+                            <input type="email" id="adminEmail" placeholder="ใส่อีเมลสำหรับรับการแจ้งเตือน">
+                        </div>
+
+                        <div class="button-group">
+                            <button onclick="saveEmailConfig()">บันทึกการตั้งค่า</button>
+                            <button onclick="testEmailConnection()">ทดสอบการเชื่อมต่อ</button>
+                            <button onclick="testRealBookingEmail()">ทดสอบการจองจริง</button>
+                        </div>
+
+                        <div id="testResult" class="test-result"></div>
+                        <div id="realBookingTestResult" class="test-result"></div>
+                    </div>
+                </div>
+
+                <h3>การจองล่าสุด</h3>
+                <div id="bookingList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับรีวิว -->
+    <div class="review-modal" id="reviewModal">
+        <div class="review-modal-content">
+            <h2>รีวิวการใช้บริการ</h2>
+            <input type="text" id="reviewerName" placeholder="ชื่อของคุณ (ไม่จำเป็น)">
+            <div class="stars" id="modalStars">
+                <span onclick="setModalRating(1)">★</span>
+                <span onclick="setModalRating(2)">★</span>
+                <span onclick="setModalRating(3)">★</span>
+                <span onclick="setModalRating(4)">★</span>
+                <span onclick="setModalRating(5)">★</span>
+            </div>
+            <textarea id="reviewComment" placeholder="ความคิดเห็น (ไม่จำเป็น)" rows="3"></textarea>
+            <div class="button-group">
+                <button onclick="submitReview()">ส่งรีวิว</button>
+            </div>
+            <p id="thanksMsg"></p>
+        </div>
+    </div>
+
+    <!-- Load EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+
+    <script>
+        // ตัวแปร global
+        const timeSelect = document.getElementById("time");
+        for (let h = 8; h <= 20; h++) {
+            let option = document.createElement("option");
+            option.value = `${h}:00`;
+            option.textContent = `${h}:00`;
+            timeSelect.appendChild(option);
+        }
+
+        // ตั้งค่าวันต่ำสุดเป็นวันปัจจุบัน
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').min = today;
+
+        let booking = {};
+        let bookingLocked = false;
+        let currentRating = 0;
+        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' || false;
+        let holidays = JSON.parse(localStorage.getItem('holidays')) || ["2025-09-01", "2025-09-10"];
+        let services = JSON.parse(localStorage.getItem('services')) || [
+            { name: "สระ - ไดร์ ผมตรง", price: "60-150 บาท" },
+            { name: "สระ - ไดร์ หนีบ", price: "80-150 บาท" },
+            { name: "สระผม - เด็กนักเรียน", price: "20-80 บาท" },
+            { name: "สปานาโน", price: "เริ่มต้นที่ 399 บาท" }
+        ];
+        let promotions = JSON.parse(localStorage.getItem('promotions')) || [];
+        let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+        let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+
+        // ข้อมูลการตั้งค่า Email
+        let emailConfig = JSON.parse(localStorage.getItem('emailConfig')) || {
+            publicKey: '',
+            serviceID: '',
+            templateID: '',
+            adminEmail: ''
+        };
+
+        // เริ่มต้นแสดงหน้าจองคิวเมื่อโหลดหน้า
+        window.addEventListener('DOMContentLoaded', (event) => {
+            // เริ่มต้น EmailJS
+            if (emailConfig.publicKey) {
+                emailjs.init(emailConfig.publicKey);
+            }
+            
+            document.getElementById('emailJSPublicKey').value = emailConfig.publicKey || '';
+            document.getElementById('emailJSServiceID').value = emailConfig.serviceID || '';
+            document.getElementById('emailJSTemplateID').value = emailConfig.templateID || '';
+            document.getElementById('adminEmail').value = emailConfig.adminEmail || '';
+            
+            // ล็อกอินอัตโนมัติหากเคยล็อกอินไว้
+            if (isLoggedIn) {
+                document.body.classList.add('logged-in');
+            }
+            
+            renderHolidays();
+            renderServices();
+            renderPromotions();
+            renderReviews();
+            
+            // สร้างลูกเล่นพิเศษ
+            createFloatingIcons();
+            createParticles();
+            
+            // แสดงหน้าจองคิวเป็นหน้าแรก
+            showPage('booking');
+        });
+
+        // ฟังก์ชันสำหรับเมนูมือถือ
+        function toggleMobileMenu() {
+            const nav = document.getElementById("mainNav");
+            const overlay = document.querySelector(".overlay");
+            nav.classList.toggle("active");
+            overlay.classList.toggle("active");
+            
+            // ป้องกันการสกรอลพื้นหลังเมื่อเมนูเปิด
+            document.body.style.overflow = nav.classList.contains("active") ? "hidden" : "";
+        }
+
+        // ฟังก์ชันสร้าง floating icons
+        function createFloatingIcons() {
+            const icons = ['💇', '💅', '💖', '✨', '🌟', '🎀', '💫', '🌸'];
+            const container = document.getElementById('floatingIcons');
+            
+            for (let i = 0; i < 15; i++) {
+                const icon = document.createElement('div');
+                icon.className = 'floating-icon';
+                icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+                icon.style.left = Math.random() * 100 + 'vw';
+                icon.style.top = Math.random() * 100 + 'vh';
+                icon.style.animationDelay = Math.random() * 20 + 's';
+                icon.style.fontSize = (Math.random() * 20 + 16) + 'px';
+                icon.style.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                container.appendChild(icon);
+            }
+        }
+
+        // ฟังก์ชันสร้าง confetti
+        function createConfetti() {
+            const colors = ['#d291bc', '#4a154b', '#ffdfd3', '#06C755', '#ffc107'];
+            const container = document.getElementById('confettiContainer');
+            
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                container.appendChild(confetti);
+                
+                // Animation
+                const animation = confetti.animate([
+                    { 
+                        transform: `translateY(0) rotate(0deg)`,
+                        opacity: 1
+                    },
+                    { 
+                        transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`,
+                        opacity: 0
+                    }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
+                });
+                
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+
+        // ฟังก์ชันล็อกอินด่วน
+        function quickLogin() {
+            const password = prompt("กรุณากรอกรหัสผ่านสำหรับเจ้าของร้าน");
+            if (password === "muksalon157") {
+                isLoggedIn = true;
+                document.body.classList.add('logged-in');
+                localStorage.setItem('isLoggedIn', 'true');
+                showNotification('ล็อคอินสำเร็จในฐานะเจ้าของร้าน', 'success');
+                showPage('manage');
+            } else {
+                showNotification('รหัสผ่านไม่ถูกต้อง', 'error');
+            }
+        }
+
+        // ฟังก์ชันล็อคอินสำหรับเจ้าของร้าน
+        function loginWithLine() {
+            const password = prompt("กรุณากรอกรหัสผ่านสำหรับเจ้าของร้าน");
+            
+            if (password === "muksalon157") {
+                isLoggedIn = true;
+                document.body.classList.add('logged-in');
+                localStorage.setItem('isLoggedIn', 'true');
+                showNotification('ล็อคอินสำเร็จในฐานะเจ้าของร้าน', 'success');
+                showPage('manage');
+            } else {
+                showNotification('รหัสผ่านไม่ถูกต้อง', 'error');
+            }
+        }
+
+        // ฟังก์ชันล็อกเอาท์
+        function logout() {
+            isLoggedIn = false;
+            document.body.classList.remove('logged-in');
+            localStorage.setItem('isLoggedIn', 'false');
+            showNotification('ล็อกเอาท์เรียบร้อย', 'success');
+            showPage('booking');
+        }
+
+        // ฟังก์ชันแสดงหน้า
+        function showPage(page) {
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("activePage"));
+            document.getElementById(page).classList.add("activePage");
+            document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+
+            const navButtons = document.querySelectorAll("nav button");
+            for (let btn of navButtons) {
+                if (btn.textContent === "หน้าหลัก" && page === "home") btn.classList.add("active");
+                if (btn.textContent === "จองคิว" && page === "booking") btn.classList.add("active");
+                if (btn.textContent === "โปรโมชัน" && page === "promo") btn.classList.add("active");
+                if (btn.textContent === "รีวิว" && page === "reviews") btn.classList.add("active");
+            }
+
+            if (page === "booking") resetBookingForm();
+            if (page === "home") {
+                renderHolidays();
+                renderServices();
+            }
+            if (page === "promo") renderPromotions();
+            if (page === "reviews") renderReviews();
+            if (page === "manage") renderBookings();
+            
+            // ปิดเมนูมือถือเมื่อเปลี่ยนหน้า
+            if (window.innerWidth <= 600) {
+                toggleMobileMenu();
+            }
+        }
+
+        // ฟังก์ชันบันทึกการตั้งค่า Email
+        function saveEmailConfig() {
+            emailConfig.publicKey = document.getElementById('emailJSPublicKey').value;
+            emailConfig.serviceID = document.getElementById('emailJSServiceID').value;
+            emailConfig.templateID = document.getElementById('emailJSTemplateID').value;
+            emailConfig.adminEmail = document.getElementById('adminEmail').value;
+
+            localStorage.setItem('emailConfig', JSON.stringify(emailConfig));
+            
+            // เริ่มต้น EmailJS
+            if (emailConfig.publicKey) {
+                emailjs.init(emailConfig.publicKey);
+            }
+            
+            showNotification('บันทึกการตั้งค่า Email เรียบร้อยแล้ว', 'success');
+        }
+
+        // ฟังก์ชันทดสอบการเชื่อมต่อ Email
+function testEmailConnection() {
+    if (!emailConfig.publicKey || !emailConfig.serviceID || !emailConfig.templateID || !emailConfig.adminEmail) {
+        showNotification('กรุณากรอกข้อมูลการตั้งค่า Email ให้ครบถ้วน', 'error');
+        return;
+    }
+
+    const testResult = document.getElementById('testResult');
+    testResult.style.display = 'block';
+    testResult.className = 'test-result';
+    testResult.innerHTML = 'กำลังทดสอบการเชื่อมต่อ...';
+
+    // ส่งอีเมลทดสอบ
+    sendTestEmail()
+        .then((success) => {
+            if (success) {
+                testResult.classList.add('success');
+                testResult.innerHTML = '✅ การทดสอบสำเร็จ! ควรมีอีเมลแจ้งเตือนไปยังกล่องจดหมายของคุณแล้ว';
+                showNotification('ทดสอบการส่งอีเมลสำเร็จ!', 'success');
+            } else {
+                testResult.classList.add('error');
+                testResult.innerHTML = '❌ การทดสอบล้มเหลว: ไม่สามารถส่งอีเมลได้';
+                showNotification('การทดสอบส่งอีเมลล้มเหลว', 'error');
+            }
+        })
+        .catch(error => {
+            testResult.classList.add('error');
+            testResult.innerHTML = '❌ การทดสอบล้มเหลว: ' + error;
+            showNotification('เกิดข้อผิดพลาดในการทดสอบ: ' + error, 'error');
+        });
+}
+
+// ฟังก์ชันส่งอีเมลทดสอบ
+async function sendTestEmail() {
+    const testHtml = `
+        <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
+            <h2 style="color: #4a154b;">🔔 ทดสอบการแจ้งเตือนจากร้านเสริมสวยมุกซาลอน</h2>
+            <p>นี่คืออีเมลทดสอบเพื่อตรวจสอบว่าการตั้งค่า EmailJS ทำงานปกติ</p>
+            <div style="background: #f9f0ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <p><strong>📅 วันที่ทดสอบ:</strong> ${new Date().toLocaleString('th-TH')}</p>
+                <p><strong>✅ สถานะ:</strong> ระบบแจ้งเตือนทำงานปกติแล้ว</p>
+            </div>
+            <p>หากคุณได้รับอีเมลนี้ แสดงว่าการตั้งค่าเสร็จสมบูรณ์แล้ว</p>
+            <hr style="margin: 20px 0;">
+            <p style="color: #666; font-size: 12px;">
+                ด้วยความนับถือ,<br>
+                <strong>ร้านเสริมสวยมุกซาลอน</strong><br>
+                📞 061-579-3940
+            </p>
+        </div>
+    `;
+
+    return await sendEmailNotification(
+        "🔔 ทดสอบการแจ้งเตือนจากร้านเสริมสวยมุกซาลอน",
+        testHtml
+    );
+}
+
+// ฟังก์ชันส่งการแจ้งเตือนผ่าน Email (เวอร์ชันสมบูรณ์)
+async function sendEmailNotification(subject, htmlMessage) {
+    // ตรวจสอบการตั้งค่า
+    if (!emailConfig.publicKey || !emailConfig.serviceID || !emailConfig.templateID || !emailConfig.adminEmail) {
+        console.warn("❌ การตั้งค่า Email ไม่ครบถ้วน - ข้ามการส่งการแจ้งเตือน");
+        console.log("การตั้งค่าปัจจุบัน:", emailConfig);
+        return false;
+    }
+
+    try {
+        console.log("📧 กำลังส่งอีเมล...", {
+            serviceID: emailConfig.serviceID,
+            templateID: emailConfig.templateID,
+            to_email: emailConfig.adminEmail,
+            subject: subject
+        });
+
+        // ตรวจสอบว่า EmailJS ถูก initialize แล้วหรือไม่
+        if (typeof emailjs === 'undefined') {
+            console.error("❌ EmailJS SDK ไม่ได้โหลด");
+            return false;
+        }
+
+        // เริ่มต้น EmailJS อีกครั้งเพื่อความแน่ใจ
+        emailjs.init(emailConfig.publicKey);
+
+        // สร้างพารามิเตอร์สำหรับเทมเพลต
+        const templateParams = {
+            to_email: emailConfig.adminEmail,
+            subject: subject,
+            message_html: htmlMessage,
+            from_name: "ร้านเสริมสวยมุกซาลอน",
+            // พารามิเตอร์เพิ่มเติม (ถ้ามีในเทมเพลต)
+            name: booking.name || "ลูกค้าทดสอบ",
+            phone: booking.phone || "ไม่ระบุ",
+            date: booking.date ? formatDateThai(booking.date) : new Date().toLocaleDateString('th-TH'),
+            time: booking.time || "ไม่ระบุ",
+            services: booking.services ? booking.services.map(s => `<li>${s}</li>`).join("") : "<li>บริการทดสอบ</li>",
+            created_at: new Date().toLocaleString('th-TH')
+        };
+
+        console.log("📋 พารามิเตอร์ที่ส่ง:", templateParams);
+
+        const response = await emailjs.send(
+            emailConfig.serviceID, 
+            emailConfig.templateID, 
+            templateParams
+        );
+
+        console.log("✅ ผลลัพธ์การส่งอีเมล:", response);
+        
+        if (response.status === 200) {
+            console.log("✅ ส่งอีเมลสำเร็จ!");
+            return true;
+        } else {
+            throw new Error(`EmailJS error: ${response.status} - ${response.text}`);
+        }
+    } catch (error) {
+        console.error("❌ เกิดข้อผิดพลาดในการส่งอีเมล:", error);
+        
+        // แสดง error ละเอียด
+        if (error.text) {
+            console.error("รายละเอียด error:", error.text);
+        }
+        
+        return false;
+    }
+}
+
+// ฟังก์ชันจัดรูปแบบวันที่ไทย (ถ้ายังไม่มี)
+function formatDateThai(dateString) {
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('th-TH', options);
+}
+
+        // ฟังก์ชันรีเซ็ตฟอร์มจอง
+        function resetBookingForm() {
+            booking = {};
+            bookingLocked = false;
+            document.querySelectorAll("#booking .box").forEach(b => b.style.display = "none");
+            document.getElementById("formBox").style.display = "block";
+            document.getElementById("name").value = "";
+            document.getElementById("phone").value = "";
+            document.getElementById("date").value = "";
+        }
+
+        // ฟังก์ชันไปยังหน้ารายการบริการ
+        function goToServiceSelection() {
+            booking.name = document.getElementById("name").value;
+            booking.phone = document.getElementById("phone").value;
+            if (!booking.name || !booking.phone) {
+                alert("กรุณากรอกข้อมูลให้ครบ");
+                return;
+            }
+            
+            // สร้างรายการบริการให้เลือก
+            const serviceSelection = document.getElementById("serviceSelection");
+            serviceSelection.innerHTML = "";
+            
+            services.forEach((service, index) => {
+                const serviceDiv = document.createElement("div");
+                serviceDiv.className = "service-option";
+                
+                serviceDiv.innerHTML = `
+                    <input type="checkbox" id="service-${index}" name="service" value="${service.name} - ${service.price}">
+                    <label for="service-${index}">${service.name} - ${service.price}</label>
+                `;
+                
+                serviceSelection.appendChild(serviceDiv);
+            });
+            
+            document.getElementById("formBox").style.display = "none";
+            document.getElementById("serviceBox").style.display = "block";
+        }
+
+        // ฟังก์ชันย้อนกลับไปยังฟอร์ม
+        function goBackToForm() {
+            document.getElementById("serviceBox").style.display = "none";
+            document.getElementById("formBox").style.display = "block";
+        }
+
+        // ฟังก์ชันไปยังหน้าปฏิทิน
+        function goToCalendar() {
+            // เก็บบริการที่เลือก
+            booking.services = [];
+            document.querySelectorAll('input[name="service"]:checked').forEach(checkbox => {
+                booking.services.push(checkbox.value);
+            });
+            
+            if (booking.services.length === 0) {
+                alert("กรุณาเลือกบริการอย่างน้อยหนึ่งรายการ");
+                return;
+            }
+            
+            document.getElementById("serviceBox").style.display = "none";
+            document.getElementById("calendarBox").style.display = "block";
+        }
+
+        // ฟังก์ชันย้อนกลับไปยังบริการ
+        function goBackToService() {
+            document.getElementById("calendarBox").style.display = "none";
+            document.getElementById("serviceBox").style.display = "block";
+        }
+
+         // ฟังก์ชันตรวจสอบการจอง
+        function reviewBooking() {
+            booking.date = document.getElementById("date").value;
+            booking.time = document.getElementById("time").value;
+            if (!booking.date || !booking.time) {
+                showNotification('กรุณาเลือกวันและเวลา', 'error');
+                return;
+            }
+            if (holidays.includes(booking.date)) {
+                showNotification('วันดังกล่าวร้านปิด กรุณาเลือกวันอื่น', 'error');
+                return;
+            }
+            
+            document.getElementById("calendarBox").style.display = "none";
+            document.getElementById("confirmBox").style.display = "block";
+            
+            let servicesList = "";
+            booking.services.forEach(service => {
+                servicesList += `<li>${service}</li>`;
+            });
+            
+            document.getElementById("bookingInfo").innerHTML = 
+                `<p><strong>ชื่อ:</strong> ${booking.name}</p>
+                 <p><strong>เบอร์โทร:</strong> ${booking.phone}</p>
+                 <p><strong>วันที่:</strong> ${booking.date}</p>
+                 <p><strong>เวลา:</strong> ${booking.time}</p>
+                 <p><strong>บริการที่เลือก:</strong></p>
+                 <ul>${servicesList}</ul>`;
+        }
+
+        // ฟังก์ชันแก้ไขการจอง
+        function editBooking() {
+            document.getElementById("confirmBox").style.display = "none";
+            document.getElementById("calendarBox").style.display = "block";
+        }
+
+        // ฟังก์ชันยืนยันการจอง
+        function lockBooking() {
+            if (bookingLocked) return;
+            bookingLocked = true;
+
+            document.getElementById("confirmBox").innerHTML =
+                `<p class="message">ลูกค้าได้จองเรียบร้อยแล้ว ขอบคุณค่ะ</p>`;
+
+            // บันทึกการจอง
+            const newBooking = {
+                name: booking.name,
+                phone: booking.phone,
+                date: booking.date,
+                time: booking.time,
+                services: booking.services,
+                timestamp: new Date().toISOString()
+            };
+            bookings.push(newBooking);
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+
+            // สร้าง confetti
+            createConfetti();
+
+            // ส่งอีเมลแจ้งเตือนการจอง
+            const bookingHtml = `
+                <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
+                    <h2 style="color: #4a154b;">✅ การจองคิวใหม่ - ร้านเสริมสวยมุกซาลอน</h2>
+                    <p><strong>👤 ชื่อลูกค้า:</strong> ${booking.name}</p>
+                    <p><strong>📞 เบอร์โทรศัพท์:</strong> ${booking.phone}</p>
+                    <p><strong>📆 วันที่:</strong> ${booking.date}</p>
+                    <p><strong>⏰ เวลา:</strong> ${booking.time} น.</p>
+                </div>
+            `;
+
+            sendEmailNotification("✅ การจองคิวใหม่ - ร้านเสริมสวยมุกซาลอน", bookingHtml)
+                .then(success => {
+                    if (success) {
+                        console.log("✅ ส่ง Email การจองสำเร็จ");
+                    } else {
+                        console.warn("❌ ส่ง Email การจองไม่สำเร็จ");
+                    }
+                });
+
+            // แสดงฟอร์มรีวิวหลังจากจองสำเร็จ
+            setTimeout(() => {
+                showReviewModal();
+            }, 1500);
+        }
+
+        // ฟังก์ชันยกเลิกการจอง
+        function cancelBooking() {
+            document.getElementById("confirmBox").innerHTML =
+                `<p class="message">ลูกค้าได้ยกเลิกการจองเรียบร้อยแล้ว ขอบคุณค่ะ</p>`;
+
+            // ส่งอีเมลแจ้งเตือนการยกเลิก
+            const cancelHtml = `
+                <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
+                    <h2 style="color: #d32f2f;">❌ ยกเลิกการจอง - ร้านเสริมสวยมุกซาลอน</h2>
+                    <p><strong>👤 ชื่อลูกค้า:</strong> ${booking.name}</p>
+                    <p><strong>📞 เบอร์โทรศัพท์:</strong> ${booking.phone}</p>
+                    <p><strong>📆 วันที่:</strong> ${booking.date}</p>
+                </div>
+            `;
+
+            sendEmailNotification("❌ ยกเลิกการจอง - ร้านเสริมสวยมุกซาลอน", cancelHtml)
+                .then(success => {
+                    if (success) {
+                        console.log("✅ ส่ง Email การยกเลิกสำเร็จ");
+                    } else {
+                        console.warn("❌ ส่ง Email การยกเลิกไม่สำเร็จ");
+                    }
+                });
+
+            setTimeout(() => {
+                showPage("booking");
+            }, 2000);
+        }
+
+        // ฟังก์ชันแสดงการจอง
+        function renderBookings() {
+            const container = document.getElementById("bookingList");
+            container.innerHTML = "";
+
+            if (bookings.length === 0) {
+                container.innerHTML = "<p>ยังไม่มีรายการจอง</p>";
+                return;
+            }
+
+            // เรียงการจองจากล่าสุดไปเก่าสุด
+            const sortedBookings = [...bookings].reverse();
+
+            sortedBookings.forEach((booking, index) => {
+                const bookingDiv = document.createElement("div");
+                bookingDiv.className = "booking-item";
+
+                let servicesList = "";
+                booking.services.forEach(service => {
+                    servicesList += `<li>${service}</li>`;
+                });
+
+                bookingDiv.innerHTML = `
+                    <div class="booking-content">
+                        <p><strong>👤 ชื่อ:</strong> ${booking.name}</p>
+                        <p><strong>📞 โทร:</strong> ${booking.phone}</p>
+                        <p><strong>📅 วันที่:</strong> ${booking.date}</p>
+                        <p><strong>⏰ เวลา:</strong> ${booking.time}</p>
+                        <div class="services-section">
+                            <p><strong>💇 บริการ:</strong></p>
+                            <ul class="services-list">${servicesList}</ul>
+                        </div>
+                        <p><strong>🕒 จองเมื่อ:</strong> ${new Date(booking.timestamp).toLocaleString('th-TH')}</p>
+                    </div>
+                `;
+
+                // เพิ่มปุ่มลบสำหรับเจ้าของร้าน
+                if (isLoggedIn) {
+                    const actionsDiv = document.createElement("div");
+                    actionsDiv.className = "booking-actions";
+                    
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.textContent = "ลบการจอง";
+                    deleteBtn.className = "delete-btn";
+                    deleteBtn.onclick = function () {
+                        // คำนวณดัชนีที่ถูกต้องเนื่องจากเรียงลำดับใหม่
+                        const actualIndex = bookings.length - 1 - index;
+                        deleteBooking(actualIndex);
+                    };
+                    
+                    actionsDiv.appendChild(deleteBtn);
+                    bookingDiv.appendChild(actionsDiv);
+                }
+
+                container.appendChild(bookingDiv);
+            });
+        }
+
+        // ฟังก์ชันลบการจอง
+        function deleteBooking(index) {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
+                return;
+            }
+
+            if (confirm("คุณแน่ใจว่าต้องการลบการจองนี้?")) {
+                // ลบการจองออกจาก array
+                bookings.splice(index, 1);
+                
+                // อัปเดต localStorage
+                localStorage.setItem('bookings', JSON.stringify(bookings));
+                
+                // รีเรนเดอร์รายการจอง
+                renderBookings();
+                
+                // แสดงการยืนยัน
+                showNotification('ลบการจองเรียบร้อยแล้ว', 'success');
+            }
+        }
+
+        // ฟังก์ชันแสดงการแจ้งเตือน
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        // ฟังก์ชันสร้างอนุภาค
+        function createParticles() {
+            const particlesContainer = document.createElement('div');
+            particlesContainer.id = 'particles';
+            particlesContainer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+            `;
+            document.body.appendChild(particlesContainer);
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    opacity: 0.5;
+                    animation: float-particle 15s infinite linear;
+                    width: ${Math.random() * 15 + 5}px;
+                    height: ${Math.random() * 15 + 5}px;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation-duration: ${Math.random() * 10 + 10}s;
+                    animation-delay: ${Math.random() * 5}s;
+                    background-color: rgba(255, 182, 193, ${Math.random() * 0.5 + 0.3});
+                `;
+                particlesContainer.appendChild(particle);
+            }
+
+            // เพิ่ม CSS animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes float-particle {
+                    0% { transform: translateY(0) translateX(0) rotate(0deg); }
+                    100% { transform: translateY(-100vh) translateX(100px) rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // ฟังก์ชันรีวิว
+        function setModalRating(stars) {
+            currentRating = stars;
+            document.querySelectorAll("#modalStars span").forEach((s, i) => {
+                s.classList.toggle("active", i < stars);
+            });
+        }
+
+        function showReviewModal() {
+            const modal = document.getElementById("reviewModal");
+            modal.style.display = "flex";
+            document.getElementById("reviewerName").value = "";
+            document.getElementById("reviewComment").value = "";
+            currentRating = 0;
+            document.querySelectorAll("#modalStars span").forEach(s => {
+                s.classList.remove("active");
+            });
+            document.getElementById("thanksMsg").innerText = "";
+        }
+
+        function closeReviewModal() {
+            document.getElementById("reviewModal").style.display = "none";
+        }
+
+        function submitReview() {
+            const reviewerName = document.getElementById("reviewerName").value || "ไม่ระบุชื่อ";
+            const comment = document.getElementById("reviewComment").value;
+
+            if (currentRating === 0) {
+                showNotification('กรุณาให้คะแนนดาวก่อนส่งรีวิว', 'error');
+                return;
+            }
+
+            reviews.push({
+                name: reviewerName,
+                rating: currentRating,
+                comment: comment,
+                date: new Date().toLocaleDateString('th-TH')
+            });
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+
+            document.getElementById("thanksMsg").innerText = "ขอบคุณค่ะสำหรับการรีวิว";
+
+            setTimeout(() => {
+                closeReviewModal();
+                showPage("booking");
+            }, 3000);
+        }
+
+        // ฟังก์ชันจัดการบริการ
+        function renderServices() {
+            const ul = document.getElementById("servicesList");
+            ul.innerHTML = "";
+            services.forEach((service, index) => {
+                let li = document.createElement("li");
+                li.className = "service-item";
+                li.innerHTML = `<span>${service.name} - ${service.price}</span>`;
+                if (isLoggedIn) {
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.textContent = "ลบ";
+                    deleteBtn.className = "delete-btn";
+                    deleteBtn.onclick = function () { deleteService(index); };
+                    li.appendChild(deleteBtn);
+                }
+                ul.appendChild(li);
+            });
+        }
+
+        function addService() {
+            const name = document.getElementById("newServiceName").value;
+            const price = document.getElementById("newServicePrice").value;
+            if (!name || !price) {
+                showNotification('กรุณากรอกชื่อบริการและราคา', 'error');
+                return;
+            }
+            services.push({ name, price });
+            localStorage.setItem('services', JSON.stringify(services));
+            document.getElementById("newServiceName").value = "";
+            document.getElementById("newServicePrice").value = "";
+            renderServices();
+            showNotification('เพิ่มบริการเรียบร้อยแล้ว', 'success');
+        }
+
+        function deleteService(index) {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
+                return;
+            }
+            if (confirm("คุณแน่ใจว่าต้องการลบบริการนี้?")) {
+                services.splice(index, 1);
+                localStorage.setItem('services', JSON.stringify(services));
+                renderServices();
+                showNotification('ลบบริการเรียบร้อยแล้ว', 'success');
+            }
+        }
+
+        // ฟังก์ชันจัดการวันหยุด
+        function renderHolidays() {
+            const ul = document.getElementById("holidayList");
+            ul.innerHTML = "";
+            holidays.forEach((day, index) => {
+                let li = document.createElement("li");
+                li.className = "holiday-item";
+                li.innerHTML = `<span>${day}</span>`;
+                if (isLoggedIn) {
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.textContent = "ลบ";
+                    deleteBtn.className = "delete-btn";
+                    deleteBtn.onclick = function () { deleteHoliday(index); };
+                    li.appendChild(deleteBtn);
+                }
+                ul.appendChild(li);
+            });
+        }
+
+        function addHoliday() {
+            const newHoliday = document.getElementById("newHoliday").value;
+            if (!newHoliday) {
+                showNotification('กรุณาเลือกวันที่', 'error');
+                return;
+            }
+            holidays.push(newHoliday);
+            localStorage.setItem('holidays', JSON.stringify(holidays));
+            document.getElementById("newHoliday").value = "";
+            renderHolidays();
+            showNotification('เพิ่มวันหยุดเรียบร้อยแล้ว', 'success');
+        }
+
+        function deleteHoliday(index) {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
+                return;
+            }
+            if (confirm("คุณแน่ใจว่าต้องการลบวันหยุดนี้?")) {
+                holidays.splice(index, 1);
+                localStorage.setItem('holidays', JSON.stringify(holidays));
+                renderHolidays();
+                showNotification('ลบวันหยุดเรียบร้อยแล้ว', 'success');
+            }
+        }
+
+        // ฟังก์ชันจัดการโปรโมชัน
+        function renderPromotions() {
+            const container = document.getElementById("promoContent");
+            container.innerHTML = "";
+            if (promotions.length === 0) {
+                container.innerHTML = "<p>ยังไม่มีโปรโมชัน</p>";
+                return;
+            }
+            promotions.forEach((promo, index) => {
+                const promoDiv = document.createElement("div");
+                promoDiv.className = "promo-item";
+                promoDiv.innerHTML = `
+                    <h3>${promo.title}</h3>
+                    <p>${promo.description}</p>
+                    ${promo.image ? `<img src="${promo.image}" alt="${promo.title}">` : ''}
+                `;
+                if (isLoggedIn) {
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.textContent = "ลบโปรโมชัน";
+                    deleteBtn.className = "delete-btn";
+                    deleteBtn.onclick = function () { deletePromo(index); };
+                    promoDiv.appendChild(deleteBtn);
+                }
+                container.appendChild(promoDiv);
+            });
+        }
+
+        function addPromo() {
+            const title = document.getElementById("promoTitle").value;
+            const description = document.getElementById("promoDescription").value;
+            if (!title || !description) {
+                showNotification('กรุณากรอกหัวข้อและรายละเอียดโปรโมชัน', 'error');
+                return;
+            }
+            promotions.push({ title, description, image: "" });
+            localStorage.setItem('promotions', JSON.stringify(promotions));
+            document.getElementById("promoTitle").value = "";
+            document.getElementById("promoDescription").value = "";
+            renderPromotions();
+            showNotification('เพิ่มโปรโมชันเรียบร้อยแล้ว', 'success');
+        }
+
+        function deletePromo(index) {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
+                return;
+            }
+            if (confirm("คุณแน่ใจว่าต้องการลบโปรโมชันนี้?")) {
+                promotions.splice(index, 1);
+                localStorage.setItem('promotions', JSON.stringify(promotions));
+                renderPromotions();
+                showNotification('ลบโปรโมชันเรียบร้อยแล้ว', 'success');
+            }
+        }
+
+        // ฟังก์ชันจัดการรีวิว
+        function renderReviews() {
+            const container = document.getElementById("reviewsList");
+            container.innerHTML = "";
+            if (reviews.length === 0) {
+                container.innerHTML = "<p>ยังไม่มีรีวิว</p>";
+                return;
+            }
+            const sortedReviews = [...reviews].reverse();
+            sortedReviews.forEach((review, index) => {
+                const reviewDiv = document.createElement("div");
+                reviewDiv.className = "review-item";
+                let stars = "";
+                for (let i = 0; i < 5; i++) {
+                    stars += i < review.rating ? "★" : "☆";
+                }
+                reviewDiv.innerHTML = `
+                    <div class="review-name">${review.name}</div>
+                    <div class="review-stars">${stars}</div>
+                    <div>${review.comment || "ไม่มีคำอธิบาย"}</div>
+                    <div style="font-size: 12px; color: #777;">${review.date}</div>
+                `;
+                if (isLoggedIn) {
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.textContent = "ลบรีวิว";
+                    deleteBtn.className = "delete-btn";
+                    deleteBtn.onclick = function () {
+                        const actualIndex = reviews.length - 1 - index;
+                        deleteReview(actualIndex);
+                    };
+                    reviewDiv.appendChild(deleteBtn);
+                }
+                container.appendChild(reviewDiv);
+            });
+        }
+
+        function deleteReview(index) {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
+                return;
+            }
+            if (confirm("คุณแน่ใจว่าต้องการลบรีวิวนี้?")) {
+                reviews.splice(index, 1);
+                localStorage.setItem('reviews', JSON.stringify(reviews));
+                renderReviews();
+                showNotification('ลบรีวิวเรียบร้อยแล้ว', 'success');
+            }
+        }
+
+        // เพิ่ม event listener สำหรับคลิกนอก modal เพื่อปิด
+        document.getElementById("reviewModal").addEventListener("click", function (e) {
+            if (e.target === this) {
+                closeReviewModal();
+                showPage("booking");
+            }
+        });
+    </script>
+</body>
+</html>
