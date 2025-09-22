@@ -173,7 +173,7 @@
             color: white;
         }
         
-        /* Mobile Menu Button */
+        /* Mobile Menu Button - แก้ไขตำแหน่งให้อยู่ขวาสุด */
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -722,6 +722,55 @@
             min-width: 120px;
         }
 
+        /* เมนูมือถือแบบใหม่ - แก้ไขให้อยู่ขวาและไม่บังข้อมูล */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: -300px; /* เริ่มต้นนอกหน้าจอด้านขวา */
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            z-index: 100;
+            transition: right 0.3s ease;
+            padding-top: 70px;
+        }
+        
+        .mobile-nav.active {
+            right: 0; /* เลื่อนเข้ามาในหน้าจอ */
+        }
+        
+        .mobile-nav button {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            text-align: left;
+            border: none;
+            background: none;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 1rem;
+            color: #4a154b;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mobile-nav button:hover, .mobile-nav button.active {
+            background: #4a154b;
+            color: white;
+        }
+        
+        .mobile-nav-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #4a154b;
+            cursor: pointer;
+        }
+
         /* Responsive Design */
         @media (min-width: 768px) {
             .container {
@@ -777,9 +826,29 @@
             .progress-bar::before {
                 top: 15px;
             }
+            
+            /* ซ่อนเมนูมือถือบนเดสก์ท็อป */
+            .mobile-menu-btn, .mobile-nav {
+                display: none;
+            }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 767px) {
+            /* ซ่อนเมนูปกติบนมือถือ */
+            nav {
+                display: none;
+            }
+            
+            /* แสดงปุ่มเมนูมือถือ */
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            /* แสดงเมนูมือถือ */
+            .mobile-nav {
+                display: block;
+            }
+            
             .container {
                 padding: 0 10px;
             }
@@ -816,40 +885,18 @@
             }
         }
 
-        @media (max-width: 600px) {
-            .mobile-menu-btn {
-                display: block;
+        @media (max-width: 480px) {
+            .cute-float {
+                font-size: 1.3rem;
             }
             
-            nav {
-                flex-direction: column;
-                position: fixed;
-                top: 0;
-                right: -280px;
-                height: 100vh;
-                width: 280px;
-                padding-top: 70px;
-                transition: right 0.3s ease;
-                z-index: 100;
-                background: white;
-                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            .box {
+                padding: 12px;
+                margin: 8px auto;
             }
             
-            nav.active {
-                right: 0;
-            }
-            
-            nav button {
-                width: 100%;
-                margin: 5px 0;
-                text-align: left;
-                padding: 12px 20px;
-                border-radius: 0;
-                border-bottom: 1px solid #f0f0f0;
-            }
-            
-            .overlay.active {
-                display: block;
+            .mobile-nav {
+                width: 250px;
             }
         }
     </style>
@@ -894,14 +941,24 @@
         </div>
     </header>
 
-    <div class="overlay" onclick="toggleMobileMenu()"></div>
-
+    <!-- เมนูปกติสำหรับเดสก์ท็อป -->
     <nav id="mainNav">
         <button class="active" onclick="showPage('home')">หน้าหลัก</button>
         <button onclick="showPage('booking')">จองคิว</button>
         <button onclick="showPage('promo')">โปรโมชัน</button>
         <button onclick="showPage('reviews')">รีวิว</button>
     </nav>
+
+    <!-- เมนูมือถือแบบใหม่ -->
+    <div class="mobile-nav" id="mobileNav">
+        <button class="mobile-nav-close" onclick="toggleMobileMenu()">×</button>
+        <button class="active" onclick="showPage('home')">หน้าหลัก</button>
+        <button onclick="showPage('booking')">จองคิว</button>
+        <button onclick="showPage('promo')">โปรโมชัน</button>
+        <button onclick="showPage('reviews')">รีวิว</button>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
 
     <div class="container">
         <!-- หน้า Home -->
@@ -1009,16 +1066,6 @@
                 <div class="box">
                     <h2>ตั้งค่าแจ้งเตือนอีเมล</h2>
                     <div class="gmail-config">
-                        <div class="instructions">
-                            <h3>ขั้นตอนการตั้งค่า EmailJS</h3>
-                            <ol>
-                                <li>ไปที่ <a href="https://www.emailjs.com/" target="_blank">EmailJS</a> และสร้างบัญชี</li>
-                                <li>เพิ่มบริการอีเมล (Gmail)</li>
-                                <li>สร้างเทมเพลตอีเมล</li>
-                                <li>คัดลอก Public Key, Service ID และ Template ID วางในช่องด้านล่าง</li>
-                            </ol>
-                        </div>
-
                         <div class="config-section">
                             <label for="emailJSPublicKey">EmailJS Public Key:</label>
                             <input type="text" id="emailJSPublicKey" placeholder="ใส่ Public Key">
@@ -1042,11 +1089,9 @@
                         <div class="button-group">
                             <button onclick="saveEmailConfig()">บันทึกการตั้งค่า</button>
                             <button onclick="testEmailConnection()">ทดสอบการเชื่อมต่อ</button>
-                            <button onclick="testRealBookingEmail()">ทดสอบการจองจริง</button>
                         </div>
 
                         <div id="testResult" class="test-result"></div>
-                        <div id="realBookingTestResult" class="test-result"></div>
                     </div>
                 </div>
 
@@ -1099,34 +1144,51 @@
         let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' || false;
         let holidays = JSON.parse(localStorage.getItem('holidays')) || ["2025-09-01", "2025-09-10"];
         let services = JSON.parse(localStorage.getItem('services')) || [
-            { name: "สระ - ไดร์ ผมตรง", price: "60-150 บาท" },
-            { name: "สระ - ไดร์ หนีบ", price: "80-150 บาท" },
-            { name: "สระผม - เด็กนักเรียน", price: "20-80 บาท" },
+            { name: "สระ - ไดร์ ผมตรง", price: "เริ่มต้นที่ 60-150 บาท" },
+            { name: "สระ - ไดร์ หนีบ", price: "เริ่มต้นที่ 80-150 บาท" },
+            { name: "สระผม - เด็กนักเรียน", price: "เริ่มต้นที่ 20-80 บาท" },
             { name: "สปานาโน", price: "เริ่มต้นที่ 399 บาท" }
         ];
         let promotions = JSON.parse(localStorage.getItem('promotions')) || [];
         let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
         let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
 
-        // ข้อมูลการตั้งค่า Email
-        let emailConfig = JSON.parse(localStorage.getItem('emailConfig')) || {
-            publicKey: '',
-            serviceID: '',
-            templateID: '',
-            adminEmail: ''
+        // ข้อมูลการตั้งค่า Email - ใช้ค่าเริ่มต้นที่ฝังในโค้ด (แก้ไขปัญหาหลัก!)
+        let emailConfig = {
+            publicKey: 'gxAXWtkmg5TT3Rm-E', // ใส่ค่าเริ่มต้นที่นี่
+            serviceID: 'service_muk157', // ใส่ค่าเริ่มต้นที่นี่
+            templateID: 'template_muk157', // ใส่ค่าเริ่มต้นที่นี่
+            adminEmail: 'muksalonwelcomes@gmail.com' // ใส่ค่าเริ่มต้นที่นี่
         };
+
+        // โหลดการตั้งค่าจาก localStorage ถ้ามี (สำหรับการอัปเดต)
+        try {
+            const savedConfig = localStorage.getItem('emailConfig');
+            if (savedConfig) {
+                const parsedConfig = JSON.parse(savedConfig);
+                // อัปเดตเฉพาะค่าที่มีใน localStorage
+                Object.keys(parsedConfig).forEach(key => {
+                    if (parsedConfig[key]) {
+                        emailConfig[key] = parsedConfig[key];
+                    }
+                });
+            }
+        } catch (e) {
+            console.log('ใช้การตั้งค่า EmailJS เริ่มต้น');
+        }
 
         // เริ่มต้นแสดงหน้าจองคิวเมื่อโหลดหน้า
         window.addEventListener('DOMContentLoaded', (event) => {
-            // เริ่มต้น EmailJS
-            if (emailConfig.publicKey) {
+            // เริ่มต้น EmailJS ด้วยค่าที่ตั้งไว้
+            if (emailConfig.publicKey && emailConfig.publicKey !== 'your_public_key_here') {
                 emailjs.init(emailConfig.publicKey);
             }
             
-            document.getElementById('emailJSPublicKey').value = emailConfig.publicKey || '';
-            document.getElementById('emailJSServiceID').value = emailConfig.serviceID || '';
-            document.getElementById('emailJSTemplateID').value = emailConfig.templateID || '';
-            document.getElementById('adminEmail').value = emailConfig.adminEmail || '';
+            // แสดงค่าปัจจุบันในฟอร์ม (สำหรับเจ้าของร้าน)
+            document.getElementById('emailJSPublicKey').value = emailConfig.publicKey;
+            document.getElementById('emailJSServiceID').value = emailConfig.serviceID;
+            document.getElementById('emailJSTemplateID').value = emailConfig.templateID;
+            document.getElementById('adminEmail').value = emailConfig.adminEmail;
             
             // ล็อกอินอัตโนมัติหากเคยล็อกอินไว้
             if (isLoggedIn) {
@@ -1146,15 +1208,16 @@
             showPage('booking');
         });
 
-        // ฟังก์ชันสำหรับเมนูมือถือ
+        // ฟังก์ชันสำหรับเมนูมือถือแบบใหม่
         function toggleMobileMenu() {
-            const nav = document.getElementById("mainNav");
-            const overlay = document.querySelector(".overlay");
-            nav.classList.toggle("active");
+            const mobileNav = document.getElementById("mobileNav");
+            const overlay = document.getElementById("overlay");
+            
+            mobileNav.classList.toggle("active");
             overlay.classList.toggle("active");
             
             // ป้องกันการสกรอลพื้นหลังเมื่อเมนูเปิด
-            document.body.style.overflow = nav.classList.contains("active") ? "hidden" : "";
+            document.body.style.overflow = mobileNav.classList.contains("active") ? "hidden" : "";
         }
 
         // ฟังก์ชันสร้าง floating icons
@@ -1190,16 +1253,9 @@
                 confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
                 container.appendChild(confetti);
                 
-                // Animation
                 const animation = confetti.animate([
-                    { 
-                        transform: `translateY(0) rotate(0deg)`,
-                        opacity: 1
-                    },
-                    { 
-                        transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`,
-                        opacity: 0
-                    }
+                    { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
                 ], {
                     duration: Math.random() * 3000 + 2000,
                     easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
@@ -1252,8 +1308,10 @@
             document.querySelectorAll(".page").forEach(p => p.classList.remove("activePage"));
             document.getElementById(page).classList.add("activePage");
             document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".mobile-nav button").forEach(b => b.classList.remove("active"));
 
-            const navButtons = document.querySelectorAll("nav button");
+            // ตั้งค่าปุ่มที่ active
+            const navButtons = document.querySelectorAll("nav button, .mobile-nav button");
             for (let btn of navButtons) {
                 if (btn.textContent === "หน้าหลัก" && page === "home") btn.classList.add("active");
                 if (btn.textContent === "จองคิว" && page === "booking") btn.classList.add("active");
@@ -1271,22 +1329,24 @@
             if (page === "manage") renderBookings();
             
             // ปิดเมนูมือถือเมื่อเปลี่ยนหน้า
-            if (window.innerWidth <= 600) {
+            if (window.innerWidth <= 767) {
                 toggleMobileMenu();
             }
         }
 
         // ฟังก์ชันบันทึกการตั้งค่า Email
         function saveEmailConfig() {
+            // อัปเดตการตั้งค่าจากฟอร์ม
             emailConfig.publicKey = document.getElementById('emailJSPublicKey').value;
             emailConfig.serviceID = document.getElementById('emailJSServiceID').value;
             emailConfig.templateID = document.getElementById('emailJSTemplateID').value;
             emailConfig.adminEmail = document.getElementById('adminEmail').value;
 
+            // บันทึกลง localStorage (สำหรับการอัปเดตในอนาคต)
             localStorage.setItem('emailConfig', JSON.stringify(emailConfig));
             
-            // เริ่มต้น EmailJS
-            if (emailConfig.publicKey) {
+            // เริ่มต้น EmailJS ใหม่
+            if (emailConfig.publicKey && emailConfig.publicKey !== 'your_public_key_here') {
                 emailjs.init(emailConfig.publicKey);
             }
             
@@ -1294,85 +1354,71 @@
         }
 
         // ฟังก์ชันทดสอบการเชื่อมต่อ Email
-function testEmailConnection() {
-    if (!emailConfig.publicKey || !emailConfig.serviceID || !emailConfig.templateID || !emailConfig.adminEmail) {
-        showNotification('กรุณากรอกข้อมูลการตั้งค่า Email ให้ครบถ้วน', 'error');
-        return;
-    }
-
-    const testResult = document.getElementById('testResult');
-    testResult.style.display = 'block';
-    testResult.className = 'test-result';
-    testResult.innerHTML = 'กำลังทดสอบการเชื่อมต่อ...';
-
-    // ส่งอีเมลทดสอบ
-    sendTestEmail()
-        .then((success) => {
-            if (success) {
-                testResult.classList.add('success');
-                testResult.innerHTML = '✅ การทดสอบสำเร็จ! ควรมีอีเมลแจ้งเตือนไปยังกล่องจดหมายของคุณแล้ว';
-                showNotification('ทดสอบการส่งอีเมลสำเร็จ!', 'success');
-            } else {
-                testResult.classList.add('error');
-                testResult.innerHTML = '❌ การทดสอบล้มเหลว: ไม่สามารถส่งอีเมลได้';
-                showNotification('การทดสอบส่งอีเมลล้มเหลว', 'error');
+        function testEmailConnection() {
+            if (!emailConfig.publicKey || emailConfig.publicKey === 'your_public_key_here' ||
+                !emailConfig.serviceID || emailConfig.serviceID === 'your_service_id_here' ||
+                !emailConfig.templateID || emailConfig.templateID === 'your_template_id_here' ||
+                !emailConfig.adminEmail || emailConfig.adminEmail === 'your_email@example.com') {
+                showNotification('กรุณาตั้งค่า EmailJS ให้ครบถ้วนก่อนทดสอบ', 'error');
+                return;
             }
-        })
-        .catch(error => {
-            testResult.classList.add('error');
-            testResult.innerHTML = '❌ การทดสอบล้มเหลว: ' + error;
-            showNotification('เกิดข้อผิดพลาดในการทดสอบ: ' + error, 'error');
-        });
-}
 
-// ฟังก์ชันส่งอีเมลทดสอบ
-async function sendTestEmail() {
-    const testHtml = `
-        <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
-            <h2 style="color: #4a154b;">🔔 ทดสอบการแจ้งเตือนจากร้านเสริมสวยมุกซาลอน</h2>
-            <p>นี่คืออีเมลทดสอบเพื่อตรวจสอบว่าการตั้งค่า EmailJS ทำงานปกติ</p>
-            <div style="background: #f9f0ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <p><strong>📅 วันที่ทดสอบ:</strong> ${new Date().toLocaleString('th-TH')}</p>
-                <p><strong>✅ สถานะ:</strong> ระบบแจ้งเตือนทำงานปกติแล้ว</p>
-            </div>
-            <p>หากคุณได้รับอีเมลนี้ แสดงว่าการตั้งค่าเสร็จสมบูรณ์แล้ว</p>
-            <hr style="margin: 20px 0;">
-            <p style="color: #666; font-size: 12px;">
-                ด้วยความนับถือ,<br>
-                <strong>ร้านเสริมสวยมุกซาลอน</strong><br>
-                📞 061-579-3940
-            </p>
-        </div>
-    `;
+            const testResult = document.getElementById('testResult');
+            testResult.style.display = 'block';
+            testResult.className = 'test-result';
+            testResult.innerHTML = 'กำลังทดสอบการเชื่อมต่อ...';
 
-    return await sendEmailNotification(
-        "🔔 ทดสอบการแจ้งเตือนจากร้านเสริมสวยมุกซาลอน",
-        testHtml
-    );
-}
-
-// ฟังก์ชันส่งการแจ้งเตือนผ่าน Email (เวอร์ชันสมบูรณ์)
-async function sendEmailNotification(subject, htmlMessage) {
-    // ตรวจสอบการตั้งค่า
-    if (!emailConfig.publicKey || !emailConfig.serviceID || !emailConfig.templateID || !emailConfig.adminEmail) {
-        console.warn("❌ การตั้งค่า Email ไม่ครบถ้วน - ข้ามการส่งการแจ้งเตือน");
-        console.log("การตั้งค่าปัจจุบัน:", emailConfig);
-        return false;
-    }
-
-    try {
-        console.log("📧 กำลังส่งอีเมล...", {
-            serviceID: emailConfig.serviceID,
-            templateID: emailConfig.templateID,
-            to_email: emailConfig.adminEmail,
-            subject: subject
-        });
-
-        // ตรวจสอบว่า EmailJS ถูก initialize แล้วหรือไม่
-        if (typeof emailjs === 'undefined') {
-            console.error("❌ EmailJS SDK ไม่ได้โหลด");
-            return false;
+            sendTestEmail()
+                .then((success) => {
+                    if (success) {
+                        testResult.classList.add('success');
+                        testResult.innerHTML = '✅ การทดสอบสำเร็จ! ควรมีอีเมลแจ้งเตือนไปยังกล่องจดหมายของคุณแล้ว';
+                        showNotification('ทดสอบการส่งอีเมลสำเร็จ!', 'success');
+                    } else {
+                        testResult.classList.add('error');
+                        testResult.innerHTML = '❌ การทดสอบล้มเหลว: ไม่สามารถส่งอีเมลได้';
+                        showNotification('การทดสอบส่งอีเมลล้มเหลว', 'error');
+                    }
+                })
+                .catch(error => {
+                    testResult.classList.add('error');
+                    testResult.innerHTML = '❌ การทดสอบล้มเหลว: ' + error;
+                    showNotification('เกิดข้อผิดพลาดในการทดสอบ', 'error');
+                });
         }
+
+        // ฟังก์ชันส่งอีเมลทดสอบ
+        async function sendTestEmail() {
+            const testHtml = `
+                <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
+                    <h2 style="color: #4a154b;">🔔 ทดสอบการแจ้งเตือนจากร้านเสริมสวยมุกซาลอน</h2>
+                    <p>นี่คืออีเมลทดสอบเพื่อตรวจสอบว่าการตั้งค่า EmailJS ทำงานปกติ</p>
+                    <div style="background: #f9f0ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <p><strong>📅 วันที่ทดสอบ:</strong> ${new Date().toLocaleString('th-TH')}</p>
+                        <p><strong>✅ สถานะ:</strong> ระบบแจ้งเตือนทำงานปกติแล้ว</p>
+                    </div>
+                    <p>หากคุณได้รับอีเมลนี้ แสดงว่าการตั้งค่าเสร็จสมบูรณ์แล้ว</p>
+                </div>
+            `;
+
+            return await sendEmailNotification(
+                "🔔 ทดสอบการแจ้งเตือนจากร้านเสริมสวยมุกซาลอน",
+                testHtml
+            );
+        }
+
+        // ฟังก์ชันส่งการแจ้งเตือนผ่าน Email
+        async function sendEmailNotification(subject, htmlMessage) {
+            // ตรวจสอบการตั้งค่า
+            if (!emailConfig.publicKey || emailConfig.publicKey === 'your_public_key_here' ||
+                !emailConfig.serviceID || emailConfig.serviceID === 'your_service_id_here' ||
+                !emailConfig.templateID || emailConfig.templateID === 'your_template_id_here' ||
+                !emailConfig.adminEmail || emailConfig.adminEmail === 'your_email@example.com') {
+                console.warn("❌ การตั้งค่า Email ไม่ครบถ้วน");
+                return false;
+            }
+
+            try {
 
         // เริ่มต้น EmailJS อีกครั้งเพื่อความแน่ใจ
         emailjs.init(emailConfig.publicKey);
@@ -1427,7 +1473,7 @@ function formatDateThai(dateString) {
     return date.toLocaleDateString('th-TH', options);
 }
 
-        // ฟังก์ชันรีเซ็ตฟอร์มจอง
+         // ฟังก์ชันรีเซ็ตฟอร์มจอง
         function resetBookingForm() {
             booking = {};
             bookingLocked = false;
@@ -1443,23 +1489,20 @@ function formatDateThai(dateString) {
             booking.name = document.getElementById("name").value;
             booking.phone = document.getElementById("phone").value;
             if (!booking.name || !booking.phone) {
-                alert("กรุณากรอกข้อมูลให้ครบ");
+                showNotification('กรุณากรอกข้อมูลให้ครบ', 'error');
                 return;
             }
             
-            // สร้างรายการบริการให้เลือก
             const serviceSelection = document.getElementById("serviceSelection");
             serviceSelection.innerHTML = "";
             
             services.forEach((service, index) => {
                 const serviceDiv = document.createElement("div");
                 serviceDiv.className = "service-option";
-                
                 serviceDiv.innerHTML = `
                     <input type="checkbox" id="service-${index}" name="service" value="${service.name} - ${service.price}">
                     <label for="service-${index}">${service.name} - ${service.price}</label>
                 `;
-                
                 serviceSelection.appendChild(serviceDiv);
             });
             
@@ -1467,22 +1510,15 @@ function formatDateThai(dateString) {
             document.getElementById("serviceBox").style.display = "block";
         }
 
-        // ฟังก์ชันย้อนกลับไปยังฟอร์ม
-        function goBackToForm() {
-            document.getElementById("serviceBox").style.display = "none";
-            document.getElementById("formBox").style.display = "block";
-        }
-
         // ฟังก์ชันไปยังหน้าปฏิทิน
         function goToCalendar() {
-            // เก็บบริการที่เลือก
             booking.services = [];
             document.querySelectorAll('input[name="service"]:checked').forEach(checkbox => {
                 booking.services.push(checkbox.value);
             });
             
             if (booking.services.length === 0) {
-                alert("กรุณาเลือกบริการอย่างน้อยหนึ่งรายการ");
+                showNotification('กรุณาเลือกบริการอย่างน้อยหนึ่งรายการ', 'error');
                 return;
             }
             
@@ -1490,13 +1526,7 @@ function formatDateThai(dateString) {
             document.getElementById("calendarBox").style.display = "block";
         }
 
-        // ฟังก์ชันย้อนกลับไปยังบริการ
-        function goBackToService() {
-            document.getElementById("calendarBox").style.display = "none";
-            document.getElementById("serviceBox").style.display = "block";
-        }
-
-         // ฟังก์ชันตรวจสอบการจอง
+        // ฟังก์ชันตรวจสอบการจอง
         function reviewBooking() {
             booking.date = document.getElementById("date").value;
             booking.time = document.getElementById("time").value;
@@ -1620,9 +1650,7 @@ function formatDateThai(dateString) {
                 return;
             }
 
-            // เรียงการจองจากล่าสุดไปเก่าสุด
             const sortedBookings = [...bookings].reverse();
-
             sortedBookings.forEach((booking, index) => {
                 const bookingDiv = document.createElement("div");
                 bookingDiv.className = "booking-item";
@@ -1646,7 +1674,6 @@ function formatDateThai(dateString) {
                     </div>
                 `;
 
-                // เพิ่มปุ่มลบสำหรับเจ้าของร้าน
                 if (isLoggedIn) {
                     const actionsDiv = document.createElement("div");
                     actionsDiv.className = "booking-actions";
@@ -1655,7 +1682,6 @@ function formatDateThai(dateString) {
                     deleteBtn.textContent = "ลบการจอง";
                     deleteBtn.className = "delete-btn";
                     deleteBtn.onclick = function () {
-                        // คำนวณดัชนีที่ถูกต้องเนื่องจากเรียงลำดับใหม่
                         const actualIndex = bookings.length - 1 - index;
                         deleteBooking(actualIndex);
                     };
@@ -1676,16 +1702,9 @@ function formatDateThai(dateString) {
             }
 
             if (confirm("คุณแน่ใจว่าต้องการลบการจองนี้?")) {
-                // ลบการจองออกจาก array
                 bookings.splice(index, 1);
-                
-                // อัปเดต localStorage
                 localStorage.setItem('bookings', JSON.stringify(bookings));
-                
-                // รีเรนเดอร์รายการจอง
                 renderBookings();
-                
-                // แสดงการยืนยัน
                 showNotification('ลบการจองเรียบร้อยแล้ว', 'success');
             }
         }
@@ -1741,7 +1760,6 @@ function formatDateThai(dateString) {
                 particlesContainer.appendChild(particle);
             }
 
-            // เพิ่ม CSS animation
             const style = document.createElement('style');
             style.textContent = `
                 @keyframes float-particle {
