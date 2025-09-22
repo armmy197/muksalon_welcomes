@@ -173,7 +173,7 @@
             color: white;
         }
         
-        /* Mobile Menu Button - แก้ไขตำแหน่งให้อยู่ขวาสุด */
+        /* Mobile Menu Button */
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -722,55 +722,6 @@
             min-width: 120px;
         }
 
-        /* เมนูมือถือแบบใหม่ - แก้ไขให้อยู่ขวาและไม่บังข้อมูล */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: -300px; /* เริ่มต้นนอกหน้าจอด้านขวา */
-            width: 280px;
-            height: 100vh;
-            background: white;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-            z-index: 100;
-            transition: right 0.3s ease;
-            padding-top: 70px;
-        }
-        
-        .mobile-nav.active {
-            right: 0; /* เลื่อนเข้ามาในหน้าจอ */
-        }
-        
-        .mobile-nav button {
-            display: block;
-            width: 100%;
-            padding: 15px 20px;
-            text-align: left;
-            border: none;
-            background: none;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 1rem;
-            color: #4a154b;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .mobile-nav button:hover, .mobile-nav button.active {
-            background: #4a154b;
-            color: white;
-        }
-        
-        .mobile-nav-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #4a154b;
-            cursor: pointer;
-        }
-
         /* Responsive Design */
         @media (min-width: 768px) {
             .container {
@@ -826,29 +777,9 @@
             .progress-bar::before {
                 top: 15px;
             }
-            
-            /* ซ่อนเมนูมือถือบนเดสก์ท็อป */
-            .mobile-menu-btn, .mobile-nav {
-                display: none;
-            }
         }
 
-        @media (max-width: 767px) {
-            /* ซ่อนเมนูปกติบนมือถือ */
-            nav {
-                display: none;
-            }
-            
-            /* แสดงปุ่มเมนูมือถือ */
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            /* แสดงเมนูมือถือ */
-            .mobile-nav {
-                display: block;
-            }
-            
+        @media (max-width: 480px) {
             .container {
                 padding: 0 10px;
             }
@@ -885,18 +816,40 @@
             }
         }
 
-        @media (max-width: 480px) {
-            .cute-float {
-                font-size: 1.3rem;
+        @media (max-width: 600px) {
+            .mobile-menu-btn {
+                display: block;
             }
             
-            .box {
-                padding: 12px;
-                margin: 8px auto;
+            nav {
+                flex-direction: column;
+                position: fixed;
+                top: 0;
+                right: -280px;
+                height: 100vh;
+                width: 280px;
+                padding-top: 70px;
+                transition: right 0.3s ease;
+                z-index: 100;
+                background: white;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
             }
             
-            .mobile-nav {
-                width: 250px;
+            nav.active {
+                right: 0;
+            }
+            
+            nav button {
+                width: 100%;
+                margin: 5px 0;
+                text-align: left;
+                padding: 12px 20px;
+                border-radius: 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .overlay.active {
+                display: block;
             }
         }
     </style>
@@ -941,7 +894,8 @@
         </div>
     </header>
 
-    <!-- เมนูปกติสำหรับเดสก์ท็อป -->
+    <div class="overlay" onclick="toggleMobileMenu()"></div>
+
     <nav id="mainNav">
         <button class="active" onclick="showPage('home')">หน้าหลัก</button>
         <button onclick="showPage('booking')">จองคิว</button>
@@ -949,18 +903,8 @@
         <button onclick="showPage('reviews')">รีวิว</button>
     </nav>
 
-    <!-- เมนูมือถือแบบใหม่ -->
-    <div class="mobile-nav" id="mobileNav">
-        <button class="mobile-nav-close" onclick="toggleMobileMenu()">×</button>
-        <button class="active" onclick="showPage('home')">หน้าหลัก</button>
-        <button onclick="showPage('booking')">จองคิว</button>
-        <button onclick="showPage('promo')">โปรโมชัน</button>
-        <button onclick="showPage('reviews')">รีวิว</button>
-    </div>
-
-    <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
-
     <div class="container">
+        
         <!-- หน้า Home -->
         <div id="home" class="page activePage">
             <div class="box">
