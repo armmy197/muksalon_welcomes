@@ -58,7 +58,7 @@
             background: #6a1b6d;
         }
         
-        /* Header */
+        /* Header - แก้ไขใหม่สำหรับมือถือ */
         header {
             background: linear-gradient(135deg, #d291bc 0%, #ffdfd3 100%);
             padding: 15px 0;
@@ -67,10 +67,32 @@
             z-index: 10;
         }
         
-        .header-content {
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            margin-bottom: 10px;
             position: relative;
+            padding: 0 15px;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #4a154b;
+            cursor: pointer;
+            z-index: 100;
+            padding: 5px;
         }
         
         .cute-float {
@@ -78,24 +100,36 @@
             color: #4a154b;
             font-size: 1.8rem;
             text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7);
-            margin-bottom: 10px;
+            margin: 0;
+            flex: 1;
+            text-align: center;
         }
         
         @keyframes float {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-5px); }
             100% { transform: translateY(0px); }
+        }
+        
+        .tagline {
+            color: white;
+            font-size: 1rem;
+            margin-top: 5px;
+            line-height: 1.3;
+            padding: 0 10px;
         }
         
         .admin-panel {
             text-align: center;
+            margin-top: 10px;
+            width: 100%;
         }
         
         .login-btn {
             background: #06C755;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 25px;
             cursor: pointer;
             font-weight: bold;
@@ -144,7 +178,7 @@
             font-size: 0.8rem;
         }
         
-        /* Navigation */
+        /* Navigation - แก้ไขใหม่สำหรับมือถือ */
         nav {
             display: flex;
             justify-content: center;
@@ -154,6 +188,14 @@
             position: sticky;
             top: 0;
             z-index: 10;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 800px;
         }
         
         nav button {
@@ -174,26 +216,43 @@
             color: white;
         }
         
-        /* Mobile Menu Button - แก้ไขตำแหน่งให้อยู่ขวาสุด */
-        .mobile-menu-btn {
+        /* Mobile Navigation */
+        .mobile-nav {
             display: none;
-            background: none;
+            position: fixed;
+            top: 0;
+            right: -280px;
+            height: 100vh;
+            width: 280px;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            z-index: 100;
+            transition: right 0.3s ease;
+            padding-top: 70px;
+            overflow-y: auto;
+        }
+        
+        .mobile-nav.active {
+            right: 0;
+        }
+        
+        .mobile-nav button {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            text-align: left;
             border: none;
+            background: none;
+            border-bottom: 1px solid #f0f0f0;
             font-size: 1rem;
-            color: white;
+            color: #4a154b;
             cursor: pointer;
-            position: absolute;
-            top: 10%;
-            right: 0px;
-            transform: translateY(-50%);
-            z-index: 50;
-            padding: 2px;
-            border-radius: 5px;
             transition: all 0.3s;
         }
         
-        .mobile-menu-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .mobile-nav button:hover, .mobile-nav button.active {
+            background: #f9f0ff;
+            color: #4a154b;
         }
         
         .overlay {
@@ -266,7 +325,7 @@
             background: #d291bc;
             color: white;
             border: none;
-            padding: 12px 16px;
+            padding: 12px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
@@ -348,7 +407,114 @@
             z-index: 1001;
         }
         
-        /* Gmail Configuration */
+        /* Security Badge */
+        .security-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Responsive Design - แก้ไขใหม่ */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 10px;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                position: absolute;
+                top: 15px;
+                right: 10px;
+            }
+            
+            .cute-float {
+                font-size: 1.5rem;
+                margin-left: 40px; /* เพิ่มระยะห่างจากปุ่มเมนู */
+                margin-right: 40px;
+                text-align: center;
+            }
+            
+            .tagline {
+                font-size: 0.9rem;
+                padding: 0 5px;
+                line-height: 1.2;
+            }
+            
+            .login-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            nav {
+                display: none; /* ซ่อนเมนูปกติบนมือถือ */
+            }
+            
+            .box {
+                padding: 15px;
+                margin: 10px auto;
+            }
+            
+            .box h2 {
+                font-size: 1.3rem;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cute-float {
+                font-size: 1.3rem;
+                margin-left: 35px;
+                margin-right: 35px;
+            }
+            
+            .tagline {
+                font-size: 0.8rem;
+            }
+            
+            .security-badge {
+                bottom: 70px;
+                left: 10px;
+                right: 10px;
+                text-align: center;
+                font-size: 0.65rem;
+            }
+            
+            .quick-login {
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .quick-login-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-menu-btn {
+                display: none;
+            }
+            
+            .mobile-nav {
+                display: none;
+            }
+        }
+
+        /* ส่วนอื่นๆ ที่เหลือเหมือนเดิม */
         .gmail-config {
             background: #f8f9fa;
             padding: 15px;
@@ -670,22 +836,6 @@
             display: none;
         }
 
-        /* Security Badge */
-        .security-badge {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 8px 12px;
-            border-radius: 16px;
-            font-size: 0.7rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
         /* Service Selection */
         .service-selection {
             margin: 12px 0;
@@ -731,56 +881,6 @@
             min-width: 120px;
         }
 
-        /* เมนูมือถือแบบใหม่ - แก้ไขให้อยู่ขวาและไม่บังข้อมูล */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: -300px; /* เริ่มต้นนอกหน้าจอด้านขวา */
-            width: 280px;
-            height: 100vh;
-            background: white;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-            z-index: 100;
-            transition: right 0.3s ease;
-            padding-top: 70px;
-        }
-        
-        .mobile-nav.active {
-            right: 0; /* เลื่อนเข้ามาในหน้าจอ */
-        }
-        
-        .mobile-nav button {
-            display: block;
-            width: 100%;
-            padding: 15px 20px;
-            text-align: left;
-            border: none;
-            background: none;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 1rem;
-            color: #4a154b;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .mobile-nav button:hover, .mobile-nav button.active {
-            background: #4a154b;
-            color: white;
-        }
-        
-        .mobile-nav-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #4a154b;
-            cursor: pointer;
-        }
-
-        /* Responsive Design */
         @media (min-width: 768px) {
             .container {
                 padding: 0 20px;
@@ -835,90 +935,6 @@
             .progress-bar::before {
                 top: 15px;
             }
-            
-            /* ซ่อนเมนูมือถือบนเดสก์ท็อป */
-            .mobile-menu-btn, .mobile-nav {
-                display: none;
-            }
-        }
-
-        @media (max-width: 767px) {
-            /* ซ่อนเมนูปกติบนมือถือ */
-            nav {
-                display: none;
-            }
-            
-            /* แสดงปุ่มเมนูมือถือ */
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            /* แสดงเมนูมือถือ */
-            .mobile-nav {
-                display: block;
-            }
-            
-            .container {
-                padding: 0 5px;
-            }
-            
-            .cute-float {
-                font-size: 1.5rem;
-                padding-right: 10px; /* เพิ่มพื้นที่สำหรับปุ่มเมนู */
-            }
-            
-            .login-btn {
-                padding: 8px 15px;
-                font-size: 0.8rem;
-            }
-            
-            .box {
-                padding: 15px;
-                margin: 10px auto;
-            }
-            
-            .booking-item {
-                padding: 12px;
-            }
-            
-            .notification {
-                min-width: calc(100% - 30px);
-                right: 15px;
-                left: 15px;
-            }
-            
-            .security-badge {
-                bottom: 70px;
-                left: 10px;
-                right: 10px;
-                text-align: center;
-            }
-            
-            /* ปรับตำแหน่ง header content ให้เหมาะสม */
-            .header-content {
-                padding: 0 50px 0 0; /* เพิ่มพื้นที่ด้านขวา */
-            }
-        }
-
-        @media (max-width: 480px) {
-            .cute-float {
-                font-size: 1.3rem;
-                padding-right: 45px;
-            }
-            
-            .box {
-                padding: 12px;
-                margin: 8px auto;
-            }
-            
-            .mobile-nav {
-                width: 250px;
-            }
-            
-            .mobile-menu-btn {
-                right: 15px;
-                font-size: 1.6rem;
-            }
         }
     </style>
 </head>
@@ -945,35 +961,28 @@
 
     <header>
         <div class="container">
-            <!-- ปุ่มเมนูมือถือ - อยู่ขวาสุด -->
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
-            <div class="header-content">
-                <h1 class="cute-float">ร้านเสริมสวยมุกซาลอน 💖</h1>
-                <p style="color: white; font-size: 1rem; margin-top: 5px;">ยินดีให้บริการด้วยความรักและ professionalism</p>
-            </div>
-            <div class="admin-panel">
-                <button id="loginBtn" class="login-btn" onclick="loginWithLine()">
-                    <span class="line-icon">L</span> ล็อคอินสำหรับเจ้าของร้าน
-                </button>
-                <div id="adminMenu" class="admin-only">
-                    <button onclick="showPage('manage')">จัดการร้าน</button>
-                    <button class="logout-btn" onclick="logout()">ล็อกเอาท์</button>
+            <div class="header-container">
+                <div class="header-top">
+                    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                    <h1 class="cute-float">ร้านเสริมสวยมุกซาลอน 💖</h1>
+                </div>
+                <p class="tagline">ยินดีให้บริการด้วยความรักและ professionalism</p>
+                
+                <div class="admin-panel">
+                    <button id="loginBtn" class="login-btn" onclick="loginWithLine()">
+                        <span class="line-icon">L</span> ล็อคอินสำหรับเจ้าของร้าน
+                    </button>
+                    <div id="adminMenu" class="admin-only">
+                        <button onclick="showPage('manage')">จัดการร้าน</button>
+                        <button class="logout-btn" onclick="logout()">ล็อกเอาท์</button>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- เมนูปกติสำหรับเดสก์ท็อป -->
-    <nav id="mainNav">
-        <button class="active" onclick="showPage('home')">หน้าหลัก</button>
-        <button onclick="showPage('booking')">จองคิว</button>
-        <button onclick="showPage('promo')">โปรโมชัน</button>
-        <button onclick="showPage('reviews')">รีวิว</button>
-    </nav>
-
-    <!-- เมนูมือถือแบบใหม่ -->
+    <!-- Mobile Navigation -->
     <div class="mobile-nav" id="mobileNav">
-        <button class="mobile-nav-close" onclick="toggleMobileMenu()">×</button>
         <button class="active" onclick="showPage('home')">หน้าหลัก</button>
         <button onclick="showPage('booking')">จองคิว</button>
         <button onclick="showPage('promo')">โปรโมชัน</button>
@@ -982,7 +991,18 @@
 
     <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
 
+    <!-- Desktop Navigation -->
+    <nav>
+        <div class="nav-container">
+            <button class="active" onclick="showPage('home')">หน้าหลัก</button>
+            <button onclick="showPage('booking')">จองคิว</button>
+            <button onclick="showPage('promo')">โปรโมชัน</button>
+            <button onclick="showPage('reviews')">รีวิว</button>
+        </div>
+    </nav>
+
     <div class="container">
+        
         <!-- หน้า Home -->
         <div id="home" class="page activePage">
             <div class="box">
@@ -1016,7 +1036,7 @@
             </div>
 
             <div class="box" id="formBox">
-                <h2>กรอกข้อมูลยืนยันตัวตน 👤</h2>
+                <h2>กรอกข้อมูลลูกค้า 👤</h2>
                 <input type="text" id="name" placeholder="ชื่อของคุณ">
                 <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์">
                 <div class="button-group">
@@ -1230,7 +1250,7 @@
             showPage('booking');
         });
 
-        // ฟังก์ชันสำหรับเมนูมือถือแบบใหม่
+              // ฟังก์ชันสำหรับเมนูมือถือแบบใหม่
         function toggleMobileMenu() {
             const mobileNav = document.getElementById("mobileNav");
             const overlay = document.getElementById("overlay");
