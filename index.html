@@ -1024,6 +1024,7 @@
             </div>
         </div>
 
+        
         <!-- หน้า Booking -->
         <div id="booking" class="page">
             <div class="box">
@@ -1162,11 +1163,22 @@
             <p id="thanksMsg"></p>
         </div>
     </div>
-
     <!-- Load EmailJS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
 
     <script>
+        
+              // ฟังก์ชันสำหรับเมนูมือถือแบบใหม่
+        function toggleMobileMenu() {
+            const mobileNav = document.getElementById("mobileNav");
+            const overlay = document.getElementById("overlay");
+            
+            mobileNav.classList.toggle("active");
+            overlay.classList.toggle("active");
+            
+            // ป้องกันการสกรอลพื้นหลังเมื่อเมนูเปิด
+            document.body.style.overflow = mobileNav.classList.contains("active") ? "hidden" : "";
+        }
         // ตัวแปร global
         const timeSelect = document.getElementById("time");
         for (let h = 8; h <= 20; h++) {
@@ -1250,17 +1262,6 @@
             showPage('booking');
         });
 
-              // ฟังก์ชันสำหรับเมนูมือถือแบบใหม่
-        function toggleMobileMenu() {
-            const mobileNav = document.getElementById("mobileNav");
-            const overlay = document.getElementById("overlay");
-            
-            mobileNav.classList.toggle("active");
-            overlay.classList.toggle("active");
-            
-            // ป้องกันการสกรอลพื้นหลังเมื่อเมนูเปิด
-            document.body.style.overflow = mobileNav.classList.contains("active") ? "hidden" : "";
-        }
 
         // ฟังก์ชันสร้าง floating icons
         function createFloatingIcons() {
