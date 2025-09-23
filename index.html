@@ -69,7 +69,7 @@
         
         .header-content {
             text-align: center;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
         
         .cute-float {
@@ -173,17 +173,20 @@
             color: white;
         }
         
-        /* Mobile Menu Button - แก้ไขตำแหน่งให้อยู่ขวาสุด */
+        /* Mobile Menu Button */
         .mobile-menu-btn {
-    font-size: 20px;
-    padding: 8px 12px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #4a154b;
+            cursor: pointer;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+        }
+        
         .overlay {
             display: none;
             position: fixed;
@@ -719,12 +722,12 @@
             min-width: 120px;
         }
 
-        /* เมนูมือถือแบบใหม่ - แก้ไขให้อยู่ขวาและไม่บังข้อมูล */
+        /* เมนูมือถือแบบใหม่ */
         .mobile-nav {
             display: none;
             position: fixed;
             top: 0;
-            right: -300px; /* เริ่มต้นนอกหน้าจอด้านขวา */
+            right: -300px;
             width: 280px;
             height: 100vh;
             background: white;
@@ -735,7 +738,7 @@
         }
         
         .mobile-nav.active {
-            right: 0; /* เลื่อนเข้ามาในหน้าจอ */
+            right: 0;
         }
         
         .mobile-nav button {
@@ -896,6 +899,32 @@
                 width: 250px;
             }
         }
+        
+        /* โปรโมชัน */
+        .promo-item {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f9f0ff;
+            border: 1px solid #e0d0e0;
+        }
+        
+        .promo-image {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        /* ข้อความแจ้งเตือนเวลาซ้ำ */
+        .time-conflict {
+            background: #fff5f5;
+            border: 1px solid #ff4757;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -989,7 +1018,7 @@
             </div>
 
             <div class="box" id="formBox">
-                <h2>กรอกข้อมูลยืนยันตัวตน 👤</h2>
+                <h2>กรอกข้อมูลลูกค้า 👤</h2>
                 <input type="text" id="name" placeholder="ชื่อของคุณ">
                 <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์">
                 <div class="button-group">
@@ -1009,6 +1038,11 @@
                 <h2>เลือกวันและเวลา 📅</h2>
                 <input type="date" id="date">
                 <select id="time"></select>
+                <!-- ข้อความแจ้งเตือนเวลาซ้ำ -->
+                <div id="timeConflict" class="time-conflict">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>มีลูกค้าอีกท่านได้จองเวลาในช่วงนี้แล้ว กรุณาเลือกเวลาอื่น</span>
+                </div>
                 <div class="button-group">
                     <button onclick="reviewBooking()">ถัดไป</button>
                 </div>
@@ -1120,8 +1154,7 @@
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
 
     <script>
-        
-              // ฟังก์ชันสำหรับเมนูมือถือแบบใหม่
+        // ฟังก์ชันสำหรับเมนูมือถือแบบใหม่
         function toggleMobileMenu() {
             const mobileNav = document.getElementById("mobileNav");
             const overlay = document.getElementById("overlay");
@@ -1132,6 +1165,7 @@
             // ป้องกันการสกรอลพื้นหลังเมื่อเมนูเปิด
             document.body.style.overflow = mobileNav.classList.contains("active") ? "hidden" : "";
         }
+        
         // ตัวแปร global
         const timeSelect = document.getElementById("time");
         for (let h = 8; h <= 20; h++) {
@@ -1213,8 +1247,11 @@
             
             // แสดงหน้าจองคิวเป็นหน้าแรก
             showPage('booking');
+            
+            // ตรวจสอบเวลาที่เลือกเมื่อมีการเปลี่ยนแปลง
+            document.getElementById('date').addEventListener('change', checkTimeConflict);
+            document.getElementById('time').addEventListener('change', checkTimeConflict);
         });
-
 
         // ฟังก์ชันสร้าง floating icons
         function createFloatingIcons() {
@@ -1415,61 +1452,100 @@
             }
 
             try {
+                // เริ่มต้น EmailJS อีกครั้งเพื่อความแน่ใจ
+                emailjs.init(emailConfig.publicKey);
 
-        // เริ่มต้น EmailJS อีกครั้งเพื่อความแน่ใจ
-        emailjs.init(emailConfig.publicKey);
+                // สร้างพารามิเตอร์สำหรับเทมเพลต
+                const templateParams = {
+                    to_email: emailConfig.adminEmail,
+                    subject: subject,
+                    message_html: htmlMessage,
+                    from_name: "ร้านเสริมสวยมุกซาลอน",
+                    // พารามิเตอร์เพิ่มเติม (ถ้ามีในเทมเพลต)
+                    name: booking.name || "ลูกค้าทดสอบ",
+                    phone: booking.phone || "ไม่ระบุ",
+                    date: booking.date ? formatDateThai(booking.date) : new Date().toLocaleDateString('th-TH'),
+                    time: booking.time || "ไม่ระบุ",
+                    services: booking.services ? booking.services.map(s => `<li>${s}</li>`).join("") : "<li>บริการทดสอบ</li>",
+                    created_at: new Date().toLocaleString('th-TH')
+                };
 
-        // สร้างพารามิเตอร์สำหรับเทมเพลต
-        const templateParams = {
-            to_email: emailConfig.adminEmail,
-            subject: subject,
-            message_html: htmlMessage,
-            from_name: "ร้านเสริมสวยมุกซาลอน",
-            // พารามิเตอร์เพิ่มเติม (ถ้ามีในเทมเพลต)
-            name: booking.name || "ลูกค้าทดสอบ",
-            phone: booking.phone || "ไม่ระบุ",
-            date: booking.date ? formatDateThai(booking.date) : new Date().toLocaleDateString('th-TH'),
-            time: booking.time || "ไม่ระบุ",
-            services: booking.services ? booking.services.map(s => `<li>${s}</li>`).join("") : "<li>บริการทดสอบ</li>",
-            created_at: new Date().toLocaleString('th-TH')
-        };
+                console.log("📋 พารามิเตอร์ที่ส่ง:", templateParams);
 
-        console.log("📋 พารามิเตอร์ที่ส่ง:", templateParams);
+                const response = await emailjs.send(
+                    emailConfig.serviceID, 
+                    emailConfig.templateID, 
+                    templateParams
+                );
 
-        const response = await emailjs.send(
-            emailConfig.serviceID, 
-            emailConfig.templateID, 
-            templateParams
-        );
-
-        console.log("✅ ผลลัพธ์การส่งอีเมล:", response);
-        
-        if (response.status === 200) {
-            console.log("✅ ส่งอีเมลสำเร็จ!");
-            return true;
-        } else {
-            throw new Error(`EmailJS error: ${response.status} - ${response.text}`);
+                console.log("✅ ผลลัพธ์การส่งอีเมล:", response);
+                
+                if (response.status === 200) {
+                    console.log("✅ ส่งอีเมลสำเร็จ!");
+                    return true;
+                } else {
+                    throw new Error(`EmailJS error: ${response.status} - ${response.text}`);
+                }
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการส่งอีเมล:", error);
+                
+                // แสดง error ละเอียด
+                if (error.text) {
+                    console.error("รายละเอียด error:", error.text);
+                }
+                
+                return false;
+            }
         }
-    } catch (error) {
-        console.error("❌ เกิดข้อผิดพลาดในการส่งอีเมล:", error);
-        
-        // แสดง error ละเอียด
-        if (error.text) {
-            console.error("รายละเอียด error:", error.text);
+
+        // ฟังก์ชันจัดรูปแบบวันที่ไทย
+        function formatDateThai(dateString) {
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('th-TH', options);
         }
-        
-        return false;
-    }
-}
 
-// ฟังก์ชันจัดรูปแบบวันที่ไทย (ถ้ายังไม่มี)
-function formatDateThai(dateString) {
-    const date = new Date(dateString);
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('th-TH', options);
-}
+        // ฟังก์ชันแสดงการแจ้งเตือน
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">×</button>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
 
-         // ฟังก์ชันรีเซ็ตฟอร์มจอง
+        // ฟังก์ชันตรวจสอบเวลาซ้ำ
+        function checkTimeConflict() {
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const conflictMsg = document.getElementById('timeConflict');
+            
+            if (!date || !time) {
+                conflictMsg.style.display = 'none';
+                return;
+            }
+            
+            // ตรวจสอบว่ามีการจองซ้ำหรือไม่
+            const isConflict = bookings.some(booking => 
+                booking.date === date && booking.time === time
+            );
+            
+            if (isConflict) {
+                conflictMsg.style.display = 'block';
+            } else {
+                conflictMsg.style.display = 'none';
+            }
+        }
+
+        // ฟังก์ชันรีเซ็ตฟอร์มจอง
         function resetBookingForm() {
             booking = {};
             bookingLocked = false;
@@ -1478,6 +1554,7 @@ function formatDateThai(dateString) {
             document.getElementById("name").value = "";
             document.getElementById("phone").value = "";
             document.getElementById("date").value = "";
+            document.getElementById("timeConflict").style.display = "none";
         }
 
         // ฟังก์ชันไปยังหน้ารายการบริการ
@@ -1532,6 +1609,16 @@ function formatDateThai(dateString) {
             }
             if (holidays.includes(booking.date)) {
                 showNotification('วันดังกล่าวร้านปิด กรุณาเลือกวันอื่น', 'error');
+                return;
+            }
+            
+            // ตรวจสอบเวลาซ้ำอีกครั้งก่อนยืนยัน
+            const isConflict = bookings.some(b => 
+                b.date === booking.date && b.time === booking.time
+            );
+            
+            if (isConflict) {
+                showNotification('มีลูกค้าอีกท่านได้จองเวลาในช่วงนี้แล้ว กรุณาเลือกเวลาอื่น', 'error');
                 return;
             }
             
@@ -1705,142 +1792,99 @@ function formatDateThai(dateString) {
             }
         }
 
-        // ฟังก์ชันแสดงการแจ้งเตือน
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <span>${message}</span>
-                <button onclick="this.parentElement.remove()">&times;</button>
-            `;
+        // ฟังก์ชันแสดงวันหยุด
+        function renderHolidays() {
+            const container = document.getElementById("holidayList");
+            container.innerHTML = "";
             
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
-                }
-            }, 3000);
-        }
-
-        // ฟังก์ชันสร้างอนุภาค
-        function createParticles() {
-            const particlesContainer = document.createElement('div');
-            particlesContainer.id = 'particles';
-            particlesContainer.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-                z-index: -1;
-            `;
-            document.body.appendChild(particlesContainer);
-
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.style.cssText = `
-                    position: absolute;
-                    border-radius: 50%;
-                    opacity: 0.5;
-                    animation: float-particle 15s infinite linear;
-                    width: ${Math.random() * 15 + 5}px;
-                    height: ${Math.random() * 15 + 5}px;
-                    left: ${Math.random() * 100}%;
-                    top: ${Math.random() * 100}%;
-                    animation-duration: ${Math.random() * 10 + 10}s;
-                    animation-delay: ${Math.random() * 5}s;
-                    background-color: rgba(255, 182, 193, ${Math.random() * 0.5 + 0.3});
-                `;
-                particlesContainer.appendChild(particle);
-            }
-
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes float-particle {
-                    0% { transform: translateY(0) translateX(0) rotate(0deg); }
-                    100% { transform: translateY(-100vh) translateX(100px) rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        // ฟังก์ชันรีวิว
-        function setModalRating(stars) {
-            currentRating = stars;
-            document.querySelectorAll("#modalStars span").forEach((s, i) => {
-                s.classList.toggle("active", i < stars);
-            });
-        }
-
-        function showReviewModal() {
-            const modal = document.getElementById("reviewModal");
-            modal.style.display = "flex";
-            document.getElementById("reviewerName").value = "";
-            document.getElementById("reviewComment").value = "";
-            currentRating = 0;
-            document.querySelectorAll("#modalStars span").forEach(s => {
-                s.classList.remove("active");
-            });
-            document.getElementById("thanksMsg").innerText = "";
-        }
-
-        function closeReviewModal() {
-            document.getElementById("reviewModal").style.display = "none";
-        }
-
-        function submitReview() {
-            const reviewerName = document.getElementById("reviewerName").value || "ไม่ระบุชื่อ";
-            const comment = document.getElementById("reviewComment").value;
-
-            if (currentRating === 0) {
-                showNotification('กรุณาให้คะแนนดาวก่อนส่งรีวิว', 'error');
+            if (holidays.length === 0) {
+                container.innerHTML = "<li>ไม่มีวันหยุดที่กำหนด</li>";
                 return;
             }
-
-            reviews.push({
-                name: reviewerName,
-                rating: currentRating,
-                comment: comment,
-                date: new Date().toLocaleDateString('th-TH')
+            
+            holidays.forEach((holiday, index) => {
+                const holidayItem = document.createElement("li");
+                holidayItem.className = "holiday-item";
+                holidayItem.innerHTML = `
+                    <span>${formatDateThai(holiday)}</span>
+                    ${isLoggedIn ? `<button class="delete-btn" onclick="deleteHoliday(${index})">ลบ</button>` : ''}
+                `;
+                container.appendChild(holidayItem);
             });
-            localStorage.setItem('reviews', JSON.stringify(reviews));
-
-            document.getElementById("thanksMsg").innerText = "ขอบคุณค่ะสำหรับการรีวิว";
-
-            setTimeout(() => {
-                closeReviewModal();
-                showPage("booking");
-            }, 3000);
         }
 
-        // ฟังก์ชันจัดการบริการ
+        // ฟังก์ชันเพิ่มวันหยุด
+        function addHoliday() {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนเพิ่มวันหยุด', 'error');
+                return;
+            }
+            
+            const newHoliday = document.getElementById("newHoliday").value;
+            if (!newHoliday) {
+                showNotification('กรุณาเลือกวันที่', 'error');
+                return;
+            }
+            
+            if (holidays.includes(newHoliday)) {
+                showNotification('วันหยุดนี้มีอยู่แล้ว', 'error');
+                return;
+            }
+            
+            holidays.push(newHoliday);
+            localStorage.setItem('holidays', JSON.stringify(holidays));
+            document.getElementById("newHoliday").value = "";
+            renderHolidays();
+            showNotification('เพิ่มวันหยุดเรียบร้อยแล้ว', 'success');
+        }
+
+        // ฟังก์ชันลบวันหยุด
+        function deleteHoliday(index) {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
+                return;
+            }
+            
+            holidays.splice(index, 1);
+            localStorage.setItem('holidays', JSON.stringify(holidays));
+            renderHolidays();
+            showNotification('ลบวันหยุดเรียบร้อยแล้ว', 'success');
+        }
+
+        // ฟังก์ชันแสดงบริการ
         function renderServices() {
-            const ul = document.getElementById("servicesList");
-            ul.innerHTML = "";
+            const container = document.getElementById("servicesList");
+            container.innerHTML = "";
+            
             services.forEach((service, index) => {
-                let li = document.createElement("li");
-                li.className = "service-item";
-                li.innerHTML = `<span>${service.name} - ${service.price}</span>`;
-                if (isLoggedIn) {
-                    const deleteBtn = document.createElement("button");
-                    deleteBtn.textContent = "ลบ";
-                    deleteBtn.className = "delete-btn";
-                    deleteBtn.onclick = function () { deleteService(index); };
-                    li.appendChild(deleteBtn);
-                }
-                ul.appendChild(li);
+                const serviceItem = document.createElement("li");
+                serviceItem.className = "service-item";
+                serviceItem.innerHTML = `
+                    <div>
+                        <strong>${service.name}</strong>
+                        <span>${service.price}</span>
+                    </div>
+                    ${isLoggedIn ? `<button class="delete-btn" onclick="deleteService(${index})">ลบ</button>` : ''}
+                `;
+                container.appendChild(serviceItem);
             });
         }
 
+        // ฟังก์ชันเพิ่มบริการ
         function addService() {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนเพิ่มบริการ', 'error');
+                return;
+            }
+            
             const name = document.getElementById("newServiceName").value;
             const price = document.getElementById("newServicePrice").value;
+            
             if (!name || !price) {
-                showNotification('กรุณากรอกชื่อบริการและราคา', 'error');
+                showNotification('กรุณากรอกข้อมูลให้ครบ', 'error');
                 return;
             }
+            
             services.push({ name, price });
             localStorage.setItem('services', JSON.stringify(services));
             document.getElementById("newServiceName").value = "";
@@ -1849,175 +1893,201 @@ function formatDateThai(dateString) {
             showNotification('เพิ่มบริการเรียบร้อยแล้ว', 'success');
         }
 
+        // ฟังก์ชันลบบริการ
         function deleteService(index) {
             if (!isLoggedIn) {
                 showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
                 return;
             }
-            if (confirm("คุณแน่ใจว่าต้องการลบบริการนี้?")) {
-                services.splice(index, 1);
-                localStorage.setItem('services', JSON.stringify(services));
-                renderServices();
-                showNotification('ลบบริการเรียบร้อยแล้ว', 'success');
-            }
+            
+            services.splice(index, 1);
+            localStorage.setItem('services', JSON.stringify(services));
+            renderServices();
+            showNotification('ลบบริการเรียบร้อยแล้ว', 'success');
         }
 
-        // ฟังก์ชันจัดการวันหยุด
-        function renderHolidays() {
-            const ul = document.getElementById("holidayList");
-            ul.innerHTML = "";
-            holidays.forEach((day, index) => {
-                let li = document.createElement("li");
-                li.className = "holiday-item";
-                li.innerHTML = `<span>${day}</span>`;
-                if (isLoggedIn) {
-                    const deleteBtn = document.createElement("button");
-                    deleteBtn.textContent = "ลบ";
-                    deleteBtn.className = "delete-btn";
-                    deleteBtn.onclick = function () { deleteHoliday(index); };
-                    li.appendChild(deleteBtn);
-                }
-                ul.appendChild(li);
-            });
-        }
-
-        function addHoliday() {
-            const newHoliday = document.getElementById("newHoliday").value;
-            if (!newHoliday) {
-                showNotification('กรุณาเลือกวันที่', 'error');
-                return;
-            }
-            holidays.push(newHoliday);
-            localStorage.setItem('holidays', JSON.stringify(holidays));
-            document.getElementById("newHoliday").value = "";
-            renderHolidays();
-            showNotification('เพิ่มวันหยุดเรียบร้อยแล้ว', 'success');
-        }
-
-        function deleteHoliday(index) {
-            if (!isLoggedIn) {
-                showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
-                return;
-            }
-            if (confirm("คุณแน่ใจว่าต้องการลบวันหยุดนี้?")) {
-                holidays.splice(index, 1);
-                localStorage.setItem('holidays', JSON.stringify(holidays));
-                renderHolidays();
-                showNotification('ลบวันหยุดเรียบร้อยแล้ว', 'success');
-            }
-        }
-
-        // ฟังก์ชันจัดการโปรโมชัน
+        // ฟังก์ชันแสดงโปรโมชัน
         function renderPromotions() {
             const container = document.getElementById("promoContent");
             container.innerHTML = "";
+            
             if (promotions.length === 0) {
                 container.innerHTML = "<p>ยังไม่มีโปรโมชัน</p>";
                 return;
             }
+            
             promotions.forEach((promo, index) => {
-                const promoDiv = document.createElement("div");
-                promoDiv.className = "promo-item";
-                promoDiv.innerHTML = `
+                const promoItem = document.createElement("div");
+                promoItem.className = "promo-item";
+                promoItem.innerHTML = `
                     <h3>${promo.title}</h3>
+                    ${promo.image ? `<img src="${promo.image}" class="promo-image" alt="${promo.title}">` : ''}
                     <p>${promo.description}</p>
-                    ${promo.image ? `<img src="${promo.image}" alt="${promo.title}">` : ''}
+                    ${isLoggedIn ? `<button class="delete-btn" onclick="deletePromo(${index})">ลบโปรโมชัน</button>` : ''}
                 `;
-                if (isLoggedIn) {
-                    const deleteBtn = document.createElement("button");
-                    deleteBtn.textContent = "ลบโปรโมชัน";
-                    deleteBtn.className = "delete-btn";
-                    deleteBtn.onclick = function () { deletePromo(index); };
-                    promoDiv.appendChild(deleteBtn);
-                }
-                container.appendChild(promoDiv);
+                container.appendChild(promoItem);
             });
         }
 
+        // ฟังก์ชันเพิ่มโปรโมชัน
         function addPromo() {
-            const title = document.getElementById("promoTitle").value;
-            const description = document.getElementById("promoDescription").value;
-            if (!title || !description) {
-                showNotification('กรุณากรอกหัวข้อและรายละเอียดโปรโมชัน', 'error');
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนเพิ่มโปรโมชัน', 'error');
                 return;
             }
-            promotions.push({ title, description, image: "" });
+            
+            const title = document.getElementById("promoTitle").value;
+            const description = document.getElementById("promoDescription").value;
+            const imageFile = document.getElementById("promoImageFile").files[0];
+            
+            if (!title || !description) {
+                showNotification('กรุณากรอกข้อมูลให้ครบ', 'error');
+                return;
+            }
+            
+            let imageUrl = "";
+            if (imageFile) {
+                // ในกรณีจริงควรอัปโหลดรูปภาพไปยังเซิร์ฟเวอร์
+                // ตัวอย่างนี้ใช้ URL.createObjectURL สำหรับการแสดงผลชั่วคราว
+                imageUrl = URL.createObjectURL(imageFile);
+            }
+            
+            promotions.push({ title, description, image: imageUrl });
             localStorage.setItem('promotions', JSON.stringify(promotions));
             document.getElementById("promoTitle").value = "";
             document.getElementById("promoDescription").value = "";
+            document.getElementById("promoImageFile").value = "";
             renderPromotions();
             showNotification('เพิ่มโปรโมชันเรียบร้อยแล้ว', 'success');
         }
 
+        // ฟังก์ชันลบโปรโมชัน
         function deletePromo(index) {
             if (!isLoggedIn) {
                 showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
                 return;
             }
-            if (confirm("คุณแน่ใจว่าต้องการลบโปรโมชันนี้?")) {
-                promotions.splice(index, 1);
-                localStorage.setItem('promotions', JSON.stringify(promotions));
-                renderPromotions();
-                showNotification('ลบโปรโมชันเรียบร้อยแล้ว', 'success');
-            }
+            
+            promotions.splice(index, 1);
+            localStorage.setItem('promotions', JSON.stringify(promotions));
+            renderPromotions();
+            showNotification('ลบโปรโมชันเรียบร้อยแล้ว', 'success');
         }
 
-        // ฟังก์ชันจัดการรีวิว
+        // ฟังก์ชันแสดงรีวิว
         function renderReviews() {
             const container = document.getElementById("reviewsList");
             container.innerHTML = "";
+            
             if (reviews.length === 0) {
                 container.innerHTML = "<p>ยังไม่มีรีวิว</p>";
                 return;
             }
-            const sortedReviews = [...reviews].reverse();
-            sortedReviews.forEach((review, index) => {
-                const reviewDiv = document.createElement("div");
-                reviewDiv.className = "review-item";
-                let stars = "";
-                for (let i = 0; i < 5; i++) {
-                    stars += i < review.rating ? "★" : "☆";
-                }
-                reviewDiv.innerHTML = `
-                    <div class="review-name">${review.name}</div>
-                    <div class="review-stars">${stars}</div>
-                    <div>${review.comment || "ไม่มีคำอธิบาย"}</div>
-                    <div style="font-size: 12px; color: #777;">${review.date}</div>
+            
+            reviews.forEach(review => {
+                const reviewItem = document.createElement("div");
+                reviewItem.className = "box";
+                reviewItem.innerHTML = `
+                    <div class="stars">
+                        ${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}
+                    </div>
+                    <p><strong>${review.name || "ไม่ระบุชื่อ"}</strong></p>
+                    <p>${review.comment || "ไม่มีข้อความเพิ่มเติม"}</p>
+                    <p><small>${new Date(review.timestamp).toLocaleString('th-TH')}</small></p>
                 `;
-                if (isLoggedIn) {
-                    const deleteBtn = document.createElement("button");
-                    deleteBtn.textContent = "ลบรีวิว";
-                    deleteBtn.className = "delete-btn";
-                    deleteBtn.onclick = function () {
-                        const actualIndex = reviews.length - 1 - index;
-                        deleteReview(actualIndex);
-                    };
-                    reviewDiv.appendChild(deleteBtn);
-                }
-                container.appendChild(reviewDiv);
+                container.appendChild(reviewItem);
             });
         }
 
-        function deleteReview(index) {
-            if (!isLoggedIn) {
-                showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
-                return;
-            }
-            if (confirm("คุณแน่ใจว่าต้องการลบรีวิวนี้?")) {
-                reviews.splice(index, 1);
-                localStorage.setItem('reviews', JSON.stringify(reviews));
-                renderReviews();
-                showNotification('ลบรีวิวเรียบร้อยแล้ว', 'success');
-            }
+        // ฟังก์ชันแสดงโมดอลรีวิว
+        function showReviewModal() {
+            document.getElementById("reviewModal").style.display = "flex";
+            currentRating = 0;
+            document.getElementById("reviewerName").value = "";
+            document.getElementById("reviewComment").value = "";
+            document.getElementById("thanksMsg").textContent = "";
+            
+            // รีเซ็ตดาว
+            const stars = document.querySelectorAll("#modalStars span");
+            stars.forEach(star => star.classList.remove("active"));
         }
 
-        // เพิ่ม event listener สำหรับคลิกนอก modal เพื่อปิด
-        document.getElementById("reviewModal").addEventListener("click", function (e) {
-            if (e.target === this) {
-                closeReviewModal();
-                showPage("booking");
+        // ฟังก์ชันตั้งค่าระดับคะแนนรีวิว
+        function setModalRating(rating) {
+            currentRating = rating;
+            const stars = document.querySelectorAll("#modalStars span");
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add("active");
+                } else {
+                    star.classList.remove("active");
+                }
+            });
+        }
+
+        // ฟังก์ชันส่งรีวิว
+        function submitReview() {
+            const name = document.getElementById("reviewerName").value || "ไม่ระบุชื่อ";
+            const comment = document.getElementById("reviewComment").value;
+            
+            if (currentRating === 0) {
+                showNotification('กรุณาให้คะแนนดาว', 'error');
+                return;
             }
-        });
+            
+            reviews.push({
+                name,
+                rating: currentRating,
+                comment,
+                timestamp: new Date().toISOString()
+            });
+            
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+            document.getElementById("thanksMsg").textContent = "ขอบคุณสำหรับรีวิวค่ะ!";
+            
+            setTimeout(() => {
+                document.getElementById("reviewModal").style.display = "none";
+                showPage("reviews");
+            }, 2000);
+        }
+
+        // ฟังก์ชันสร้าง particles (สำหรับลูกเล่นพื้นหลัง)
+        function createParticles() {
+            // สร้าง particles สำหรับพื้นหลัง
+            const particlesContainer = document.createElement('div');
+            particlesContainer.style.position = 'fixed';
+            particlesContainer.style.top = '0';
+            particlesContainer.style.left = '0';
+            particlesContainer.style.width = '100%';
+            particlesContainer.style.height = '100%';
+            particlesContainer.style.pointerEvents = 'none';
+            particlesContainer.style.zIndex = '-1';
+            document.body.appendChild(particlesContainer);
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = Math.random() * 5 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.background = `hsl(${Math.random() * 360}, 70%, 70%)`;
+                particle.style.borderRadius = '50%';
+                particle.style.opacity = Math.random() * 0.5 + 0.2;
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+                
+                particlesContainer.appendChild(particle);
+                
+                // อนิเมชันเคลื่อนไหว
+                particle.animate([
+                    { transform: 'translate(0, 0)' },
+                    { transform: `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px)` }
+                ], {
+                    duration: Math.random() * 10000 + 5000,
+                    iterations: Infinity,
+                    direction: 'alternate'
+                });
+            }
+        }
     </script>
 </body>
 </html>
