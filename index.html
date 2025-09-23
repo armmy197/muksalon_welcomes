@@ -58,7 +58,7 @@
             background: #6a1b6d;
         }
         
-        /* Header - แก้ไขใหม่สำหรับมือถือ */
+       /* Header */
         header {
             background: linear-gradient(135deg, #d291bc 0%, #ffdfd3 100%);
             padding: 15px 0;
@@ -67,23 +67,11 @@
             z-index: 10;
         }
         
-        .header-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .header-content {
             text-align: center;
-            position: relative;
-            padding: 0 15px;
-        }
-        
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
             margin-bottom: 10px;
+            position: relative;
         }
-        
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -1060,7 +1048,7 @@
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
             <div class="header-content">
                 <h1 class="cute-float">ร้านเสริมสวยมุกซาลอน 💖</h1>
-                <p style="color: white; font-size: 1rem; margin-top: 5px;">ยินดีให้บริการด้วยความรักและ professionalism</p>
+                <p style="color: white; font-size: 1rem; margin-top: 5px;"></p>
             </div>
             <div class="admin-panel">
                 <button id="loginBtn" class="login-btn" onclick="loginWithLine()">
