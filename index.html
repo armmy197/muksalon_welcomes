@@ -6,6 +6,9 @@
     <title>ร้านเสริมสวยมุกซาลอน</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- เพิ่ม Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -173,7 +176,7 @@
             color: white;
         }
         
-        /* Mobile Menu Button */
+        /* Mobile Menu Button - แก้ไขตำแหน่งให้อยู่ขวาสุด */
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -519,6 +522,10 @@
             background: linear-gradient(135deg, #ff4757, #ff2e43);
         }
 
+        .notification.warning {
+            background: linear-gradient(135deg, #ffa502, #ff7e00);
+        }
+
         .notification button {
             background: none;
             border: none;
@@ -722,12 +729,12 @@
             min-width: 120px;
         }
 
-        /* เมนูมือถือแบบใหม่ */
+        /* เมนูมือถือแบบใหม่ - แก้ไขให้อยู่ขวาและไม่บังข้อมูล */
         .mobile-nav {
             display: none;
             position: fixed;
             top: 0;
-            right: -300px;
+            right: -300px; /* เริ่มต้นนอกหน้าจอด้านขวา */
             width: 280px;
             height: 100vh;
             background: white;
@@ -738,7 +745,7 @@
         }
         
         .mobile-nav.active {
-            right: 0;
+            right: 0; /* เลื่อนเข้ามาในหน้าจอ */
         }
         
         .mobile-nav button {
@@ -769,6 +776,53 @@
             font-size: 1.5rem;
             color: #4a154b;
             cursor: pointer;
+        }
+
+        /* Promo Items */
+        .promo-item {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 12px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 4px solid #d291bc;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .promo-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .promo-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .promo-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4a154b;
+            margin-bottom: 8px;
+        }
+
+        .promo-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Firebase Config Section */
+        .firebase-config {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
         }
 
         /* Responsive Design */
@@ -899,32 +953,6 @@
                 width: 250px;
             }
         }
-        
-        /* โปรโมชัน */
-        .promo-item {
-            margin: 15px 0;
-            padding: 15px;
-            border-radius: 10px;
-            background: #f9f0ff;
-            border: 1px solid #e0d0e0;
-        }
-        
-        .promo-image {
-            max-width: 100%;
-            border-radius: 8px;
-            margin: 10px 0;
-        }
-        
-        /* ข้อความแจ้งเตือนเวลาซ้ำ */
-        .time-conflict {
-            background: #fff5f5;
-            border: 1px solid #ff4757;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -1018,7 +1046,7 @@
             </div>
 
             <div class="box" id="formBox">
-                <h2>กรอกข้อมูลลูกค้า 👤</h2>
+                <h2>กรอกข้อมูลยืนยันตัวตน 👤</h2>
                 <input type="text" id="name" placeholder="ชื่อของคุณ">
                 <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์">
                 <div class="button-group">
@@ -1038,11 +1066,6 @@
                 <h2>เลือกวันและเวลา 📅</h2>
                 <input type="date" id="date">
                 <select id="time"></select>
-                <!-- ข้อความแจ้งเตือนเวลาซ้ำ -->
-                <div id="timeConflict" class="time-conflict">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span>มีลูกค้าอีกท่านได้จองเวลาในช่วงนี้แล้ว กรุณาเลือกเวลาอื่น</span>
-                </div>
                 <div class="button-group">
                     <button onclick="reviewBooking()">ถัดไป</button>
                 </div>
@@ -1124,6 +1147,21 @@
                     </div>
                 </div>
 
+                <div class="box">
+                    <h2>ตั้งค่า Firebase</h2>
+                    <div class="firebase-config">
+                        <div class="config-section">
+                            <label for="firebaseConfig">Firebase Configuration:</label>
+                            <textarea id="firebaseConfig" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", "storageBucket": "...", "messagingSenderId": "...", "appId": "..."}' rows="6"></textarea>
+                        </div>
+                        <div class="button-group">
+                            <button onclick="saveFirebaseConfig()">บันทึกการตั้งค่า Firebase</button>
+                            <button onclick="testFirebaseConnection()">ทดสอบการเชื่อมต่อ Firebase</button>
+                        </div>
+                        <div id="firebaseTestResult" class="test-result"></div>
+                    </div>
+                </div>
+
                 <h3>การจองล่าสุด</h3>
                 <div id="bookingList"></div>
             </div>
@@ -1166,92 +1204,329 @@
             document.body.style.overflow = mobileNav.classList.contains("active") ? "hidden" : "";
         }
         
-        // ตัวแปร global
-        const timeSelect = document.getElementById("time");
-        for (let h = 8; h <= 20; h++) {
-            let option = document.createElement("option");
-            option.value = `${h}:00`;
-            option.textContent = `${h}:00`;
-            timeSelect.appendChild(option);
+        // ตั้งค่า Firebase Configuration โดยตรง - ย้ายมาอยู่ด้านบนสุด
+const firebaseConfig = { 
+    apiKey: "AIzaSyCHDTfUAYl_3QNltoDomAZip369XRePm08",
+    authDomain: "muksalon-welcome529.firebaseapp.com",
+    projectId: "muksalon-welcome529",
+    storageBucket: "muksalon-welcome529.firebasestorage.app",
+    messagingSenderId: "763113739059",
+    appId: "1:763113739059:web:b3632852dab45f66522446"
+};
+
+// ตัวแปร global
+const timeSelect = document.getElementById("time");
+for (let h = 8; h <= 20; h++) {
+    let option = document.createElement("option");
+    option.value = `${h}:00`;
+    option.textContent = `${h}:00`;
+    timeSelect.appendChild(option);
+}
+
+// ตั้งค่าวันต่ำสุดเป็นวันปัจจุบัน
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('date').min = today;
+
+let booking = {};
+let bookingLocked = false;
+let currentRating = 0;
+let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' || false;
+
+// ข้อมูลเริ่มต้น - จะถูกโหลดจาก Firebase แทน localStorage
+let holidays = [];
+let services = [];
+let promotions = [];
+let reviews = [];
+let bookings = [];
+
+// ตัวแปรสำหรับ Firebase
+let db = null;
+let firebaseInitialized = false;
+
+// ข้อมูลการตั้งค่า Email
+let emailConfig = {
+    publicKey: 'gxAXWtkmg5TT3Rm-E',
+    serviceID: 'service_muk157',
+    templateID: 'template_muk157',
+    adminEmail: 'muksalonwelcomes@gmail.com'
+};
+
+// ฟังก์ชันเริ่มต้น Firebase - ย้ายมาอยู่ก่อน DOMContentLoaded
+function initializeFirebase(config) {
+    try {
+        // ตรวจสอบว่า Firebase ถูกโหลดมาหรือยัง
+        if (typeof firebase === 'undefined') {
+            console.error("❌ Firebase SDK ยังไม่โหลด");
+            return false;
         }
-
-        // ตั้งค่าวันต่ำสุดเป็นวันปัจจุบัน
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('date').min = today;
-
-        let booking = {};
-        let bookingLocked = false;
-        let currentRating = 0;
-        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' || false;
-        let holidays = JSON.parse(localStorage.getItem('holidays')) || ["2025-09-01", "2025-09-10"];
-        let services = JSON.parse(localStorage.getItem('services')) || [
-            { name: "สระ - ไดร์ ผมตรง", price: "เริ่มต้นที่ 60-150 บาท" },
-            { name: "สระ - ไดร์ หนีบ", price: "เริ่มต้นที่ 80-150 บาท" },
-            { name: "สระผม - เด็กนักเรียน", price: "เริ่มต้นที่ 20-80 บาท" },
-            { name: "สปานาโน", price: "เริ่มต้นที่ 399 บาท" }
-        ];
-        let promotions = JSON.parse(localStorage.getItem('promotions')) || [];
-        let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
-        let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-
-        // ข้อมูลการตั้งค่า Email - ใช้ค่าเริ่มต้นที่ฝังในโค้ด (แก้ไขปัญหาหลัก!)
-        let emailConfig = {
-            publicKey: 'gxAXWtkmg5TT3Rm-E', // ใส่ค่าเริ่มต้นที่นี่
-            serviceID: 'service_muk157', // ใส่ค่าเริ่มต้นที่นี่
-            templateID: 'template_muk157', // ใส่ค่าเริ่มต้นที่นี่
-            adminEmail: 'muksalonwelcomes@gmail.com' // ใส่ค่าเริ่มต้นที่นี่
-        };
-
-        // โหลดการตั้งค่าจาก localStorage ถ้ามี (สำหรับการอัปเดต)
-        try {
-            const savedConfig = localStorage.getItem('emailConfig');
-            if (savedConfig) {
-                const parsedConfig = JSON.parse(savedConfig);
-                // อัปเดตเฉพาะค่าที่มีใน localStorage
-                Object.keys(parsedConfig).forEach(key => {
-                    if (parsedConfig[key]) {
-                        emailConfig[key] = parsedConfig[key];
-                    }
-                });
-            }
-        } catch (e) {
-            console.log('ใช้การตั้งค่า EmailJS เริ่มต้น');
+        
+        // ถ้าเคยเริ่มต้นแล้ว ให้ลบแอปเก่าก่อน
+        if (firebase.apps.length > 0) {
+            firebase.app().delete();
         }
+        
+        firebase.initializeApp(config);
+        db = firebase.firestore();
+        firebaseInitialized = true;
+        console.log("✅ Firebase เริ่มต้นสำเร็จ");
+        return true;
+    } catch (error) {
+        console.error("❌ เกิดข้อผิดพลาดในการเริ่มต้น Firebase:", error);
+        firebaseInitialized = false;
+        return false;
+    }
+}
 
-        // เริ่มต้นแสดงหน้าจองคิวเมื่อโหลดหน้า
-        window.addEventListener('DOMContentLoaded', (event) => {
-            // เริ่มต้น EmailJS ด้วยค่าที่ตั้งไว้
-            if (emailConfig.publicKey && emailConfig.publicKey !== 'your_public_key_here') {
-                emailjs.init(emailConfig.publicKey);
+// โหลดการตั้งค่าจาก localStorage ถ้ามี
+try {
+    const savedConfig = localStorage.getItem('emailConfig');
+    if (savedConfig) {
+        const parsedConfig = JSON.parse(savedConfig);
+        Object.keys(parsedConfig).forEach(key => {
+            if (parsedConfig[key]) {
+                emailConfig[key] = parsedConfig[key];
             }
-            
-            // แสดงค่าปัจจุบันในฟอร์ม (สำหรับเจ้าของร้าน)
-            document.getElementById('emailJSPublicKey').value = emailConfig.publicKey;
-            document.getElementById('emailJSServiceID').value = emailConfig.serviceID;
-            document.getElementById('emailJSTemplateID').value = emailConfig.templateID;
-            document.getElementById('adminEmail').value = emailConfig.adminEmail;
-            
-            // ล็อกอินอัตโนมัติหากเคยล็อกอินไว้
-            if (isLoggedIn) {
-                document.body.classList.add('logged-in');
-            }
-            
-            renderHolidays();
-            renderServices();
-            renderPromotions();
-            renderReviews();
-            
-            // สร้างลูกเล่นพิเศษ
-            createFloatingIcons();
-            createParticles();
-            
-            // แสดงหน้าจองคิวเป็นหน้าแรก
-            showPage('booking');
-            
-            // ตรวจสอบเวลาที่เลือกเมื่อมีการเปลี่ยนแปลง
-            document.getElementById('date').addEventListener('change', checkTimeConflict);
-            document.getElementById('time').addEventListener('change', checkTimeConflict);
         });
+    }
+} catch (e) {
+    console.log('ใช้การตั้งค่าเริ่มต้น');
+}
+
+// เริ่มต้นแสดงหน้าจองคิวเมื่อโหลดหน้า
+window.addEventListener('DOMContentLoaded', (event) => {
+    // เริ่มต้น Firebase ด้วย config ที่ประกาศไว้
+    initializeFirebase(firebaseConfig);
+    
+    // แสดง Firebase Config ในฟอร์มจัดการร้าน
+    document.getElementById('firebaseConfig').value = JSON.stringify(firebaseConfig, null, 2);
+    
+    // เริ่มต้น EmailJS ด้วยค่าที่ตั้งไว้
+    if (emailConfig.publicKey && emailConfig.publicKey !== 'your_public_key_here') {
+        emailjs.init(emailConfig.publicKey);
+    }
+    
+    // แสดงค่าปัจจุบันในฟอร์ม
+    document.getElementById('emailJSPublicKey').value = emailConfig.publicKey;
+    document.getElementById('emailJSServiceID').value = emailConfig.serviceID;
+    document.getElementById('emailJSTemplateID').value = emailConfig.templateID;
+    document.getElementById('adminEmail').value = emailConfig.adminEmail;
+    
+    // ล็อกอินอัตโนมัติหากเคยล็อกอินไว้
+    if (isLoggedIn) {
+        document.body.classList.add('logged-in');
+    }
+    
+    // โหลดข้อมูลจาก Firebase ถ้าเชื่อมต่อแล้ว
+    if (firebaseInitialized) {
+        loadDataFromFirebase();
+    } else {
+        // โหลดข้อมูลจาก localStorage เป็น fallback
+        loadDataFromLocalStorage();
+    }
+    
+    renderHolidays();
+    renderServices();
+    renderPromotions();
+    renderReviews();
+    
+    // สร้างลูกเล่นพิเศษ
+    createFloatingIcons();
+    createParticles();
+    
+    // แสดงหน้าจองคิวเป็นหน้าแรก
+    showPage('booking');
+});
+
+// ฟังก์ชันบันทึกการตั้งค่า Firebase - แก้ไขให้ถูกต้อง
+function saveFirebaseConfig() {
+    const configText = document.getElementById('firebaseConfig').value;
+    try {
+        const config = JSON.parse(configText);
+        
+        // ตรวจสอบว่ามีฟิลด์ที่จำเป็นครบหรือไม่
+        const requiredFields = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+        const missingFields = requiredFields.filter(field => !config[field]);
+        
+        if (missingFields.length > 0) {
+            showNotification('การตั้งค่าไม่ครบถ้วน: ' + missingFields.join(', '), 'error');
+            return;
+        }
+        
+        localStorage.setItem('firebaseConfig', configText);
+        
+        // อัปเดตค่า config ใหม่
+        Object.assign(firebaseConfig, config);
+        
+        // เริ่มต้น Firebase ใหม่
+        const success = initializeFirebase(firebaseConfig);
+        
+        if (success) {
+            showNotification('บันทึกการตั้งค่า Firebase เรียบร้อยแล้ว', 'success');
+            // โหลดข้อมูลใหม่จาก Firebase
+            loadDataFromFirebase();
+        } else {
+            showNotification('ไม่สามารถเริ่มต้น Firebase ได้', 'error');
+        }
+    } catch (error) {
+        console.error('Error parsing Firebase config:', error);
+        showNotification('รูปแบบการตั้งค่า Firebase ไม่ถูกต้อง: ' + error.message, 'error');
+    }
+}
+
+// ฟังก์ชันทดสอบการเชื่อมต่อ Firebase - แก้ไขให้ปลอดภัย
+function testFirebaseConnection() {
+    const testResult = document.getElementById('firebaseTestResult');
+    testResult.style.display = 'block';
+    testResult.className = 'test-result';
+    testResult.innerHTML = 'กำลังทดสอบการเชื่อมต่อ...';
+
+    if (!firebaseInitialized || !db) {
+        testResult.classList.add('error');
+        testResult.innerHTML = '❌ Firebase ยังไม่ได้เริ่มต้น กรุณาตั้งค่าก่อน';
+        return;
+    }
+
+    // ทดสอบการอ่านข้อมูล - ใช้ collection ที่มีอยู่แล้ว
+    db.collection('services').limit(1).get()
+        .then((snapshot) => {
+            testResult.classList.add('success');
+            testResult.innerHTML = '✅ การเชื่อมต่อ Firebase สำเร็จ';
+            showNotification('ทดสอบการเชื่อมต่อ Firebase สำเร็จ!', 'success');
+        })
+        .catch(error => {
+            testResult.classList.add('error');
+            testResult.innerHTML = '❌ การเชื่อมต่อ Firebase ล้มเหลว: ' + error.message;
+            showNotification('การทดสอบ Firebase ล้มเหลว', 'error');
+        });
+}
+
+// ฟังก์ชันโหลดข้อมูลจาก Firebase - แก้ไขให้ปลอดภัย
+function loadDataFromFirebase() {
+    if (!firebaseInitialized || !db) {
+        console.warn("Firebase ยังไม่พร้อม โหลดข้อมูลจาก localStorage แทน");
+        loadDataFromLocalStorage();
+        return;
+    }
+
+    // โหลดบริการ
+    db.collection('services').get()
+        .then(snapshot => {
+            services = [];
+            snapshot.forEach(doc => {
+                services.push({ id: doc.id, ...doc.data() });
+            });
+            renderServices();
+        })
+        .catch(error => {
+            console.error("❌ เกิดข้อผิดพลาดในการโหลดบริการ:", error);
+        });
+
+    // โหลดวันหยุด
+    db.collection('holidays').get()
+        .then(snapshot => {
+            holidays = [];
+            snapshot.forEach(doc => {
+                holidays.push(doc.data().date);
+            });
+            renderHolidays();
+        })
+        .catch(error => {
+            console.error("❌ เกิดข้อผิดพลาดในการโหลดวันหยุด:", error);
+        });
+
+    // โหลดโปรโมชัน
+    db.collection('promotions').get()
+        .then(snapshot => {
+            promotions = [];
+            snapshot.forEach(doc => {
+                promotions.push({ id: doc.id, ...doc.data() });
+            });
+            renderPromotions();
+        })
+        .catch(error => {
+            console.error("❌ เกิดข้อผิดพลาดในการโหลดโปรโมชัน:", error);
+        });
+
+    // โหลดรีวิว
+    db.collection('reviews').get()
+        .then(snapshot => {
+            reviews = [];
+            snapshot.forEach(doc => {
+                reviews.push({ id: doc.id, ...doc.data() });
+            });
+            renderReviews();
+        })
+        .catch(error => {
+            console.error("❌ เกิดข้อผิดพลาดในการโหลดรีวิว:", error);
+        });
+
+    // โหลดการจอง
+    db.collection('bookings').get()
+        .then(snapshot => {
+            bookings = [];
+            snapshot.forEach(doc => {
+                bookings.push({ id: doc.id, ...doc.data() });
+            });
+            if (isLoggedIn) renderBookings();
+        })
+        .catch(error => {
+            console.error("❌ เกิดข้อผิดพลาดในการโหลดการจอง:", error);
+        });
+}
+
+        // ฟังก์ชันโหลดข้อมูลจาก localStorage (fallback)
+        function loadDataFromLocalStorage() {
+            holidays = JSON.parse(localStorage.getItem('holidays')) || [];
+            services = JSON.parse(localStorage.getItem('services')) || [
+                { name: "สระ - ไดร์ ผมตรง", price: "เริ่มต้นที่ 60-150 บาท" },
+                { name: "สระ - ไดร์ หนีบ", price: "เริ่มต้นที่ 80-150 บาท" },
+                { name: "สระผม - เด็กนักเรียน", price: "เริ่มต้นที่ 20-80 บาท" },
+                { name: "สปานาโน", price: "เริ่มต้นที่ 399 บาท" }
+            ];
+            promotions = JSON.parse(localStorage.getItem('promotions')) || [];
+            reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        }
+
+        // ฟังก์ชันบันทึกข้อมูลไปยัง Firebase
+        function saveToFirebase(collection, data, id = null) {
+            if (!firebaseInitialized) {
+                // ถ้า Firebase ไม่พร้อม ให้บันทึกลง localStorage แทน
+                return saveToLocalStorage(collection, data);
+            }
+
+            if (id) {
+                return db.collection(collection).doc(id).set(data);
+            } else {
+                return db.collection(collection).add(data);
+            }
+        }
+
+        // ฟังก์ชันบันทึกลง localStorage (fallback)
+        function saveToLocalStorage(collection, data) {
+            let items = JSON.parse(localStorage.getItem(collection)) || [];
+            items.push(data);
+            localStorage.setItem(collection, JSON.stringify(items));
+            return Promise.resolve();
+        }
+
+        // ฟังก์ชันลบข้อมูลจาก Firebase
+        function deleteFromFirebase(collection, id) {
+            if (!firebaseInitialized) {
+                // ถ้า Firebase ไม่พร้อม ให้ลบจาก localStorage แทน
+                return deleteFromLocalStorage(collection, id);
+            }
+
+            return db.collection(collection).doc(id).delete();
+        }
+
+        // ฟังก์ชันลบจาก localStorage (fallback)
+        function deleteFromLocalStorage(collection, index) {
+            let items = JSON.parse(localStorage.getItem(collection)) || [];
+            items.splice(index, 1);
+            localStorage.setItem(collection, JSON.stringify(items));
+            return Promise.resolve();
+        }
 
         // ฟังก์ชันสร้าง floating icons
         function createFloatingIcons() {
@@ -1375,7 +1650,7 @@
             emailConfig.templateID = document.getElementById('emailJSTemplateID').value;
             emailConfig.adminEmail = document.getElementById('adminEmail').value;
 
-            // บันทึกลง localStorage (สำหรับการอัปเดตในอนาคต)
+            // บันทึกลง localStorage
             localStorage.setItem('emailConfig', JSON.stringify(emailConfig));
             
             // เริ่มต้น EmailJS ใหม่
@@ -1461,7 +1736,6 @@
                     subject: subject,
                     message_html: htmlMessage,
                     from_name: "ร้านเสริมสวยมุกซาลอน",
-                    // พารามิเตอร์เพิ่มเติม (ถ้ามีในเทมเพลต)
                     name: booking.name || "ลูกค้าทดสอบ",
                     phone: booking.phone || "ไม่ระบุ",
                     date: booking.date ? formatDateThai(booking.date) : new Date().toLocaleDateString('th-TH'),
@@ -1505,46 +1779,6 @@
             return date.toLocaleDateString('th-TH', options);
         }
 
-        // ฟังก์ชันแสดงการแจ้งเตือน
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <span>${message}</span>
-                <button onclick="this.parentElement.remove()">×</button>
-            `;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
-                }
-            }, 5000);
-        }
-
-        // ฟังก์ชันตรวจสอบเวลาซ้ำ
-        function checkTimeConflict() {
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('time').value;
-            const conflictMsg = document.getElementById('timeConflict');
-            
-            if (!date || !time) {
-                conflictMsg.style.display = 'none';
-                return;
-            }
-            
-            // ตรวจสอบว่ามีการจองซ้ำหรือไม่
-            const isConflict = bookings.some(booking => 
-                booking.date === date && booking.time === time
-            );
-            
-            if (isConflict) {
-                conflictMsg.style.display = 'block';
-            } else {
-                conflictMsg.style.display = 'none';
-            }
-        }
-
         // ฟังก์ชันรีเซ็ตฟอร์มจอง
         function resetBookingForm() {
             booking = {};
@@ -1554,7 +1788,6 @@
             document.getElementById("name").value = "";
             document.getElementById("phone").value = "";
             document.getElementById("date").value = "";
-            document.getElementById("timeConflict").style.display = "none";
         }
 
         // ฟังก์ชันไปยังหน้ารายการบริการ
@@ -1599,8 +1832,29 @@
             document.getElementById("calendarBox").style.display = "block";
         }
 
+        // ฟังก์ชันตรวจสอบเวลาจองซ้ำ
+        async function checkBookingConflict(date, time) {
+            try {
+                // ตรวจสอบใน Firebase
+                if (firebaseInitialized) {
+                    const snapshot = await db.collection('bookings')
+                        .where('date', '==', date)
+                        .where('time', '==', time)
+                        .get();
+                    
+                    return !snapshot.empty;
+                } else {
+                    // ตรวจสอบใน localStorage
+                    return bookings.some(b => b.date === date && b.time === time);
+                }
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการตรวจสอบการจองซ้ำ:", error);
+                return false;
+            }
+        }
+
         // ฟังก์ชันตรวจสอบการจอง
-        function reviewBooking() {
+        async function reviewBooking() {
             booking.date = document.getElementById("date").value;
             booking.time = document.getElementById("time").value;
             if (!booking.date || !booking.time) {
@@ -1612,13 +1866,10 @@
                 return;
             }
             
-            // ตรวจสอบเวลาซ้ำอีกครั้งก่อนยืนยัน
-            const isConflict = bookings.some(b => 
-                b.date === booking.date && b.time === booking.time
-            );
-            
-            if (isConflict) {
-                showNotification('มีลูกค้าอีกท่านได้จองเวลาในช่วงนี้แล้ว กรุณาเลือกเวลาอื่น', 'error');
+            // ตรวจสอบเวลาจองซ้ำ
+            const hasConflict = await checkBookingConflict(booking.date, booking.time);
+            if (hasConflict) {
+                showNotification('⏰ มีลูกค้าอีกท่านได้จองเวลาในช่วงนี้แล้ว กรุณาเลือกเวลาอื่น', 'warning');
                 return;
             }
             
@@ -1646,8 +1897,16 @@
         }
 
         // ฟังก์ชันยืนยันการจอง
-        function lockBooking() {
+        async function lockBooking() {
             if (bookingLocked) return;
+            
+            // ตรวจสอบอีกครั้งก่อนยืนยัน
+            const hasConflict = await checkBookingConflict(booking.date, booking.time);
+            if (hasConflict) {
+                showNotification('⏰ มีลูกค้าอีกท่านได้จองเวลาในช่วงนี้แล้ว กรุณาเลือกเวลาอื่น', 'warning');
+                return;
+            }
+            
             bookingLocked = true;
 
             document.getElementById("confirmBox").innerHTML =
@@ -1662,8 +1921,16 @@
                 services: booking.services,
                 timestamp: new Date().toISOString()
             };
-            bookings.push(newBooking);
-            localStorage.setItem('bookings', JSON.stringify(bookings));
+            
+            // บันทึกลง Firebase หรือ localStorage
+            try {
+                await saveToFirebase('bookings', newBooking);
+                bookings.push(newBooking);
+                showNotification('✅ การจองสำเร็จ!', 'success');
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการบันทึกการจอง:", error);
+                showNotification('เกิดข้อผิดพลาดในการบันทึกการจอง', 'error');
+            }
 
             // สร้าง confetti
             createConfetti();
@@ -1765,8 +2032,7 @@
                     deleteBtn.textContent = "ลบการจอง";
                     deleteBtn.className = "delete-btn";
                     deleteBtn.onclick = function () {
-                        const actualIndex = bookings.length - 1 - index;
-                        deleteBooking(actualIndex);
+                        deleteBooking(booking.id || index);
                     };
                     
                     actionsDiv.appendChild(deleteBtn);
@@ -1778,105 +2044,42 @@
         }
 
         // ฟังก์ชันลบการจอง
-        function deleteBooking(index) {
+        async function deleteBooking(id) {
             if (!isLoggedIn) {
                 showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
                 return;
             }
 
             if (confirm("คุณแน่ใจว่าต้องการลบการจองนี้?")) {
-                bookings.splice(index, 1);
-                localStorage.setItem('bookings', JSON.stringify(bookings));
-                renderBookings();
-                showNotification('ลบการจองเรียบร้อยแล้ว', 'success');
+                try {
+                    // ลบจาก Firebase หรือ localStorage
+                    await deleteFromFirebase('bookings', id);
+                    
+                    // อัปเดตรายการจองในหน่วยความจำ
+                    const index = bookings.findIndex(b => b.id === id);
+                    if (index !== -1) {
+                        bookings.splice(index, 1);
+                    } else {
+                        // ถ้าไม่มี id (ใช้ localStorage) ให้ลบตาม index
+                        bookings.splice(id, 1);
+                    }
+                    
+                    renderBookings();
+                    showNotification('ลบการจองเรียบร้อยแล้ว', 'success');
+                } catch (error) {
+                    console.error("❌ เกิดข้อผิดพลาดในการลบการจอง:", error);
+                    showNotification('เกิดข้อผิดพลาดในการลบการจอง', 'error');
+                }
             }
-        }
-
-        // ฟังก์ชันแสดงวันหยุด
-        function renderHolidays() {
-            const container = document.getElementById("holidayList");
-            container.innerHTML = "";
-            
-            if (holidays.length === 0) {
-                container.innerHTML = "<li>ไม่มีวันหยุดที่กำหนด</li>";
-                return;
-            }
-            
-            holidays.forEach((holiday, index) => {
-                const holidayItem = document.createElement("li");
-                holidayItem.className = "holiday-item";
-                holidayItem.innerHTML = `
-                    <span>${formatDateThai(holiday)}</span>
-                    ${isLoggedIn ? `<button class="delete-btn" onclick="deleteHoliday(${index})">ลบ</button>` : ''}
-                `;
-                container.appendChild(holidayItem);
-            });
-        }
-
-        // ฟังก์ชันเพิ่มวันหยุด
-        function addHoliday() {
-            if (!isLoggedIn) {
-                showNotification('กรุณาล็อกอินก่อนเพิ่มวันหยุด', 'error');
-                return;
-            }
-            
-            const newHoliday = document.getElementById("newHoliday").value;
-            if (!newHoliday) {
-                showNotification('กรุณาเลือกวันที่', 'error');
-                return;
-            }
-            
-            if (holidays.includes(newHoliday)) {
-                showNotification('วันหยุดนี้มีอยู่แล้ว', 'error');
-                return;
-            }
-            
-            holidays.push(newHoliday);
-            localStorage.setItem('holidays', JSON.stringify(holidays));
-            document.getElementById("newHoliday").value = "";
-            renderHolidays();
-            showNotification('เพิ่มวันหยุดเรียบร้อยแล้ว', 'success');
-        }
-
-        // ฟังก์ชันลบวันหยุด
-        function deleteHoliday(index) {
-            if (!isLoggedIn) {
-                showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
-                return;
-            }
-            
-            holidays.splice(index, 1);
-            localStorage.setItem('holidays', JSON.stringify(holidays));
-            renderHolidays();
-            showNotification('ลบวันหยุดเรียบร้อยแล้ว', 'success');
-        }
-
-        // ฟังก์ชันแสดงบริการ
-        function renderServices() {
-            const container = document.getElementById("servicesList");
-            container.innerHTML = "";
-            
-            services.forEach((service, index) => {
-                const serviceItem = document.createElement("li");
-                serviceItem.className = "service-item";
-                serviceItem.innerHTML = `
-                    <div>
-                        <strong>${service.name}</strong>
-                        <span>${service.price}</span>
-                    </div>
-                    ${isLoggedIn ? `<button class="delete-btn" onclick="deleteService(${index})">ลบ</button>` : ''}
-                `;
-                container.appendChild(serviceItem);
-            });
         }
 
         // ฟังก์ชันเพิ่มบริการ
-        function addService() {
+        async function addService() {
             if (!isLoggedIn) {
                 showNotification('กรุณาล็อกอินก่อนเพิ่มบริการ', 'error');
                 return;
             }
-            
+
             const name = document.getElementById("newServiceName").value;
             const price = document.getElementById("newServicePrice").value;
             
@@ -1884,58 +2087,174 @@
                 showNotification('กรุณากรอกข้อมูลให้ครบ', 'error');
                 return;
             }
+
+            const newService = { name, price };
             
-            services.push({ name, price });
-            localStorage.setItem('services', JSON.stringify(services));
-            document.getElementById("newServiceName").value = "";
-            document.getElementById("newServicePrice").value = "";
-            renderServices();
-            showNotification('เพิ่มบริการเรียบร้อยแล้ว', 'success');
+            try {
+                // บันทึกลง Firebase หรือ localStorage
+                await saveToFirebase('services', newService);
+                services.push(newService);
+                renderServices();
+                document.getElementById("newServiceName").value = "";
+                document.getElementById("newServicePrice").value = "";
+                showNotification('เพิ่มบริการเรียบร้อยแล้ว', 'success');
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการเพิ่มบริการ:", error);
+                showNotification('เกิดข้อผิดพลาดในการเพิ่มบริการ', 'error');
+            }
+        }
+
+        // ฟังก์ชันแสดงบริการ
+        function renderServices() {
+            const container = document.getElementById("servicesList");
+            container.innerHTML = "";
+
+            if (services.length === 0) {
+                container.innerHTML = "<p>ยังไม่มีบริการ</p>";
+                return;
+            }
+
+            services.forEach((service, index) => {
+                const serviceItem = document.createElement("li");
+                serviceItem.className = "service-item";
+                serviceItem.innerHTML = `
+                    <div>
+                        <strong>${service.name}</strong> - ${service.price}
+                    </div>
+                    ${isLoggedIn ? `<button class="delete-btn" onclick="deleteService('${service.id || index}')">ลบ</button>` : ''}
+                `;
+                container.appendChild(serviceItem);
+            });
         }
 
         // ฟังก์ชันลบบริการ
-        function deleteService(index) {
+        async function deleteService(id) {
             if (!isLoggedIn) {
                 showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
                 return;
             }
-            
-            services.splice(index, 1);
-            localStorage.setItem('services', JSON.stringify(services));
-            renderServices();
-            showNotification('ลบบริการเรียบร้อยแล้ว', 'success');
+
+            if (confirm("คุณแน่ใจว่าต้องการลบบริการนี้?")) {
+                try {
+                    // ลบจาก Firebase หรือ localStorage
+                    await deleteFromFirebase('services', id);
+                    
+                    // อัปเดตรายการบริการในหน่วยความจำ
+                    const index = services.findIndex(s => s.id === id);
+                    if (index !== -1) {
+                        services.splice(index, 1);
+                    } else {
+                        // ถ้าไม่มี id (ใช้ localStorage) ให้ลบตาม index
+                        services.splice(id, 1);
+                    }
+                    
+                    renderServices();
+                    showNotification('ลบบริการเรียบร้อยแล้ว', 'success');
+                } catch (error) {
+                    console.error("❌ เกิดข้อผิดพลาดในการลบบริการ:", error);
+                    showNotification('เกิดข้อผิดพลาดในการลบบริการ', 'error');
+                }
+            }
         }
 
-        // ฟังก์ชันแสดงโปรโมชัน
-        function renderPromotions() {
-            const container = document.getElementById("promoContent");
-            container.innerHTML = "";
+        // ฟังก์ชันเพิ่มวันหยุด
+        async function addHoliday() {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนเพิ่มวันหยุด', 'error');
+                return;
+            }
+
+            const date = document.getElementById("newHoliday").value;
             
-            if (promotions.length === 0) {
-                container.innerHTML = "<p>ยังไม่มีโปรโมชัน</p>";
+            if (!date) {
+                showNotification('กรุณาเลือกวันที่', 'error');
+                return;
+            }
+
+            if (holidays.includes(date)) {
+                showNotification('วันหยุดนี้มีอยู่แล้ว', 'error');
                 return;
             }
             
-            promotions.forEach((promo, index) => {
-                const promoItem = document.createElement("div");
-                promoItem.className = "promo-item";
-                promoItem.innerHTML = `
-                    <h3>${promo.title}</h3>
-                    ${promo.image ? `<img src="${promo.image}" class="promo-image" alt="${promo.title}">` : ''}
-                    <p>${promo.description}</p>
-                    ${isLoggedIn ? `<button class="delete-btn" onclick="deletePromo(${index})">ลบโปรโมชัน</button>` : ''}
+            try {
+                // บันทึกลง Firebase หรือ localStorage
+                await saveToFirebase('holidays', { date });
+                holidays.push(date);
+                renderHolidays();
+                document.getElementById("newHoliday").value = "";
+                showNotification('เพิ่มวันหยุดเรียบร้อยแล้ว', 'success');
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการเพิ่มวันหยุด:", error);
+                showNotification('เกิดข้อผิดพลาดในการเพิ่มวันหยุด', 'error');
+            }
+        }
+
+        // ฟังก์ชันแสดงวันหยุด
+        function renderHolidays() {
+            const container = document.getElementById("holidayList");
+            container.innerHTML = "";
+
+            if (holidays.length === 0) {
+                container.innerHTML = "<p>ยังไม่มีวันหยุด</p>";
+                return;
+            }
+
+            holidays.forEach((date, index) => {
+                const holidayItem = document.createElement("li");
+                holidayItem.className = "holiday-item";
+                holidayItem.innerHTML = `
+                    <div>${new Date(date).toLocaleDateString('th-TH')}</div>
+                    ${isLoggedIn ? `<button class="delete-btn" onclick="deleteHoliday('${date}')">ลบ</button>` : ''}
                 `;
-                container.appendChild(promoItem);
+                container.appendChild(holidayItem);
             });
         }
 
+        // ฟังก์ชันลบวันหยุด
+        async function deleteHoliday(date) {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
+                return;
+            }
+
+            if (confirm("คุณแน่ใจว่าต้องการลบวันหยุดนี้?")) {
+                try {
+                    // ลบจาก Firebase (ต้องค้นหา document ที่มี field date เท่ากับวันที่ต้องการลบ)
+                    if (firebaseInitialized) {
+                        const snapshot = await db.collection('holidays')
+                            .where('date', '==', date)
+                            .get();
+                        
+                        snapshot.forEach(doc => {
+                            doc.ref.delete();
+                        });
+                    } else {
+                        // ลบจาก localStorage
+                        await deleteFromLocalStorage('holidays', holidays.indexOf(date));
+                    }
+                    
+                    // อัปเดตรายการวันหยุดในหน่วยความจำ
+                    const index = holidays.indexOf(date);
+                    if (index !== -1) {
+                        holidays.splice(index, 1);
+                    }
+                    
+                    renderHolidays();
+                    showNotification('ลบวันหยุดเรียบร้อยแล้ว', 'success');
+                } catch (error) {
+                    console.error("❌ เกิดข้อผิดพลาดในการลบวันหยุด:", error);
+                    showNotification('เกิดข้อผิดพลาดในการลบวันหยุด', 'error');
+                }
+            }
+        }
+
         // ฟังก์ชันเพิ่มโปรโมชัน
-        function addPromo() {
+        async function addPromo() {
             if (!isLoggedIn) {
                 showNotification('กรุณาล็อกอินก่อนเพิ่มโปรโมชัน', 'error');
                 return;
             }
-            
+
             const title = document.getElementById("promoTitle").value;
             const description = document.getElementById("promoDescription").value;
             const imageFile = document.getElementById("promoImageFile").files[0];
@@ -1944,80 +2263,160 @@
                 showNotification('กรุณากรอกข้อมูลให้ครบ', 'error');
                 return;
             }
-            
+
             let imageUrl = "";
-            if (imageFile) {
-                // ในกรณีจริงควรอัปโหลดรูปภาพไปยังเซิร์ฟเวอร์
-                // ตัวอย่างนี้ใช้ URL.createObjectURL สำหรับการแสดงผลชั่วคราว
-                imageUrl = URL.createObjectURL(imageFile);
-            }
             
-            promotions.push({ title, description, image: imageUrl });
-            localStorage.setItem('promotions', JSON.stringify(promotions));
-            document.getElementById("promoTitle").value = "";
-            document.getElementById("promoDescription").value = "";
-            document.getElementById("promoImageFile").value = "";
-            renderPromotions();
-            showNotification('เพิ่มโปรโมชันเรียบร้อยแล้ว', 'success');
+            // อัปโหลดรูปภาพถ้ามี
+            if (imageFile) {
+                // ในกรณีนี้เราจะเก็บเป็น base64 เนื่องจากไม่มี Firebase Storage
+                // ในเวอร์ชันจริงควรใช้ Firebase Storage สำหรับอัปโหลดรูปภาพ
+                imageUrl = await readFileAsDataURL(imageFile);
+            }
+
+            const newPromo = { 
+                title, 
+                description, 
+                imageUrl,
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                // บันทึกลง Firebase หรือ localStorage
+                await saveToFirebase('promotions', newPromo);
+                promotions.push(newPromo);
+                renderPromotions();
+                document.getElementById("promoTitle").value = "";
+                document.getElementById("promoDescription").value = "";
+                document.getElementById("promoImageFile").value = "";
+                showNotification('เพิ่มโปรโมชันเรียบร้อยแล้ว', 'success');
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการเพิ่มโปรโมชัน:", error);
+                showNotification('เกิดข้อผิดพลาดในการเพิ่มโปรโมชัน', 'error');
+            }
+        }
+
+        // ฟังก์ชันอ่านไฟล์เป็น Data URL
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ฟังก์ชันแสดงโปรโมชัน
+        function renderPromotions() {
+            const container = document.getElementById("promoContent");
+            container.innerHTML = "";
+
+            if (promotions.length === 0) {
+                container.innerHTML = "<p>ยังไม่มีโปรโมชัน</p>";
+                return;
+            }
+
+            const sortedPromos = [...promotions].reverse();
+            sortedPromos.forEach((promo, index) => {
+                const promoItem = document.createElement("div");
+                promoItem.className = "promo-item";
+                
+                let imageHtml = "";
+                if (promo.imageUrl) {
+                    imageHtml = `<img src="${promo.imageUrl}" alt="${promo.title}" class="promo-image">`;
+                }
+                
+                promoItem.innerHTML = `
+                    ${imageHtml}
+                    <div class="promo-title">${promo.title}</div>
+                    <div class="promo-description">${promo.description}</div>
+                    ${isLoggedIn ? `<button class="delete-btn" onclick="deletePromo('${promo.id || index}')">ลบโปรโมชัน</button>` : ''}
+                `;
+                container.appendChild(promoItem);
+            });
         }
 
         // ฟังก์ชันลบโปรโมชัน
-        function deletePromo(index) {
+        async function deletePromo(id) {
             if (!isLoggedIn) {
                 showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
                 return;
             }
-            
-            promotions.splice(index, 1);
-            localStorage.setItem('promotions', JSON.stringify(promotions));
-            renderPromotions();
-            showNotification('ลบโปรโมชันเรียบร้อยแล้ว', 'success');
+
+            if (confirm("คุณแน่ใจว่าต้องการลบโปรโมชันนี้?")) {
+                try {
+                    // ลบจาก Firebase หรือ localStorage
+                    await deleteFromFirebase('promotions', id);
+                    
+                    // อัปเดตรายการโปรโมชันในหน่วยความจำ
+                    const index = promotions.findIndex(p => p.id === id);
+                    if (index !== -1) {
+                        promotions.splice(index, 1);
+                    } else {
+                        // ถ้าไม่มี id (ใช้ localStorage) ให้ลบตาม index
+                        promotions.splice(id, 1);
+                    }
+                    
+                    renderPromotions();
+                    showNotification('ลบโปรโมชันเรียบร้อยแล้ว', 'success');
+                } catch (error) {
+                    console.error("❌ เกิดข้อผิดพลาดในการลบโปรโมชัน:", error);
+                    showNotification('เกิดข้อผิดพลาดในการลบโปรโมชัน', 'error');
+                }
+            }
         }
 
         // ฟังก์ชันแสดงรีวิว
         function renderReviews() {
             const container = document.getElementById("reviewsList");
             container.innerHTML = "";
-            
+
             if (reviews.length === 0) {
                 container.innerHTML = "<p>ยังไม่มีรีวิว</p>";
                 return;
             }
-            
-            reviews.forEach(review => {
+
+            const sortedReviews = [...reviews].reverse();
+            sortedReviews.forEach(review => {
                 const reviewItem = document.createElement("div");
                 reviewItem.className = "box";
+                reviewItem.style.margin = "10px 0";
+                
+                let stars = "";
+                for (let i = 1; i <= 5; i++) {
+                    stars += i <= review.rating ? "★" : "☆";
+                }
+                
                 reviewItem.innerHTML = `
-                    <div class="stars">
-                        ${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}
+                    <div style="text-align: center;">
+                        <div class="stars">${stars}</div>
+                        <p><strong>${review.name || "ไม่ระบุชื่อ"}</strong></p>
+                        <p>${review.comment || "ไม่มีข้อความเพิ่มเติม"}</p>
+                        <p style="font-size: 0.8rem; color: #888;">${new Date(review.timestamp).toLocaleDateString('th-TH')}</p>
                     </div>
-                    <p><strong>${review.name || "ไม่ระบุชื่อ"}</strong></p>
-                    <p>${review.comment || "ไม่มีข้อความเพิ่มเติม"}</p>
-                    <p><small>${new Date(review.timestamp).toLocaleString('th-TH')}</small></p>
                 `;
                 container.appendChild(reviewItem);
             });
         }
 
-        // ฟังก์ชันแสดงโมดอลรีวิว
+        // ฟังก์ชันแสดง modal รีวิว
         function showReviewModal() {
             document.getElementById("reviewModal").style.display = "flex";
+            document.getElementById("reviewerName").value = booking.name || "";
             currentRating = 0;
-            document.getElementById("reviewerName").value = "";
-            document.getElementById("reviewComment").value = "";
-            document.getElementById("thanksMsg").textContent = "";
-            
-            // รีเซ็ตดาว
-            const stars = document.querySelectorAll("#modalStars span");
-            stars.forEach(star => star.classList.remove("active"));
+            updateModalStars();
         }
 
-        // ฟังก์ชันตั้งค่าระดับคะแนนรีวิว
+        // ฟังก์ชันตั้งค่ารีวิวใน modal
         function setModalRating(rating) {
             currentRating = rating;
+            updateModalStars();
+        }
+
+        // ฟังก์ชันอัปเดตดาวใน modal
+        function updateModalStars() {
             const stars = document.querySelectorAll("#modalStars span");
             stars.forEach((star, index) => {
-                if (index < rating) {
+                if (index < currentRating) {
                     star.classList.add("active");
                 } else {
                     star.classList.remove("active");
@@ -2026,67 +2425,69 @@
         }
 
         // ฟังก์ชันส่งรีวิว
-        function submitReview() {
+        async function submitReview() {
             const name = document.getElementById("reviewerName").value || "ไม่ระบุชื่อ";
-            const comment = document.getElementById("reviewComment").value;
+            const comment = document.getElementById("reviewComment").value || "";
             
             if (currentRating === 0) {
                 showNotification('กรุณาให้คะแนนดาว', 'error');
                 return;
             }
-            
-            reviews.push({
+
+            const newReview = {
                 name,
                 rating: currentRating,
                 comment,
                 timestamp: new Date().toISOString()
+            };
+            
+            try {
+                // บันทึกลง Firebase หรือ localStorage
+                await saveToFirebase('reviews', newReview);
+                reviews.push(newReview);
+                renderReviews();
+                
+                document.getElementById("thanksMsg").innerHTML = "ขอบคุณสำหรับรีวิวค่ะ 💖";
+                setTimeout(() => {
+                    document.getElementById("reviewModal").style.display = "none";
+                    showPage("reviews");
+                }, 2000);
+                
+                showNotification('ส่งรีวิวเรียบร้อยแล้ว', 'success');
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการส่งรีวิว:", error);
+                showNotification('เกิดข้อผิดพลาดในการส่งรีวิว', 'error');
+            }
+        }
+
+        // ฟังก์ชันแสดงการแจ้งเตือน
+        function showNotification(message, type) {
+            // ลบการแจ้งเตือนเก่าทิ้งก่อน
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => {
+                notification.remove();
             });
             
-            localStorage.setItem('reviews', JSON.stringify(reviews));
-            document.getElementById("thanksMsg").textContent = "ขอบคุณสำหรับรีวิวค่ะ!";
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">×</button>
+            `;
             
+            document.body.appendChild(notification);
+            
+            // ลบการแจ้งเตือนอัตโนมัติหลังจาก 5 วินาที
             setTimeout(() => {
-                document.getElementById("reviewModal").style.display = "none";
-                showPage("reviews");
-            }, 2000);
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
         }
 
         // ฟังก์ชันสร้าง particles (สำหรับลูกเล่นพื้นหลัง)
         function createParticles() {
-            // สร้าง particles สำหรับพื้นหลัง
-            const particlesContainer = document.createElement('div');
-            particlesContainer.style.position = 'fixed';
-            particlesContainer.style.top = '0';
-            particlesContainer.style.left = '0';
-            particlesContainer.style.width = '100%';
-            particlesContainer.style.height = '100%';
-            particlesContainer.style.pointerEvents = 'none';
-            particlesContainer.style.zIndex = '-1';
-            document.body.appendChild(particlesContainer);
-            
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.style.position = 'absolute';
-                particle.style.width = Math.random() * 5 + 2 + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.background = `hsl(${Math.random() * 360}, 70%, 70%)`;
-                particle.style.borderRadius = '50%';
-                particle.style.opacity = Math.random() * 0.5 + 0.2;
-                particle.style.left = Math.random() * 100 + 'vw';
-                particle.style.top = Math.random() * 100 + 'vh';
-                
-                particlesContainer.appendChild(particle);
-                
-                // อนิเมชันเคลื่อนไหว
-                particle.animate([
-                    { transform: 'translate(0, 0)' },
-                    { transform: `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px)` }
-                ], {
-                    duration: Math.random() * 10000 + 5000,
-                    iterations: Infinity,
-                    direction: 'alternate'
-                });
-            }
+            // ฟังก์ชันนี้สามารถเพิ่มลูกเล่นเพิ่มเติมได้
         }
     </script>
 </body>
