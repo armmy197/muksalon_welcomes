@@ -832,6 +832,76 @@
             margin: 15px 0;
         }
 
+        /* Time Slots Styling */
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .time-slot {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .time-slot:hover {
+            background: #f9f0ff;
+            border-color: #d291bc;
+        }
+
+        .time-slot.selected {
+            background: #d291bc;
+            color: white;
+            border-color: #d291bc;
+        }
+
+        .time-slot.booked {
+            background: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+            cursor: not-allowed;
+        }
+
+        .time-slot.booked:hover {
+            background: #ff6b6b;
+        }
+
+        /* Promo Items Styling */
+        .promo-item {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 12px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 4px solid #d291bc;
+            position: relative;
+        }
+
+        .promo-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .promo-title {
+            font-weight: bold;
+            color: #4a154b;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .promo-description {
+            color: #6a1b6d;
+            line-height: 1.5;
+        }
+
         /* Responsive Design */
         @media (min-width: 768px) {
             .container {
@@ -944,6 +1014,10 @@
                 right: 10px;
                 text-align: center;
             }
+            
+            .time-slots {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         @media (max-width: 480px) {
@@ -958,6 +1032,10 @@
             
             .mobile-nav {
                 width: 250px;
+            }
+            
+            .time-slots {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -1041,50 +1119,32 @@
             </div>
         </div>
 
-        <!-- หน้า Booking -->
+        <!-- หน้า Booking - ปรับเป็นหน้าเดียว -->
         <div id="booking" class="page">
             <div class="box">
-                <div class="progress-bar">
-                    <div class="progress-step active">1<span class="step-label">ข้อมูลลูกค้า</span></div>
-                    <div class="progress-step">2<span class="step-label">เลือกบริการ</span></div>
-                    <div class="progress-step">3<span class="step-label">วันและเวลา</span></div>
-                    <div class="progress-step">4<span class="step-label">ยืนยันการจอง</span></div>
-                </div>
-            </div>
-
-            <div class="box" id="formBox">
-                <h2>กรอกข้อมูลลูกค้า 👤</h2>
-                <input type="text" id="name" placeholder="ชื่อของคุณ">
-                <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์">
-                <div class="button-group">
-                    <button onclick="goToServiceSelection()">ถัดไป</button>
-                </div>
-            </div>
-
-            <div class="box" id="serviceBox" style="display:none;">
-                <h2>เลือกบริการ 💇‍♀️</h2>
-                <div id="serviceSelection" class="service-selection"></div>
-                <div class="button-group">
-                    <button onclick="goToCalendar()">ถัดไป</button>
-                </div>
-            </div>
-
-            <div class="box" id="calendarBox" style="display:none;">
-                <h2>เลือกวันและเวลา 📅</h2>
-                <input type="date" id="date">
-                <select id="time"></select>
-                <div class="button-group">
-                    <button onclick="reviewBooking()">ถัดไป</button>
-                </div>
-            </div>
-
-            <div class="box" id="confirmBox" style="display:none;">
-                <h2>ข้อมูลการจอง ✅</h2>
-                <div id="bookingInfo"></div>
-                <div class="button-group">
-                    <button onclick="lockBooking()">ยืนยันการจอง</button>
-                    <button onclick="editBooking()">แก้ไข</button>
-                    <button onclick="cancelBooking()" class="delete-btn">ยกเลิกการจอง</button>
+                <h2>จองคิว 💇‍♀️</h2>
+                
+                <div class="booking-form">
+                    <div class="form-section">
+                        <h3>ข้อมูลลูกค้า 👤</h3>
+                        <input type="text" id="name" placeholder="ชื่อของคุณ">
+                        <input type="tel" id="phone" placeholder="เบอร์โทรศัพท์">
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>เลือกบริการ 💇‍♀️</h3>
+                        <div id="serviceSelection" class="service-selection"></div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>เลือกวันและเวลา 📅</h3>
+                        <input type="date" id="date">
+                        <div class="time-slots" id="timeSlots"></div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="submitBooking()">ยืนยันการจอง</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1215,279 +1275,320 @@
         }
         
         // ตั้งค่า Firebase Configuration โดยตรง - ย้ายมาอยู่ด้านบนสุด
-const firebaseConfig = { 
-    apiKey: "AIzaSyCHDTfUAYl_3QNltoDomAZip369XRePm08",
-    authDomain: "muksalon-welcome529.firebaseapp.com",
-    projectId: "muksalon-welcome529",
-    storageBucket: "muksalon-welcome529.firebasestorage.app",
-    messagingSenderId: "763113739059",
-    appId: "1:763113739059:web:b3632852dab45f66522446"
-};
+        const firebaseConfig = { 
+            apiKey: "AIzaSyCHDTfUAYl_3QNltoDomAZip369XRePm08",
+            authDomain: "muksalon-welcome529.firebaseapp.com",
+            projectId: "muksalon-welcome529",
+            storageBucket: "muksalon-welcome529.firebasestorage.app",
+            messagingSenderId: "763113739059",
+            appId: "1:763113739059:web:b3632852dab45f66522446"
+        };
 
-// ตัวแปร global
-const timeSelect = document.getElementById("time");
-for (let h = 8; h <= 20; h++) {
-    let option = document.createElement("option");
-    option.value = `${h}:00`;
-    option.textContent = `${h}:00`;
-    timeSelect.appendChild(option);
-}
+        // ตัวแปร global
+        let booking = {};
+        let bookingLocked = false;
+        let currentRating = 0;
+        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' || false;
 
-// ตั้งค่าวันต่ำสุดเป็นวันปัจจุบัน
-const today = new Date().toISOString().split('T')[0];
-document.getElementById('date').min = today;
+        // ข้อมูลเริ่มต้น - จะถูกโหลดจาก Firebase แทน localStorage
+        let holidays = [];
+        let services = [];
+        let promotions = [];
+        let reviews = [];
+        let bookings = [];
 
-let booking = {};
-let bookingLocked = false;
-let currentRating = 0;
-let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' || false;
+        // ตัวแปรสำหรับ Firebase
+        let db = null;
+        let firebaseInitialized = false;
 
-// ข้อมูลเริ่มต้น - จะถูกโหลดจาก Firebase แทน localStorage
-let holidays = [];
-let services = [];
-let promotions = [];
-let reviews = [];
-let bookings = [];
+        // ข้อมูลการตั้งค่า Email
+        let emailConfig = {
+            publicKey: 'gxAXWtkmg5TT3Rm-E',
+            serviceID: 'service_muk157',
+            templateID: 'template_muk157',
+            adminEmail: 'muksalonwelcomes@gmail.com'
+        };
 
-// ตัวแปรสำหรับ Firebase
-let db = null;
-let firebaseInitialized = false;
-
-// ข้อมูลการตั้งค่า Email
-let emailConfig = {
-    publicKey: 'gxAXWtkmg5TT3Rm-E',
-    serviceID: 'service_muk157',
-    templateID: {
-        booking: 'template_muk157',      // ⬅️ ใส่ ID จริงของเทมเพลตการจอง
-        cancellation: 'template_cancel5'  // ⬅️ ใส่ ID จริงของเทมเพลตการยกเลิก
-    },
-
-    
-    adminEmail: 'muksalonwelcomes@gmail.com'
-};
-
-// ฟังก์ชันเริ่มต้น Firebase - ย้ายมาอยู่ก่อน DOMContentLoaded
-function initializeFirebase(config) {
-    try {
-        // ตรวจสอบว่า Firebase ถูกโหลดมาหรือยัง
-        if (typeof firebase === 'undefined') {
-            console.error("❌ Firebase SDK ยังไม่โหลด");
-            return false;
-        }
-        
-        // ถ้าเคยเริ่มต้นแล้ว ให้ลบแอปเก่าก่อน
-        if (firebase.apps.length > 0) {
-            firebase.app().delete();
-        }
-        
-        firebase.initializeApp(config);
-        db = firebase.firestore();
-        firebaseInitialized = true;
-        console.log("✅ Firebase เริ่มต้นสำเร็จ");
-        return true;
-    } catch (error) {
-        console.error("❌ เกิดข้อผิดพลาดในการเริ่มต้น Firebase:", error);
-        firebaseInitialized = false;
-        return false;
-    }
-}
-
-// โหลดการตั้งค่าจาก localStorage ถ้ามี
-try {
-    const savedConfig = localStorage.getItem('emailConfig');
-    if (savedConfig) {
-        const parsedConfig = JSON.parse(savedConfig);
-        Object.keys(parsedConfig).forEach(key => {
-            if (parsedConfig[key]) {
-                emailConfig[key] = parsedConfig[key];
+        // ฟังก์ชันเริ่มต้น Firebase - ย้ายมาอยู่ก่อน DOMContentLoaded
+        function initializeFirebase(config) {
+            try {
+                // ตรวจสอบว่า Firebase ถูกโหลดมาหรือยัง
+                if (typeof firebase === 'undefined') {
+                    console.error("❌ Firebase SDK ยังไม่โหลด");
+                    return false;
+                }
+                
+                // ถ้าเคยเริ่มต้นแล้ว ให้ลบแอปเก่าก่อน
+                if (firebase.apps.length > 0) {
+                    firebase.app().delete();
+                }
+                
+                firebase.initializeApp(config);
+                db = firebase.firestore();
+                firebaseInitialized = true;
+                console.log("✅ Firebase เริ่มต้นสำเร็จ");
+                return true;
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการเริ่มต้น Firebase:", error);
+                firebaseInitialized = false;
+                return false;
             }
-        });
-    }
-} catch (e) {
-    console.log('ใช้การตั้งค่าเริ่มต้น');
-}
-
-// เริ่มต้นแสดงหน้าจองคิวเมื่อโหลดหน้า
-window.addEventListener('DOMContentLoaded', (event) => {
-    // เริ่มต้น Firebase ด้วย config ที่ประกาศไว้
-    initializeFirebase(firebaseConfig);
-    
-    // แสดง Firebase Config ในฟอร์มจัดการร้าน
-    document.getElementById('firebaseConfig').value = JSON.stringify(firebaseConfig, null, 2);
-    
-    // เริ่มต้น EmailJS ด้วยค่าที่ตั้งไว้
-    if (emailConfig.publicKey && emailConfig.publicKey !== 'your_public_key_here') {
-        emailjs.init(emailConfig.publicKey);
-    }
-    
-    // แสดงค่าปัจจุบันในฟอร์ม
-    document.getElementById('emailJSPublicKey').value = emailConfig.publicKey;
-    document.getElementById('emailJSServiceID').value = emailConfig.serviceID;
-    document.getElementById('emailJSTemplateID').value = emailConfig.templateID;
-    document.getElementById('adminEmail').value = emailConfig.adminEmail;
-    
-    // ล็อกอินอัตโนมัติหากเคยล็อกอินไว้
-    if (isLoggedIn) {
-        document.body.classList.add('logged-in');
-    }
-    
-    // โหลดข้อมูลจาก Firebase ถ้าเชื่อมต่อแล้ว
-    if (firebaseInitialized) {
-        loadDataFromFirebase();
-    } else {
-        // โหลดข้อมูลจาก localStorage เป็น fallback
-        loadDataFromLocalStorage();
-    }
-    
-    renderHolidays();
-    renderServices();
-    renderPromotions();
-    renderReviews();
-    
-    // สร้างลูกเล่นพิเศษ
-    createFloatingIcons();
-    createParticles();
-    
-    // แสดงหน้าจองคิวเป็นหน้าแรก
-    showPage('booking');
-});
-
-// ฟังก์ชันบันทึกการตั้งค่า Firebase - แก้ไขให้ถูกต้อง
-function saveFirebaseConfig() {
-    const configText = document.getElementById('firebaseConfig').value;
-    try {
-        const config = JSON.parse(configText);
-        
-        // ตรวจสอบว่ามีฟิลด์ที่จำเป็นครบหรือไม่
-        const requiredFields = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
-        const missingFields = requiredFields.filter(field => !config[field]);
-        
-        if (missingFields.length > 0) {
-            showNotification('การตั้งค่าไม่ครบถ้วน: ' + missingFields.join(', '), 'error');
-            return;
         }
-        
-        localStorage.setItem('firebaseConfig', configText);
-        
-        // อัปเดตค่า config ใหม่
-        Object.assign(firebaseConfig, config);
-        
-        // เริ่มต้น Firebase ใหม่
-        const success = initializeFirebase(firebaseConfig);
-        
-        if (success) {
-            showNotification('บันทึกการตั้งค่า Firebase เรียบร้อยแล้ว', 'success');
-            // โหลดข้อมูลใหม่จาก Firebase
-            loadDataFromFirebase();
-        } else {
-            showNotification('ไม่สามารถเริ่มต้น Firebase ได้', 'error');
+
+        // โหลดการตั้งค่าจาก localStorage ถ้ามี
+        try {
+            const savedConfig = localStorage.getItem('emailConfig');
+            if (savedConfig) {
+                const parsedConfig = JSON.parse(savedConfig);
+                Object.keys(parsedConfig).forEach(key => {
+                    if (parsedConfig[key]) {
+                        emailConfig[key] = parsedConfig[key];
+                    }
+                });
+            }
+        } catch (e) {
+            console.log('ใช้การตั้งค่าเริ่มต้น');
         }
-    } catch (error) {
-        console.error('Error parsing Firebase config:', error);
-        showNotification('รูปแบบการตั้งค่า Firebase ไม่ถูกต้อง: ' + error.message, 'error');
-    }
-}
 
-// ฟังก์ชันทดสอบการเชื่อมต่อ Firebase - แก้ไขให้ปลอดภัย
-function testFirebaseConnection() {
-    const testResult = document.getElementById('firebaseTestResult');
-    testResult.style.display = 'block';
-    testResult.className = 'test-result';
-    testResult.innerHTML = 'กำลังทดสอบการเชื่อมต่อ...';
-
-    if (!firebaseInitialized || !db) {
-        testResult.classList.add('error');
-        testResult.innerHTML = '❌ Firebase ยังไม่ได้เริ่มต้น กรุณาตั้งค่าก่อน';
-        return;
-    }
-
-    // ทดสอบการอ่านข้อมูล - ใช้ collection ที่มีอยู่แล้ว
-    db.collection('services').limit(1).get()
-        .then((snapshot) => {
-            testResult.classList.add('success');
-            testResult.innerHTML = '✅ การเชื่อมต่อ Firebase สำเร็จ';
-            showNotification('ทดสอบการเชื่อมต่อ Firebase สำเร็จ!', 'success');
-        })
-        .catch(error => {
-            testResult.classList.add('error');
-            testResult.innerHTML = '❌ การเชื่อมต่อ Firebase ล้มเหลว: ' + error.message;
-            showNotification('การทดสอบ Firebase ล้มเหลว', 'error');
-        });
-}
-
-// ฟังก์ชันโหลดข้อมูลจาก Firebase - แก้ไขให้ปลอดภัย
-function loadDataFromFirebase() {
-    if (!firebaseInitialized || !db) {
-        console.warn("Firebase ยังไม่พร้อม โหลดข้อมูลจาก localStorage แทน");
-        loadDataFromLocalStorage();
-        return;
-    }
-
-    // โหลดบริการ
-    db.collection('services').get()
-        .then(snapshot => {
-            services = [];
-            snapshot.forEach(doc => {
-                services.push({ id: doc.id, ...doc.data() });
-            });
-            renderServices();
-        })
-        .catch(error => {
-            console.error("❌ เกิดข้อผิดพลาดในการโหลดบริการ:", error);
-        });
-
-    // โหลดวันหยุด
-    db.collection('holidays').get()
-        .then(snapshot => {
-            holidays = [];
-            snapshot.forEach(doc => {
-                holidays.push(doc.data().date);
-            });
+        // เริ่มต้นแสดงหน้าจองคิวเมื่อโหลดหน้า
+        window.addEventListener('DOMContentLoaded', (event) => {
+            // เริ่มต้น Firebase ด้วย config ที่ประกาศไว้
+            initializeFirebase(firebaseConfig);
+            
+            // แสดง Firebase Config ในฟอร์มจัดการร้าน
+            document.getElementById('firebaseConfig').value = JSON.stringify(firebaseConfig, null, 2);
+            
+            // เริ่มต้น EmailJS ด้วยค่าที่ตั้งไว้
+            if (emailConfig.publicKey && emailConfig.publicKey !== 'your_public_key_here') {
+                emailjs.init(emailConfig.publicKey);
+            }
+            
+            // แสดงค่าปัจจุบันในฟอร์ม
+            document.getElementById('emailJSPublicKey').value = emailConfig.publicKey;
+            document.getElementById('emailJSServiceID').value = emailConfig.serviceID;
+            document.getElementById('emailJSTemplateID').value = emailConfig.templateID;
+            document.getElementById('adminEmail').value = emailConfig.adminEmail;
+            
+            // ล็อกอินอัตโนมัติหากเคยล็อกอินไว้
+            if (isLoggedIn) {
+                document.body.classList.add('logged-in');
+            }
+            
+            // โหลดข้อมูลจาก Firebase ถ้าเชื่อมต่อแล้ว
+            if (firebaseInitialized) {
+                loadDataFromFirebase();
+            } else {
+                // โหลดข้อมูลจาก localStorage เป็น fallback
+                loadDataFromLocalStorage();
+            }
+            
             renderHolidays();
-        })
-        .catch(error => {
-            console.error("❌ เกิดข้อผิดพลาดในการโหลดวันหยุด:", error);
-        });
-
-    // โหลดโปรโมชัน
-    db.collection('promotions').get()
-        .then(snapshot => {
-            promotions = [];
-            snapshot.forEach(doc => {
-                promotions.push({ id: doc.id, ...doc.data() });
-            });
+            renderServices();
             renderPromotions();
-        })
-        .catch(error => {
-            console.error("❌ เกิดข้อผิดพลาดในการโหลดโปรโมชัน:", error);
-        });
-
-    // โหลดรีวิว
-    db.collection('reviews').get()
-        .then(snapshot => {
-            reviews = [];
-            snapshot.forEach(doc => {
-                reviews.push({ id: doc.id, ...doc.data() });
-            });
             renderReviews();
-        })
-        .catch(error => {
-            console.error("❌ เกิดข้อผิดพลาดในการโหลดรีวิว:", error);
+            
+            // สร้างลูกเล่นพิเศษ
+            createFloatingIcons();
+            createParticles();
+            
+            // แสดงหน้าจองคิวเป็นหน้าแรก
+            showPage('booking');
+            
+            // ตั้งค่า min date สำหรับ input date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').min = today;
+            
+            // เพิ่ม event listener สำหรับการเลือกวันที่
+            document.getElementById('date').addEventListener('change', function() {
+                renderTimeSlots(this.value);
+            });
+            
+            // แสดงบริการสำหรับการจองทันที
+            renderServicesForBooking();
         });
 
-    // โหลดการจอง
-    db.collection('bookings').get()
-        .then(snapshot => {
-            bookings = [];
-            snapshot.forEach(doc => {
-                bookings.push({ id: doc.id, ...doc.data() });
-            });
-            if (isLoggedIn) renderBookings();
-        })
-        .catch(error => {
-            console.error("❌ เกิดข้อผิดพลาดในการโหลดการจอง:", error);
-        });
-}
+        // ฟังก์ชันสร้าง time slots
+        function renderTimeSlots(date) {
+            const timeSlotsContainer = document.getElementById('timeSlots');
+            timeSlotsContainer.innerHTML = '';
+            
+            if (!date) return;
+            
+            // ตรวจสอบว่าวันที่เลือกเป็นวันหยุดหรือไม่
+            if (holidays.includes(date)) {
+                timeSlotsContainer.innerHTML = '<p style="color: red; text-align: center;">วันนี้ร้านปิด กรุณาเลือกวันอื่น</p>';
+                return;
+            }
+            
+            // สร้าง time slots จาก 8:00 ถึง 20:00
+            for (let h = 8; h <= 20; h++) {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.textContent = `${h}:00`;
+                timeSlot.dataset.time = `${h}:00`;
+                
+                // ตรวจสอบว่าช่วงเวลานี้ถูกจองแล้วหรือไม่
+                const isBooked = bookings.some(booking => 
+                    booking.date === date && booking.time === `${h}:00`
+                );
+                
+                if (isBooked) {
+                    timeSlot.classList.add('booked');
+                    timeSlot.innerHTML = `${h}:00<br><small>จองแล้ว</small>`;
+                } else {
+                    timeSlot.addEventListener('click', function() {
+                        // ลบการเลือกเดิม
+                        document.querySelectorAll('.time-slot.selected').forEach(slot => {
+                            slot.classList.remove('selected');
+                        });
+                        
+                        // เลือกเวลาปัจจุบัน
+                        this.classList.add('selected');
+                        booking.time = this.dataset.time;
+                    });
+                }
+                
+                timeSlotsContainer.appendChild(timeSlot);
+            }
+        }
+
+        // ฟังก์ชันบันทึกการตั้งค่า Firebase - แก้ไขให้ถูกต้อง
+        function saveFirebaseConfig() {
+            const configText = document.getElementById('firebaseConfig').value;
+            try {
+                const config = JSON.parse(configText);
+                
+                // ตรวจสอบว่ามีฟิลด์ที่จำเป็นครบหรือไม่
+                const requiredFields = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+                const missingFields = requiredFields.filter(field => !config[field]);
+                
+                if (missingFields.length > 0) {
+                    showNotification('การตั้งค่าไม่ครบถ้วน: ' + missingFields.join(', '), 'error');
+                    return;
+                }
+                
+                localStorage.setItem('firebaseConfig', configText);
+                
+                // อัปเดตค่า config ใหม่
+                Object.assign(firebaseConfig, config);
+                
+                // เริ่มต้น Firebase ใหม่
+                const success = initializeFirebase(firebaseConfig);
+                
+                if (success) {
+                    showNotification('บันทึกการตั้งค่า Firebase เรียบร้อยแล้ว', 'success');
+                    // โหลดข้อมูลใหม่จาก Firebase
+                    loadDataFromFirebase();
+                } else {
+                    showNotification('ไม่สามารถเริ่มต้น Firebase ได้', 'error');
+                }
+            } catch (error) {
+                console.error('Error parsing Firebase config:', error);
+                showNotification('รูปแบบการตั้งค่า Firebase ไม่ถูกต้อง: ' + error.message, 'error');
+            }
+        }
+
+        // ฟังก์ชันทดสอบการเชื่อมต่อ Firebase - แก้ไขให้ปลอดภัย
+        function testFirebaseConnection() {
+            const testResult = document.getElementById('firebaseTestResult');
+            testResult.style.display = 'block';
+            testResult.className = 'test-result';
+            testResult.innerHTML = 'กำลังทดสอบการเชื่อมต่อ...';
+
+            if (!firebaseInitialized || !db) {
+                testResult.classList.add('error');
+                testResult.innerHTML = '❌ Firebase ยังไม่ได้เริ่มต้น กรุณาตั้งค่าก่อน';
+                return;
+            }
+
+            // ทดสอบการอ่านข้อมูล - ใช้ collection ที่มีอยู่แล้ว
+            db.collection('services').limit(1).get()
+                .then((snapshot) => {
+                    testResult.classList.add('success');
+                    testResult.innerHTML = '✅ การเชื่อมต่อ Firebase สำเร็จ';
+                    showNotification('ทดสอบการเชื่อมต่อ Firebase สำเร็จ!', 'success');
+                })
+                .catch(error => {
+                    testResult.classList.add('error');
+                    testResult.innerHTML = '❌ การเชื่อมต่อ Firebase ล้มเหลว: ' + error.message;
+                    showNotification('การทดสอบ Firebase ล้มเหลว', 'error');
+                });
+        }
+
+        // ฟังก์ชันโหลดข้อมูลจาก Firebase - แก้ไขให้ปลอดภัย
+        function loadDataFromFirebase() {
+            if (!firebaseInitialized || !db) {
+                console.warn("Firebase ยังไม่พร้อม โหลดข้อมูลจาก localStorage แทน");
+                loadDataFromLocalStorage();
+                return;
+            }
+
+            // โหลดบริการ
+            db.collection('services').get()
+                .then(snapshot => {
+                    services = [];
+                    snapshot.forEach(doc => {
+                        services.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderServices();
+                    renderServicesForBooking(); // แสดงบริการสำหรับการจองทันที
+                })
+                .catch(error => {
+                    console.error("❌ เกิดข้อผิดพลาดในการโหลดบริการ:", error);
+                });
+
+            // โหลดวันหยุด
+            db.collection('holidays').get()
+                .then(snapshot => {
+                    holidays = [];
+                    snapshot.forEach(doc => {
+                        holidays.push(doc.data().date);
+                    });
+                    renderHolidays();
+                })
+                .catch(error => {
+                    console.error("❌ เกิดข้อผิดพลาดในการโหลดวันหยุด:", error);
+                });
+
+            // โหลดโปรโมชัน
+            db.collection('promotions').get()
+                .then(snapshot => {
+                    promotions = [];
+                    snapshot.forEach(doc => {
+                        promotions.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderPromotions();
+                })
+                .catch(error => {
+                    console.error("❌ เกิดข้อผิดพลาดในการโหลดโปรโมชัน:", error);
+                });
+
+            // โหลดรีวิว
+            db.collection('reviews').get()
+                .then(snapshot => {
+                    reviews = [];
+                    snapshot.forEach(doc => {
+                        reviews.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderReviews();
+                })
+                .catch(error => {
+                    console.error("❌ เกิดข้อผิดพลาดในการโหลดรีวิว:", error);
+                });
+
+            // โหลดการจอง
+            db.collection('bookings').get()
+                .then(snapshot => {
+                    bookings = [];
+                    snapshot.forEach(doc => {
+                        bookings.push({ id: doc.id, ...doc.data() });
+                    });
+                    if (isLoggedIn) renderBookings();
+                })
+                .catch(error => {
+                    console.error("❌ เกิดข้อผิดพลาดในการโหลดการจอง:", error);
+                });
+        }
 
         // ฟังก์ชันโหลดข้อมูลจาก localStorage (fallback)
         function loadDataFromLocalStorage() {
@@ -1642,7 +1743,10 @@ function loadDataFromFirebase() {
                 if (btn.textContent === "รีวิว" && page === "reviews") btn.classList.add("active");
             }
 
-            if (page === "booking") resetBookingForm();
+            if (page === "booking") {
+                resetBookingForm();
+                renderServicesForBooking();
+            }
             if (page === "home") {
                 renderHolidays();
                 renderServices();
@@ -1657,29 +1761,166 @@ function loadDataFromFirebase() {
             }
         }
 
-       function saveEmailConfig() {
-    // อัปเดตการตั้งค่าจากฟอร์ม
-    emailConfig.publicKey = document.getElementById('emailJSPublicKey').value;
-    emailConfig.serviceID = document.getElementById('emailJSServiceID').value;
-    
-    // ⬅️ แก้ไขส่วน template IDs
-    emailConfig.templateIDs = {
-        booking: document.getElementById('emailJSTemplateID_booking').value,    // ต้องเพิ่ม input ใหม่
-        cancellation: document.getElementById('emailJSTemplateID_cancel').value // ต้องเพิ่ม input ใหม่
-    };
-    
-    emailConfig.adminEmail = document.getElementById('adminEmail').value;
+        // ฟังก์ชันรีเซ็ตฟอร์มจอง
+        function resetBookingForm() {
+            booking = {};
+            bookingLocked = false;
+            document.getElementById("name").value = "";
+            document.getElementById("phone").value = "";
+            document.getElementById("date").value = "";
+            document.getElementById("timeSlots").innerHTML = "";
+            
+            // ล้างการเลือกบริการ
+            document.querySelectorAll('input[name="service"]:checked').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
 
-    // บันทึกลง localStorage
-    localStorage.setItem('emailConfig', JSON.stringify(emailConfig));
-    
-    // เริ่มต้น EmailJS ใหม่
-    if (emailConfig.publicKey && emailConfig.publicKey !== 'your_public_key_here') {
-        emailjs.init(emailConfig.publicKey);
-    }
-    
-    showNotification('บันทึกการตั้งค่า Email เรียบร้อยแล้ว', 'success');
-}
+        // ฟังก์ชันแสดงบริการสำหรับการจอง
+        function renderServicesForBooking() {
+            const serviceSelection = document.getElementById("serviceSelection");
+            serviceSelection.innerHTML = "";
+            
+            if (services.length === 0) {
+                serviceSelection.innerHTML = "<p>กำลังโหลดบริการ...</p>";
+                return;
+            }
+            
+            services.forEach((service, index) => {
+                const serviceDiv = document.createElement("div");
+                serviceDiv.className = "service-option";
+                serviceDiv.innerHTML = `
+                    <input type="checkbox" id="service-${index}" name="service" value="${service.name} - ${service.price}">
+                    <label for="service-${index}">${service.name} - ${service.price}</label>
+                `;
+                serviceSelection.appendChild(serviceDiv);
+            });
+        }
+
+        // ฟังก์ชันส่งการจอง
+        async function submitBooking() {
+            // เก็บข้อมูลการจอง
+            booking.name = document.getElementById("name").value.trim();
+            booking.phone = document.getElementById("phone").value.trim();
+            booking.date = document.getElementById("date").value;
+            
+            // ตรวจสอบข้อมูล
+            if (!booking.name || !booking.phone) {
+                showNotification('กรุณากรอกชื่อและเบอร์โทรศัพท์', 'error');
+                return;
+            }
+            
+            if (!booking.date) {
+                showNotification('กรุณาเลือกวันที่', 'error');
+                return;
+            }
+            
+            if (!booking.time) {
+                showNotification('กรุณาเลือกเวลา', 'error');
+                return;
+            }
+            
+            // เก็บบริการที่เลือก
+            booking.services = [];
+            document.querySelectorAll('input[name="service"]:checked').forEach(checkbox => {
+                booking.services.push(checkbox.value);
+            });
+            
+            if (booking.services.length === 0) {
+                showNotification('กรุณาเลือกบริการอย่างน้อยหนึ่งรายการ', 'error');
+                return;
+            }
+            
+            // ตรวจสอบว่าช่วงเวลานี้ถูกจองแล้วหรือไม่
+            const hasConflict = await checkBookingConflict(booking.date, booking.time);
+            if (hasConflict) {
+                showNotification('⏰ มีลูกค้าอีกท่านได้จองเวลาในช่วงนี้แล้ว กรุณาเลือกเวลาอื่น', 'warning');
+                return;
+            }
+            
+            // บันทึกการจอง
+            const newBooking = {
+                name: booking.name,
+                phone: booking.phone,
+                date: booking.date,
+                time: booking.time,
+                services: booking.services,
+                timestamp: new Date().toISOString(),
+                status: "confirmed"
+            };
+            
+            try {
+                await saveToFirebase('bookings', newBooking);
+                bookings.push(newBooking);
+                
+                // สร้าง confetti
+                createConfetti();
+                
+                showNotification('✅ การจองสำเร็จ!', 'success');
+                
+                // ส่งอีเมลแจ้งเตือน
+                sendEmailNotification("booking")
+                    .then(success => {
+                        if (success) {
+                            console.log("✅ ส่ง Email การจองสำเร็จ");
+                        } else {
+                            console.warn("❌ ส่ง Email การจองไม่สำเร็จ");
+                        }
+                    });
+                
+                // รีเซ็ตฟอร์ม
+                resetBookingForm();
+                
+                // แสดงฟอร์มรีวิวหลังจากจองสำเร็จ
+                setTimeout(() => {
+                    showReviewModal();
+                }, 1500);
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการบันทึกการจอง:", error);
+                showNotification('เกิดข้อผิดพลาดในการบันทึกการจอง', 'error');
+            }
+        }
+
+        // ฟังก์ชันตรวจสอบเวลาจองซ้ำ
+        async function checkBookingConflict(date, time) {
+            try {
+                // ตรวจสอบใน Firebase
+                if (firebaseInitialized) {
+                    const snapshot = await db.collection('bookings')
+                        .where('date', '==', date)
+                        .where('time', '==', time)
+                        .get();
+                    
+                    return !snapshot.empty;
+                } else {
+                    // ตรวจสอบใน localStorage
+                    return bookings.some(b => b.date === date && b.time === time);
+                }
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการตรวจสอบการจองซ้ำ:", error);
+                return false;
+            }
+        }
+
+        // ฟังก์ชันบันทึกการตั้งค่า Email
+        function saveEmailConfig() {
+            // อัปเดตการตั้งค่าจากฟอร์ม
+            emailConfig.publicKey = document.getElementById('emailJSPublicKey').value;
+            emailConfig.serviceID = document.getElementById('emailJSServiceID').value;
+            emailConfig.templateID = document.getElementById('emailJSTemplateID').value;
+            emailConfig.adminEmail = document.getElementById('adminEmail').value;
+
+            // บันทึกลง localStorage
+            localStorage.setItem('emailConfig', JSON.stringify(emailConfig));
+            
+            // เริ่มต้น EmailJS ใหม่
+            if (emailConfig.publicKey && emailConfig.publicKey !== 'your_public_key_here') {
+                emailjs.init(emailConfig.publicKey);
+            }
+            
+            showNotification('บันทึกการตั้งค่า Email เรียบร้อยแล้ว', 'success');
+        }
+
         // ฟังก์ชันทดสอบการเชื่อมต่อ Email
         function testEmailConnection() {
             if (!emailConfig.publicKey || emailConfig.publicKey === 'your_public_key_here' ||
@@ -1734,322 +1975,58 @@ function loadDataFromFirebase() {
             );
         }
 
-        // ฟังก์ชันจัดรูปแบบวันที่ไทย - ย้ายมาอยู่ด้านนอก
-function formatDateThai(dateString) {
-    const date = new Date(dateString);
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('th-TH', options);
-}
-
-// ฟังก์ชันส่งการแจ้งเตือนผ่าน Email - รองรับ 2 เทมเพลต
-async function sendEmailNotification(type = "booking") {
-    // ตรวจสอบการตั้งค่า
-    if (!emailConfig.publicKey || emailConfig.publicKey === 'your_public_key_here' ||
-        !emailConfig.serviceID || emailConfig.serviceID === 'your_service_id_here' ||
-        !emailConfig.templateIDs || 
-        !emailConfig.adminEmail || emailConfig.adminEmail === 'your_email@example.com') {
-        console.warn("❌ การตั้งค่า Email ไม่ครบถ้วน");
-        return false;
-    }
-
-    try {
-        // เริ่มต้น EmailJS
-        emailjs.init(emailConfig.publicKey);
-
-        // เลือก Template ID ตามประเภท
-        const templateID = emailConfig.templateIDs[type];
-        
-        if (!templateID) {
-            console.error("❌ ไม่พบ Template ID สำหรับประเภท:", type);
-            return false;
+        // ฟังก์ชันจัดรูปแบบวันที่ไทย
+        function formatDateThai(dateString) {
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('th-TH', options);
         }
 
-        // สร้างพารามิเตอร์
-        const templateParams = {
-            to_email: emailConfig.adminEmail,
-            name: booking.name || "ลูกค้า",
-            phone: booking.phone || "ไม่ระบุ",
-            date: booking.date ? formatDateThai(booking.date) : new Date().toLocaleDateString('th-TH'),
-            time: booking.time || "ไม่ระบุ",
-            services: booking.services ? booking.services.map(s => `<li>${s}</li>`).join("") : "<li>บริการทดสอบ</li>",
-            created_at: new Date().toLocaleString('th-TH')
-        };
-
-        console.log("📧 ส่งอีเมลประเภท:", type);
-        console.log("🎯 ใช้เทมเพลต ID:", templateID);
-
-        const response = await emailjs.send(
-            emailConfig.serviceID, 
-            templateID,
-            templateParams
-        );
-
-        if (response.status === 200) {
-            console.log(`✅ ส่งอีเมล ${type} สำเร็จ!`);
-            return true;
-        } else {
-            throw new Error(`EmailJS error: ${response.status} - ${response.text}`);
-        }
-    } catch (error) {
-        console.error("❌ เกิดข้อผิดพลาดในการส่งอีเมล:", error);
-        return false;
-    }
-}
-
-        // ฟังก์ชันรีเซ็ตฟอร์มจอง
-        function resetBookingForm() {
-            booking = {};
-            bookingLocked = false;
-            document.querySelectorAll("#booking .box").forEach(b => b.style.display = "none");
-            document.getElementById("formBox").style.display = "block";
-            document.getElementById("name").value = "";
-            document.getElementById("phone").value = "";
-            document.getElementById("date").value = "";
-        }
-
-        // ฟังก์ชันไปยังหน้ารายการบริการ
-        function goToServiceSelection() {
-            booking.name = document.getElementById("name").value.trim();
-            booking.phone = document.getElementById("phone").value.trim();
-            
-            if (!booking.name || !booking.phone) {
-                showNotification('กรุณากรอกข้อมูลให้ครบ', 'error');
-                return;
+        // ฟังก์ชันส่งการแจ้งเตือนผ่าน Email
+        async function sendEmailNotification(type = "booking") {
+            // ตรวจสอบการตั้งค่า
+            if (!emailConfig.publicKey || emailConfig.publicKey === 'your_public_key_here' ||
+                !emailConfig.serviceID || emailConfig.serviceID === 'your_service_id_here' ||
+                !emailConfig.templateID || emailConfig.templateID === 'your_template_id_here' ||
+                !emailConfig.adminEmail || emailConfig.adminEmail === 'your_email@example.com') {
+                console.warn("❌ การตั้งค่า Email ไม่ครบถ้วน");
+                return false;
             }
-            
-            // ✅ สร้าง session ID เพื่อแยกการจอง
-            booking.sessionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-            
-            const serviceSelection = document.getElementById("serviceSelection");
-            serviceSelection.innerHTML = "";
-            
-            services.forEach((service, index) => {
-                const serviceDiv = document.createElement("div");
-                serviceDiv.className = "service-option";
-                serviceDiv.innerHTML = `
-                    <input type="checkbox" id="service-${index}" name="service" value="${service.name} - ${service.price}">
-                    <label for="service-${index}">${service.name} - ${service.price}</label>
-                `;
-                serviceSelection.appendChild(serviceDiv);
-            });
-            
-            document.getElementById("formBox").style.display = "none";
-            document.getElementById("serviceBox").style.display = "block";
-        }
-        // ฟังก์ชันไปยังหน้าปฏิทิน
-        function goToCalendar() {
-            booking.services = [];
-            document.querySelectorAll('input[name="service"]:checked').forEach(checkbox => {
-                booking.services.push(checkbox.value);
-            });
-            
-            if (booking.services.length === 0) {
-                showNotification('กรุณาเลือกบริการอย่างน้อยหนึ่งรายการ', 'error');
-                return;
-            }
-            
-            document.getElementById("serviceBox").style.display = "none";
-            document.getElementById("calendarBox").style.display = "block";
-        }
 
-        // ฟังก์ชันตรวจสอบเวลาจองซ้ำ
-        async function checkBookingConflict(date, time) {
             try {
-                // ตรวจสอบใน Firebase
-                if (firebaseInitialized) {
-                    const snapshot = await db.collection('bookings')
-                        .where('date', '==', date)
-                        .where('time', '==', time)
-                        .get();
-                    
-                    return !snapshot.empty;
+                // เริ่มต้น EmailJS
+                emailjs.init(emailConfig.publicKey);
+
+                // สร้างพารามิเตอร์
+                const templateParams = {
+                    to_email: emailConfig.adminEmail,
+                    name: booking.name || "ลูกค้า",
+                    phone: booking.phone || "ไม่ระบุ",
+                    date: booking.date ? formatDateThai(booking.date) : new Date().toLocaleDateString('th-TH'),
+                    time: booking.time || "ไม่ระบุ",
+                    services: booking.services ? booking.services.map(s => `<li>${s}</li>`).join("") : "<li>บริการทดสอบ</li>",
+                    created_at: new Date().toLocaleString('th-TH')
+                };
+
+                console.log("📧 ส่งอีเมลประเภท:", type);
+
+                const response = await emailjs.send(
+                    emailConfig.serviceID, 
+                    emailConfig.templateID,
+                    templateParams
+                );
+
+                if (response.status === 200) {
+                    console.log(`✅ ส่งอีเมล ${type} สำเร็จ!`);
+                    return true;
                 } else {
-                    // ตรวจสอบใน localStorage
-                    return bookings.some(b => b.date === date && b.time === time);
+                    throw new Error(`EmailJS error: ${response.status} - ${response.text}`);
                 }
             } catch (error) {
-                console.error("❌ เกิดข้อผิดพลาดในการตรวจสอบการจองซ้ำ:", error);
+                console.error("❌ เกิดข้อผิดพลาดในการส่งอีเมล:", error);
                 return false;
             }
         }
-
-        // ฟังก์ชันตรวจสอบการจอง
-        async function reviewBooking() {
-            booking.date = document.getElementById("date").value;
-            booking.time = document.getElementById("time").value;
-            if (!booking.date || !booking.time) {
-                showNotification('กรุณาเลือกวันและเวลา', 'error');
-                return;
-            }
-            if (holidays.includes(booking.date)) {
-                showNotification('วันดังกล่าวร้านปิด กรุณาเลือกวันอื่น', 'error');
-                return;
-            }
-            
-            // ตรวจสอบเวลาจองซ้ำ
-            const hasConflict = await checkBookingConflict(booking.date, booking.time);
-            if (hasConflict) {
-                showNotification('⏰ มีลูกค้าอีกท่านได้จองเวลาในช่วงนี้แล้ว กรุณาเลือกเวลาอื่น', 'warning');
-                return;
-            }
-            
-            document.getElementById("calendarBox").style.display = "none";
-            document.getElementById("confirmBox").style.display = "block";
-            
-            let servicesList = "";
-            booking.services.forEach(service => {
-                servicesList += `<li>${service}</li>`;
-            });
-            
-            document.getElementById("bookingInfo").innerHTML = 
-                `<p><strong>ชื่อ:</strong> ${booking.name}</p>
-                 <p><strong>เบอร์โทร:</strong> ${booking.phone}</p>
-                 <p><strong>วันที่:</strong> ${booking.date}</p>
-                 <p><strong>เวลา:</strong> ${booking.time}</p>
-                 <p><strong>บริการที่เลือก:</strong></p>
-                 <ul>${servicesList}</ul>`;
-        }
-
-        // ฟังก์ชันแก้ไขการจอง
-        function editBooking() {
-            document.getElementById("confirmBox").style.display = "none";
-            document.getElementById("calendarBox").style.display = "block";
-        }
-
-        /// ฟังก์ชันยืนยันการจอง - แก้ไขหัวข้อให้ชัดเจน
-async function lockBooking() {
-    if (bookingLocked) return;
-    
-    // ตรวจสอบอีกครั้งก่อนยืนยัน
-    const hasConflict = await checkBookingConflict(booking.date, booking.time);
-    if (hasConflict) {
-        showNotification('⏰ มีลูกค้าอีกท่านได้จองเวลาในช่วงนี้แล้ว กรุณาเลือกเวลาอื่น', 'warning');
-        return;
-    }
-    
-    bookingLocked = true;
-
-    document.getElementById("confirmBox").innerHTML =
-        `<p class="message">ลูกค้าได้จองเรียบร้อยแล้ว ขอบคุณค่ะ</p>`;
-
-            // บันทึกการจอง
-    const newBooking = {
-        name: booking.name,
-        phone: booking.phone,
-        date: booking.date,
-        time: booking.time,
-        services: booking.services,
-        timestamp: new Date().toISOString(),
-        status: "confirmed" // ✅ เพิ่มสถานะการจอง
-    };
-    
-    // บันทึกลง Firebase หรือ localStorage
-    try {
-        await saveToFirebase('bookings', newBooking);
-        bookings.push(newBooking);
-        showNotification('✅ การจองสำเร็จ!', 'success');
-    } catch (error) {
-        console.error("❌ เกิดข้อผิดพลาดในการบันทึกการจอง:", error);
-        showNotification('เกิดข้อผิดพลาดในการบันทึกการจอง', 'error');
-    }
-
-    // สร้าง confetti
-    createConfetti();
-
-    // ✅ ส่งอีเมลแจ้งเตือนการจอง - หัวข้อชัดเจน
-    const booking = `
-        <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
-            <h2 style="color: #4a154b;">✅ การจองคิวใหม่ - ร้านเสริมสวยมุกซาลอน</h2>
-            <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <p><strong>📋 ประเภท:</strong> <span style="color: #4a154b; font-weight: bold;">การจองคิวใหม่</span></p>
-                <p><strong>👤 ชื่อลูกค้า:</strong> ${booking.name}</p>
-                <p><strong>📞 เบอร์โทรศัพท์:</strong> ${booking.phone}</p>
-                <p><strong>📆 วันที่:</strong> ${booking.date}</p>
-                <p><strong>⏰ เวลา:</strong> ${booking.time} น.</p>
-                <p><strong>💇 บริการ:</strong></p>
-                <ul>${booking.services.map(s => `<li>${s}</li>`).join('')}</ul>
-                <p><strong>🕒 จองเมื่อ:</strong> ${new Date().toLocaleString('th-TH')}</p>
-            </div>
-            <p style="color: #666; font-size: 12px;">อีเมลนี้ส่งอัตโนมัติจากระบบจองคิวร้านเสริมสวยมุกซาลอน</p>
-        </div>
-    `;
-
-    // ✅ ส่งอีเมลประเภท "booking"
-    sendEmailNotification("✅ การจองคิวใหม่ - ร้านเสริมสวยมุกซาลอน", booking, "booking")
-        .then(success => {
-            if (success) {
-                console.log("✅ ส่ง Email การจองสำเร็จ");
-            } else {
-                console.warn("❌ ส่ง Email การจองไม่สำเร็จ");
-            }
-        });
-
-    // แสดงฟอร์มรีวิวหลังจากจองสำเร็จ
-    setTimeout(() => {
-        showReviewModal();
-    }, 1500);
-}
-
-// ฟังก์ชันยกเลิกการจอง - แก้ไขหัวข้อให้ชัดเจน
-function cancelBooking() {
-    document.getElementById("confirmBox").innerHTML =
-        `<p class="message">ลูกค้าได้ยกเลิกการจองเรียบร้อยแล้ว ขอบคุณค่ะ</p>`;
-
-    // ✅ ส่งอีเมลแจ้งเตือนการยกเลิก - หัวข้อชัดเจน
-    const cancel = `
-        <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
-            <h2 style="color: #d32f2f;">❌ ยกเลิกการจอง - ร้านเสริมสวยมุกซาลอน</h2>
-            <div style="background: #fff0f0; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <p><strong>📋 ประเภท:</strong> <span style="color: #d32f2f; font-weight: bold;">การยกเลิกการจอง</span></p>
-                <p><strong>👤 ชื่อลูกค้า:</strong> ${booking.name}</p>
-                <p><strong>📞 เบอร์โทรศัพท์:</strong> ${booking.phone}</p>
-                <p><strong>📆 วันที่จองเดิม:</strong> ${booking.date}</p>
-                <p><strong>⏰ เวลาจองเดิม:</strong> ${booking.time} น.</p>
-                <p><strong>💇 บริการที่ยกเลิก:</strong></p>
-                <ul>${booking.services.map(s => `<li>${s}</li>`).join('')}</ul>
-                <p><strong>🕒 ยกเลิกเมื่อ:</strong> ${new Date().toLocaleString('th-TH')}</p>
-            </div>
-            <p style="color: #666; font-size: 12px;">อีเมลนี้ส่งอัตโนมัติจากระบบจองคิวร้านเสริมสวยมุกซาลอน</p>
-        </div>
-    `;
-
-    // ✅ ส่งอีเมลประเภท "cancellation"
-        sendEmailNotification("❌ ยกเลิกการจอง - ร้านเสริมสวยมุกซาลอน", cancelHtml, "cancellation")
-        .then(success => {
-            if (success) {
-                console.log("✅ ส่ง Email การยกเลิกสำเร็จ");
-            } else {
-                console.warn("❌ ส่ง Email การยกเลิกไม่สำเร็จ");
-            }
-        });
-
-    setTimeout(() => {
-        showPage("booking");
-    }, 2000);
-}
-
-// ฟังก์ชันทดสอบการส่งอีเมล - แก้ไขให้ทดสอบทั้งสองประเภท
-async function sendTestEmail() {
-    const testType = confirm("ต้องการทดสอบอีเมลประเภทใด?\nOK = การจอง\nCancel = การยกเลิก") ? "booking" : "cancellation";
-    
-    const testHtml = `
-        <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
-            <h2 style="color: ${testType === 'booking' ? '#4a154b' : '#d32f2f'};">${testType === 'booking' ? '✅' : '❌'} ทดสอบการแจ้งเตือน${testType === 'booking' ? 'การจอง' : 'การยกเลิก'} - ร้านเสริมสวยมุกซาลอน</h2>
-            <div style="background: ${testType === 'booking' ? '#f0f8ff' : '#fff0f0'}; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <p><strong>📋 ประเภทการทดสอบ:</strong> <span style="color: ${testType === 'booking' ? '#4a154b' : '#d32f2f'}; font-weight: bold;">${testType === 'booking' ? 'การจองคิว' : 'การยกเลิกการจอง'}</span></p>
-                <p><strong>📅 วันที่ทดสอบ:</strong> ${new Date().toLocaleString('th-TH')}</p>
-                <p><strong>✅ สถานะ:</strong> ระบบแจ้งเตือน${testType === 'booking' ? 'การจอง' : 'การยกเลิก'} ทำงานปกติแล้ว</p>
-            </div>
-            <p>หากคุณได้รับอีเมลนี้ แสดงว่าการตั้งค่าเสร็จสมบูรณ์แล้ว</p>
-        </div>
-    `;
-
-    return await sendEmailNotification(
-        `${testType === 'booking' ? '✅' : '❌'} ทดสอบการแจ้งเตือน${testType === 'booking' ? 'การจอง' : 'การยกเลิก'} - ร้านเสริมสวยมุกซาลอน`,
-        testHtml,
-        testType
-    );
-}
 
         // ฟังก์ชันแสดงการจอง
         function renderBookings() {
@@ -2156,6 +2133,7 @@ async function sendTestEmail() {
                 await saveToFirebase('services', newService);
                 services.push(newService);
                 renderServices();
+                renderServicesForBooking(); // อัปเดตบริการสำหรับการจองด้วย
                 document.getElementById("newServiceName").value = "";
                 document.getElementById("newServicePrice").value = "";
                 showNotification('เพิ่มบริการเรียบร้อยแล้ว', 'success');
@@ -2210,6 +2188,7 @@ async function sendTestEmail() {
                     }
                     
                     renderServices();
+                    renderServicesForBooking(); // อัปเดตบริการสำหรับการจองด้วย
                     showNotification('ลบบริการเรียบร้อยแล้ว', 'success');
                 } catch (error) {
                     console.error("❌ เกิดข้อผิดพลาดในการลบบริการ:", error);
@@ -2427,186 +2406,217 @@ async function sendTestEmail() {
         }
 
         // ฟังก์ชันแสดงรีวิว
-function renderReviews() {
-    const container = document.getElementById("reviewsList");
-    container.innerHTML = "";
+        function renderReviews() {
+            const container = document.getElementById("reviewsList");
+            container.innerHTML = "";
 
-    if (reviews.length === 0) {
-        container.innerHTML = "<p>ยังไม่มีรีวิว</p>";
-        return;
-    }
+            if (reviews.length === 0) {
+                container.innerHTML = "<p>ยังไม่มีรีวิว</p>";
+                return;
+            }
 
-    const sortedReviews = [...reviews].reverse();
-    sortedReviews.forEach(review => {
-        const reviewItem = document.createElement("div");
-        reviewItem.className = "review-item"; // ใช้ class ใหม่สำหรับ styling
-        
-        let stars = "";
-        for (let i = 1; i <= 5; i++) {
-            stars += i <= review.rating ? "★" : "☆";
+            const sortedReviews = [...reviews].reverse();
+            sortedReviews.forEach(review => {
+                const reviewItem = document.createElement("div");
+                reviewItem.className = "review-item"; // ใช้ class ใหม่สำหรับ styling
+                
+                let stars = "";
+                for (let i = 1; i <= 5; i++) {
+                    stars += i <= review.rating ? "★" : "☆";
+                }
+                
+                // ✅ แก้ไข: เพิ่มปุ่มลบสำหรับเจ้าของร้าน
+                reviewItem.innerHTML = `
+                    <div class="review-header">
+                        <div class="reviewer-name">${review.name || "ไม่ระบุชื่อ"}</div>
+                        <div class="review-date">${new Date(review.timestamp).toLocaleDateString('th-TH')}</div>
+                    </div>
+                    <div class="stars">${stars}</div>
+                    <p>${review.comment || "ไม่มีข้อความเพิ่มเติม"}</p>
+                    ${isLoggedIn ? `
+                        <div class="review-actions">
+                            <button class="delete-btn" onclick="deleteReview('${review.id}')">
+                                <i class="fas fa-trash"></i> ลบรีวิว
+                            </button>
+                        </div>
+                    ` : ''}
+                `;
+                container.appendChild(reviewItem);
+            });
         }
-        
-        // ✅ แก้ไข: เพิ่มปุ่มลบสำหรับเจ้าของร้าน
-        reviewItem.innerHTML = `
-            <div class="review-header">
-                <div class="reviewer-name">${review.name || "ไม่ระบุชื่อ"}</div>
-                <div class="review-date">${new Date(review.timestamp).toLocaleDateString('th-TH')}</div>
-            </div>
-            <div class="stars">${stars}</div>
-            <p>${review.comment || "ไม่มีข้อความเพิ่มเติม"}</p>
-            ${isLoggedIn ? `
-                <div class="review-actions">
-                    <button class="delete-btn" onclick="deleteReview('${review.id}')">
-                        <i class="fas fa-trash"></i> ลบรีวิว
-                    </button>
-                </div>
-            ` : ''}
-        `;
-        container.appendChild(reviewItem);
-    });
-}
 
-// ฟังก์ชันแสดงการจัดการรีวิว (สำหรับเจ้าของร้าน)
-function renderReviewsManagement() {
-    const container = document.getElementById("reviewsManagementList");
-    if (!container) return;
-    
-    container.innerHTML = "";
-
-    if (reviews.length === 0) {
-        container.innerHTML = "<p>ยังไม่มีรีวิว</p>";
-        return;
-    }
-
-    const sortedReviews = [...reviews].reverse();
-    sortedReviews.forEach(review => {
-        const reviewItem = document.createElement("div");
-        reviewItem.className = "review-item";
-        
-        let stars = "";
-        for (let i = 1; i <= 5; i++) {
-            stars += i <= review.rating ? "★" : "☆";
-        }
-        
-        reviewItem.innerHTML = `
-            <div class="review-header">
-                <div class="reviewer-name">${review.name || "ไม่ระบุชื่อ"}</div>
-                <div class="review-date">${new Date(review.timestamp).toLocaleDateString('th-TH')}</div>
-            </div>
-            <div class="stars">${stars}</div>
-            <p>${review.comment || "ไม่มีข้อความเพิ่มเติม"}</p>
-            <div class="review-actions">
-                <button class="delete-btn" onclick="deleteReview('${review.id}')">
-                    <i class="fas fa-trash"></i> ลบรีวิว
-                </button>
-            </div>
-        `;
-        container.appendChild(reviewItem);
-    });
-}
-
-// ฟังก์ชันลบรีวิว
-async function deleteReview(id) {
-    if (!isLoggedIn) {
-        showNotification('กรุณาล็อกอินก่อนลบรีวิว', 'error');
-        return;
-    }
-
-    if (confirm("คุณแน่ใจว่าต้องการลบรีวิวนี้?")) {
-        try {
-            await deleteFromFirebase('reviews', id);
+        // ฟังก์ชันแสดงการจัดการรีวิว (สำหรับเจ้าของร้าน)
+        function renderReviewsManagement() {
+            const container = document.getElementById("reviewsManagementList");
+            if (!container) return;
             
-            // ลบรีวิวออกจากอาร์เรย์
-            const index = reviews.findIndex(r => r.id === id);
-            if (index !== -1) {
-                reviews.splice(index, 1);
+            container.innerHTML = "";
+
+            if (reviews.length === 0) {
+                container.innerHTML = "<p>ยังไม่มีรีวิว</p>";
+                return;
+            }
+
+            const sortedReviews = [...reviews].reverse();
+            sortedReviews.forEach(review => {
+                const reviewItem = document.createElement("div");
+                reviewItem.className = "review-item";
+                
+                let stars = "";
+                for (let i = 1; i <= 5; i++) {
+                    stars += i <= review.rating ? "★" : "☆";
+                }
+                
+                reviewItem.innerHTML = `
+                    <div class="review-header">
+                        <div class="reviewer-name">${review.name || "ไม่ระบุชื่อ"}</div>
+                        <div class="review-date">${new Date(review.timestamp).toLocaleDateString('th-TH')}</div>
+                    </div>
+                    <div class="stars">${stars}</div>
+                    <p>${review.comment || "ไม่มีข้อความเพิ่มเติม"}</p>
+                    <div class="review-actions">
+                        <button class="delete-btn" onclick="deleteReview('${review.id}')">
+                            <i class="fas fa-trash"></i> ลบรีวิว
+                        </button>
+                    </div>
+                `;
+                container.appendChild(reviewItem);
+            });
+        }
+
+        // ฟังก์ชันลบรีวิว
+        async function deleteReview(id) {
+            if (!isLoggedIn) {
+                showNotification('กรุณาล็อกอินก่อนลบรีวิว', 'error');
+                return;
+            }
+
+            if (confirm("คุณแน่ใจว่าต้องการลบรีวิวนี้?")) {
+                try {
+                    await deleteFromFirebase('reviews', id);
+                    
+                    // ลบรีวิวออกจากอาร์เรย์
+                    const index = reviews.findIndex(r => r.id === id);
+                    if (index !== -1) {
+                        reviews.splice(index, 1);
+                    }
+                    
+                    // รีเฟรชการแสดงผล
+                    renderReviews();
+                    if (isLoggedIn) {
+                        renderReviewsManagement();
+                    }
+                    
+                    showNotification('ลบรีวิวเรียบร้อยแล้ว', 'success');
+                } catch (error) {
+                    console.error("❌ เกิดข้อผิดพลาดในการลบรีวิว:", error);
+                    showNotification('เกิดข้อผิดพลาดในการลบรีวิว', 'error');
+                }
+            }
+        }
+
+        // ฟังก์ชันแสดง modal รีวิว
+        function showReviewModal() {
+            document.getElementById("reviewModal").style.display = "flex";
+            currentRating = 0;
+            document.getElementById("reviewerName").value = "";
+            document.getElementById("reviewComment").value = "";
+            document.getElementById("thanksMsg").innerHTML = "";
+            
+            // รีเซ็ตดาว
+            const stars = document.querySelectorAll("#modalStars span");
+            stars.forEach(star => {
+                star.classList.remove("active");
+            });
+        }
+
+        // ฟังก์ชันตั้งค่าคะแนนใน modal
+        function setModalRating(rating) {
+            currentRating = rating;
+            const stars = document.querySelectorAll("#modalStars span");
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add("active");
+                } else {
+                    star.classList.remove("active");
+                }
+            });
+        }
+
+        // ฟังก์ชันส่งรีวิว - แก้ไขให้เรียก renderReviewsManagement() ด้วย
+        async function submitReview() {
+            const name = document.getElementById("reviewerName").value.trim() || "ไม่ระบุชื่อ";
+            const comment = document.getElementById("reviewComment").value.trim() || "";
+            
+            if (currentRating === 0) {
+                showNotification('กรุณาให้คะแนนดาว', 'error');
+                return;
+            }
+
+            const newReview = {
+                name,
+                rating: currentRating,
+                comment,
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                await saveToFirebase('reviews', newReview);
+                reviews.push(newReview);
+                
+                // ✅ แก้ไข: รีเฟรชทั้งสองส่วน
+                renderReviews();
+                if (isLoggedIn) {
+                    renderReviewsManagement();
+                }
+                
+                document.getElementById("thanksMsg").innerHTML = "ขอบคุณสำหรับรีวิวค่ะ 💖";
+                setTimeout(() => {
+                    document.getElementById("reviewModal").style.display = "none";
+                    showPage("reviews");
+                }, 2000);
+                
+                showNotification('ส่งรีวิวเรียบร้อยแล้ว', 'success');
+            } catch (error) {
+                console.error("❌ เกิดข้อผิดพลาดในการส่งรีวิว:", error);
+                showNotification('เกิดข้อผิดพลาดในการส่งรีวิว', 'error');
+            }
+        }
+
+        // ฟังก์ชันแสดงหน้า - แก้ไขให้เรียก renderReviewsManagement() เมื่อแสดงหน้า manage
+        function showPage(page) {
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("activePage"));
+            document.getElementById(page).classList.add("activePage");
+            document.querySelectorAll("nav button, .mobile-nav button").forEach(b => b.classList.remove("active"));
+
+            // ตั้งค่าปุ่มที่ active
+            const navButtons = document.querySelectorAll("nav button, .mobile-nav button");
+            for (let btn of navButtons) {
+                if (btn.textContent === "หน้าหลัก" && page === "home") btn.classList.add("active");
+                if (btn.textContent === "จองคิว" && page === "booking") btn.classList.add("active");
+                if (btn.textContent === "โปรโมชัน" && page === "promo") btn.classList.add("active");
+                if (btn.textContent === "รีวิว" && page === "reviews") btn.classList.add("active");
+            }
+
+            if (page === "booking") {
+                resetBookingForm();
+                renderServicesForBooking();
+            }
+            if (page === "home") {
+                renderHolidays();
+                renderServices();
+            }
+            if (page === "promo") renderPromotions();
+            if (page === "reviews") renderReviews(); // ✅ แสดงรีวิวปกติ
+            if (page === "manage") {
+                renderBookings();
+                renderReviewsManagement(); // ✅ แสดงการจัดการรีวิว
             }
             
-            // รีเฟรชการแสดงผล
-            renderReviews();
-            if (isLoggedIn) {
-                renderReviewsManagement();
+            if (window.innerWidth <= 767) {
+                toggleMobileMenu();
             }
-            
-            showNotification('ลบรีวิวเรียบร้อยแล้ว', 'success');
-        } catch (error) {
-            console.error("❌ เกิดข้อผิดพลาดในการลบรีวิว:", error);
-            showNotification('เกิดข้อผิดพลาดในการลบรีวิว', 'error');
         }
-    }
-}
-
-// ฟังก์ชันส่งรีวิว - แก้ไขให้เรียก renderReviewsManagement() ด้วย
-async function submitReview() {
-    const name = document.getElementById("reviewerName").value.trim() || "ไม่ระบุชื่อ";
-    const comment = document.getElementById("reviewComment").value.trim() || "";
-    
-    if (currentRating === 0) {
-        showNotification('กรุณาให้คะแนนดาว', 'error');
-        return;
-    }
-
-    const newReview = {
-        name,
-        rating: currentRating,
-        comment,
-        timestamp: new Date().toISOString()
-    };
-    
-    try {
-        await saveToFirebase('reviews', newReview);
-        reviews.push(newReview);
-        
-        // ✅ แก้ไข: รีเฟรชทั้งสองส่วน
-        renderReviews();
-        if (isLoggedIn) {
-            renderReviewsManagement();
-        }
-        
-        document.getElementById("thanksMsg").innerHTML = "ขอบคุณสำหรับรีวิวค่ะ 💖";
-        setTimeout(() => {
-            document.getElementById("reviewModal").style.display = "none";
-            showPage("reviews");
-        }, 2000);
-        
-        showNotification('ส่งรีวิวเรียบร้อยแล้ว', 'success');
-    } catch (error) {
-        console.error("❌ เกิดข้อผิดพลาดในการส่งรีวิว:", error);
-        showNotification('เกิดข้อผิดพลาดในการส่งรีวิว', 'error');
-    }
-}
-
-// ฟังก์ชันแสดงหน้า - แก้ไขให้เรียก renderReviewsManagement() เมื่อแสดงหน้า manage
-function showPage(page) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("activePage"));
-    document.getElementById(page).classList.add("activePage");
-    document.querySelectorAll("nav button, .mobile-nav button").forEach(b => b.classList.remove("active"));
-
-    // ตั้งค่าปุ่มที่ active
-    const navButtons = document.querySelectorAll("nav button, .mobile-nav button");
-    for (let btn of navButtons) {
-        if (btn.textContent === "หน้าหลัก" && page === "home") btn.classList.add("active");
-        if (btn.textContent === "จองคิว" && page === "booking") btn.classList.add("active");
-        if (btn.textContent === "โปรโมชัน" && page === "promo") btn.classList.add("active");
-        if (btn.textContent === "รีวิว" && page === "reviews") btn.classList.add("active");
-    }
-
-    if (page === "booking") resetBookingForm();
-    if (page === "home") {
-        renderHolidays();
-        renderServices();
-    }
-    if (page === "promo") renderPromotions();
-    if (page === "reviews") renderReviews(); // ✅ แสดงรีวิวปกติ
-    if (page === "manage") {
-        renderBookings();
-        renderReviewsManagement(); // ✅ แสดงการจัดการรีวิว
-    }
-    
-    if (window.innerWidth <= 767) {
-        toggleMobileMenu();
-    }
-}
 
         // ฟังก์ชันแสดงการแจ้งเตือน
         function showNotification(message, type) {
