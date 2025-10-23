@@ -902,6 +902,24 @@
             line-height: 1.5;
         }
 
+        /* Holiday Message */
+        .holiday-message {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
         /* Responsive Design */
         @media (min-width: 768px) {
             .container {
@@ -1114,8 +1132,13 @@
                 <ul id="holidayList" style="color:red; text-align:left; list-style-type: none; padding: 0;"></ul>
                 <div class="admin-only">
                     <input type="date" id="newHoliday">
+                    <input type="time" id="newHolidayStartTime" placeholder="เวลาเริ่มต้น (ไม่บังคับ)">
+                    <input type="time" id="newHolidayEndTime" placeholder="เวลาสิ้นสุด (ไม่บังคับ)">
                     <button onclick="addHoliday()">เพิ่มวันหยุด</button>
                 </div>
+                
+                <!-- แสดงข้อความวันหยุด -->
+                <div id="holidayMessageContainer"></div>
             </div>
         </div>
 
@@ -1123,6 +1146,9 @@
         <div id="booking" class="page">
             <div class="box">
                 <h2>จองคิว 💇‍♀️</h2>
+                
+                <!-- แสดงข้อความวันหยุด -->
+                <div id="bookingHolidayMessageContainer"></div>
                 
                 <div class="booking-form">
                     <div class="form-section">
@@ -1405,6 +1431,12 @@
             
             // แสดงบริการสำหรับการจองทันที
             renderServicesForBooking();
+            
+            // เริ่มต้นการแสดงข้อความวันหยุด
+            startHolidayMessageCycle();
+            
+            // เริ่มต้นการตรวจสอบการแจ้งเตือนล่วงหน้า
+            startReminderCheck();
         });
 
         // ฟังก์ชันสร้าง time slots
@@ -1415,10 +1447,25 @@
             if (!date) return;
             
             // ตรวจสอบว่าวันที่เลือกเป็นวันหยุดหรือไม่
-            if (holidays.includes(date)) {
+            const isHoliday = holidays.some(holiday => {
+                if (holiday.date === date) {
+                    // ถ้ามีการกำหนดเวลาเฉพาะ
+                    if (holiday.startTime && holiday.endTime) {
+                        // ตรวจสอบว่ามีช่วงเวลาที่ไม่ใช่ช่วงหยุด
+                        return false; // ยังสามารถจองได้ในช่วงเวลาอื่น
+                    }
+                    return true; // เป็นวันหยุดทั้งวัน
+                }
+                return false;
+            });
+            
+            if (isHoliday) {
                 timeSlotsContainer.innerHTML = '<p style="color: red; text-align: center;">วันนี้ร้านปิด กรุณาเลือกวันอื่น</p>';
                 return;
             }
+            
+            // ตรวจสอบว่ามีวันหยุดบางช่วงเวลาหรือไม่
+            const partialHoliday = holidays.find(holiday => holiday.date === date && holiday.startTime && holiday.endTime);
             
             // สร้าง time slots จาก 8:00 ถึง 20:00
             for (let h = 8; h <= 20; h++) {
@@ -1427,14 +1474,34 @@
                 timeSlot.textContent = `${h}:00`;
                 timeSlot.dataset.time = `${h}:00`;
                 
-                // ตรวจสอบว่าช่วงเวลานี้ถูกจองแล้วหรือไม่
-                const isBooked = bookings.some(booking => 
-                    booking.date === date && booking.time === `${h}:00`
-                );
+                // ตรวจสอบว่าช่วงเวลานี้อยู่ในช่วงหยุดหรือไม่
+                let isBookedOrHoliday = false;
                 
-                if (isBooked) {
+                if (partialHoliday) {
+                    const slotTime = `${h}:00`;
+                    const startTime = partialHoliday.startTime;
+                    const endTime = partialHoliday.endTime;
+                    
+                    if (slotTime >= startTime && slotTime <= endTime) {
+                        isBookedOrHoliday = true;
+                        timeSlot.innerHTML = `${h}:00<br><small>ร้านปิด</small>`;
+                    }
+                }
+                
+                // ตรวจสอบว่าช่วงเวลานี้ถูกจองแล้วหรือไม่
+                if (!isBookedOrHoliday) {
+                    const isBooked = bookings.some(booking => 
+                        booking.date === date && booking.time === `${h}:00`
+                    );
+                    
+                    if (isBooked) {
+                        isBookedOrHoliday = true;
+                        timeSlot.innerHTML = `${h}:00<br><small>จองแล้ว</small>`;
+                    }
+                }
+                
+                if (isBookedOrHoliday) {
                     timeSlot.classList.add('booked');
-                    timeSlot.innerHTML = `${h}:00<br><small>จองแล้ว</small>`;
                 } else {
                     timeSlot.addEventListener('click', function() {
                         // ลบการเลือกเดิม
@@ -1542,7 +1609,7 @@
                 .then(snapshot => {
                     holidays = [];
                     snapshot.forEach(doc => {
-                        holidays.push(doc.data().date);
+                        holidays.push({ id: doc.id, ...doc.data() });
                     });
                     renderHolidays();
                 })
@@ -1746,10 +1813,12 @@
             if (page === "booking") {
                 resetBookingForm();
                 renderServicesForBooking();
+                updateHolidayMessage(); // อัปเดตข้อความวันหยุดในหน้าจอง
             }
             if (page === "home") {
                 renderHolidays();
                 renderServices();
+                updateHolidayMessage(); // อัปเดตข้อความวันหยุดในหน้าหลัก
             }
             if (page === "promo") renderPromotions();
             if (page === "reviews") renderReviews();
@@ -1846,7 +1915,8 @@
                 time: booking.time,
                 services: booking.services,
                 timestamp: new Date().toISOString(),
-                status: "confirmed"
+                status: "confirmed",
+                reminderSent: false // เพิ่มฟิลด์สำหรับติดตามการส่งการแจ้งเตือนล่วงหน้า
             };
             
             try {
@@ -1983,7 +2053,7 @@
         }
 
         // ฟังก์ชันส่งการแจ้งเตือนผ่าน Email
-        async function sendEmailNotification(type = "booking") {
+        async function sendEmailNotification(type = "booking", bookingData = null) {
             // ตรวจสอบการตั้งค่า
             if (!emailConfig.publicKey || emailConfig.publicKey === 'your_public_key_here' ||
                 !emailConfig.serviceID || emailConfig.serviceID === 'your_service_id_here' ||
@@ -1997,15 +2067,19 @@
                 // เริ่มต้น EmailJS
                 emailjs.init(emailConfig.publicKey);
 
+                // ใช้ข้อมูลการจองที่ส่งมา หรือใช้ข้อมูลการจองปัจจุบัน
+                const bookingToUse = bookingData || booking;
+                
                 // สร้างพารามิเตอร์
                 const templateParams = {
                     to_email: emailConfig.adminEmail,
-                    name: booking.name || "ลูกค้า",
-                    phone: booking.phone || "ไม่ระบุ",
-                    date: booking.date ? formatDateThai(booking.date) : new Date().toLocaleDateString('th-TH'),
-                    time: booking.time || "ไม่ระบุ",
-                    services: booking.services ? booking.services.map(s => `<li>${s}</li>`).join("") : "<li>บริการทดสอบ</li>",
-                    created_at: new Date().toLocaleString('th-TH')
+                    name: bookingToUse.name || "ลูกค้า",
+                    phone: bookingToUse.phone || "ไม่ระบุ",
+                    date: bookingToUse.date ? formatDateThai(bookingToUse.date) : new Date().toLocaleDateString('th-TH'),
+                    time: bookingToUse.time || "ไม่ระบุ",
+                    services: bookingToUse.services ? bookingToUse.services.map(s => `<li>${s}</li>`).join("") : "<li>บริการทดสอบ</li>",
+                    created_at: new Date().toLocaleString('th-TH'),
+                    type: type // เพิ่มประเภทการแจ้งเตือน
                 };
 
                 console.log("📧 ส่งอีเมลประเภท:", type);
@@ -2205,24 +2279,38 @@
             }
 
             const date = document.getElementById("newHoliday").value;
+            const startTime = document.getElementById("newHolidayStartTime").value;
+            const endTime = document.getElementById("newHolidayEndTime").value;
             
             if (!date) {
                 showNotification('กรุณาเลือกวันที่', 'error');
                 return;
             }
 
-            if (holidays.includes(date)) {
+            // ตรวจสอบว่ามีวันหยุดนี้อยู่แล้วหรือไม่
+            const existingHoliday = holidays.find(h => h.date === date);
+            if (existingHoliday) {
                 showNotification('วันหยุดนี้มีอยู่แล้ว', 'error');
                 return;
             }
             
+            // สร้างข้อมูลวันหยุด
+            const holidayData = { date };
+            if (startTime) holidayData.startTime = startTime;
+            if (endTime) holidayData.endTime = endTime;
+            
             try {
                 // บันทึกลง Firebase หรือ localStorage
-                await saveToFirebase('holidays', { date });
-                holidays.push(date);
+                await saveToFirebase('holidays', holidayData);
+                holidays.push(holidayData);
                 renderHolidays();
                 document.getElementById("newHoliday").value = "";
+                document.getElementById("newHolidayStartTime").value = "";
+                document.getElementById("newHolidayEndTime").value = "";
                 showNotification('เพิ่มวันหยุดเรียบร้อยแล้ว', 'success');
+                
+                // อัปเดตข้อความวันหยุด
+                updateHolidayMessage();
             } catch (error) {
                 console.error("❌ เกิดข้อผิดพลาดในการเพิ่มวันหยุด:", error);
                 showNotification('เกิดข้อผิดพลาดในการเพิ่มวันหยุด', 'error');
@@ -2239,19 +2327,25 @@
                 return;
             }
 
-            holidays.forEach((date, index) => {
+            holidays.forEach((holiday, index) => {
                 const holidayItem = document.createElement("li");
                 holidayItem.className = "holiday-item";
+                
+                let holidayText = new Date(holiday.date).toLocaleDateString('th-TH');
+                if (holiday.startTime && holiday.endTime) {
+                    holidayText += ` (${holiday.startTime} - ${holiday.endTime})`;
+                }
+                
                 holidayItem.innerHTML = `
-                    <div>${new Date(date).toLocaleDateString('th-TH')}</div>
-                    ${isLoggedIn ? `<button class="delete-btn" onclick="deleteHoliday('${date}')">ลบ</button>` : ''}
+                    <div>${holidayText}</div>
+                    ${isLoggedIn ? `<button class="delete-btn" onclick="deleteHoliday('${holiday.id || holiday.date}')">ลบ</button>` : ''}
                 `;
                 container.appendChild(holidayItem);
             });
         }
 
         // ฟังก์ชันลบวันหยุด
-        async function deleteHoliday(date) {
+        async function deleteHoliday(idOrDate) {
             if (!isLoggedIn) {
                 showNotification('กรุณาล็อกอินก่อนลบข้อมูล', 'error');
                 return;
@@ -2261,31 +2355,93 @@
                 try {
                     // ลบจาก Firebase (ต้องค้นหา document ที่มี field date เท่ากับวันที่ต้องการลบ)
                     if (firebaseInitialized) {
-                        const snapshot = await db.collection('holidays')
-                            .where('date', '==', date)
-                            .get();
-                        
-                        snapshot.forEach(doc => {
-                            doc.ref.delete();
-                        });
+                        // ถ้า idOrDate เป็น id ของ document
+                        if (idOrDate.length > 10) {
+                            await db.collection('holidays').doc(idOrDate).delete();
+                        } else {
+                            // ถ้า idOrDate เป็นวันที่
+                            const snapshot = await db.collection('holidays')
+                                .where('date', '==', idOrDate)
+                                .get();
+                            
+                            snapshot.forEach(doc => {
+                                doc.ref.delete();
+                            });
+                        }
                     } else {
                         // ลบจาก localStorage
-                        await deleteFromLocalStorage('holidays', holidays.indexOf(date));
+                        const index = holidays.findIndex(h => h.id === idOrDate || h.date === idOrDate);
+                        if (index !== -1) {
+                            await deleteFromLocalStorage('holidays', index);
+                        }
                     }
                     
                     // อัปเดตรายการวันหยุดในหน่วยความจำ
-                    const index = holidays.indexOf(date);
+                    const index = holidays.findIndex(h => h.id === idOrDate || h.date === idOrDate);
                     if (index !== -1) {
                         holidays.splice(index, 1);
                     }
                     
                     renderHolidays();
+                    updateHolidayMessage(); // อัปเดตข้อความวันหยุด
                     showNotification('ลบวันหยุดเรียบร้อยแล้ว', 'success');
                 } catch (error) {
                     console.error("❌ เกิดข้อผิดพลาดในการลบวันหยุด:", error);
                     showNotification('เกิดข้อผิดพลาดในการลบวันหยุด', 'error');
                 }
             }
+        }
+
+        // ฟังก์ชันอัปเดตข้อความวันหยุด
+        function updateHolidayMessage() {
+            const homeContainer = document.getElementById("holidayMessageContainer");
+            const bookingContainer = document.getElementById("bookingHolidayMessageContainer");
+            
+            // ล้างข้อความเก่า
+            homeContainer.innerHTML = "";
+            bookingContainer.innerHTML = "";
+            
+            // ถ้าไม่มีวันหยุด ไม่ต้องแสดงข้อความ
+            if (holidays.length === 0) return;
+            
+            // สร้างข้อความวันหยุด
+            let holidayMessage = "<div class='holiday-message'>";
+            holidayMessage += "<h3>📅 วันหยุดของร้าน</h3>";
+            holidayMessage += "<p>ร้านจะปิดทำการในวันที่:</p>";
+            holidayMessage += "<ul style='text-align: left; margin: 10px 0;'>";
+            
+            holidays.forEach(holiday => {
+                let holidayText = new Date(holiday.date).toLocaleDateString('th-TH');
+                if (holiday.startTime && holiday.endTime) {
+                    holidayText += ` (${holiday.startTime} - ${holiday.endTime})`;
+                }
+                holidayMessage += `<li>${holidayText}</li>`;
+            });
+            
+            holidayMessage += "</ul>";
+            holidayMessage += "<p>กรุณาเลือกวันอื่นในการจองคิว</p>";
+            holidayMessage += "</div>";
+            
+            // แสดงข้อความในหน้าหลักและหน้าจอง
+            homeContainer.innerHTML = holidayMessage;
+            bookingContainer.innerHTML = holidayMessage;
+        }
+
+        // ฟังก์ชันเริ่มต้นการแสดงข้อความวันหยุดแบบวนซ้ำ
+        function startHolidayMessageCycle() {
+            setInterval(() => {
+                // สลับการแสดงข้อความวันหยุด
+                const homeMessage = document.getElementById("holidayMessageContainer");
+                const bookingMessage = document.getElementById("bookingHolidayMessageContainer");
+                
+                if (homeMessage.innerHTML && holidays.length > 0) {
+                    homeMessage.style.display = homeMessage.style.display === 'none' ? 'block' : 'none';
+                }
+                
+                if (bookingMessage.innerHTML && holidays.length > 0) {
+                    bookingMessage.style.display = bookingMessage.style.display === 'none' ? 'block' : 'none';
+                }
+            }, 30000); // 30 วินาที
         }
 
         // ฟังก์ชันเพิ่มโปรโมชัน
@@ -2601,10 +2757,12 @@
             if (page === "booking") {
                 resetBookingForm();
                 renderServicesForBooking();
+                updateHolidayMessage(); // อัปเดตข้อความวันหยุดในหน้าจอง
             }
             if (page === "home") {
                 renderHolidays();
                 renderServices();
+                updateHolidayMessage(); // อัปเดตข้อความวันหยุดในหน้าหลัก
             }
             if (page === "promo") renderPromotions();
             if (page === "reviews") renderReviews(); // ✅ แสดงรีวิวปกติ
@@ -2646,6 +2804,59 @@
         // ฟังก์ชันสร้าง particles (สำหรับลูกเล่นพื้นหลัง)
         function createParticles() {
             // ฟังก์ชันนี้สามารถเพิ่มลูกเล่นเพิ่มเติมได้
+        }
+
+        // ฟังก์ชันตรวจสอบการแจ้งเตือนล่วงหน้า
+        function startReminderCheck() {
+            setInterval(() => {
+                checkAndSendReminders();
+            }, 60000); // ตรวจสอบทุก 1 นาที
+        }
+
+        // ฟังก์ชันตรวจสอบและส่งการแจ้งเตือนล่วงหน้า
+        async function checkAndSendReminders() {
+            const now = new Date();
+            
+            for (const booking of bookings) {
+                // ตรวจสอบเฉพาะการจองที่ยังไม่ได้ส่งการแจ้งเตือน
+                if (!booking.reminderSent) {
+                    const bookingDate = new Date(booking.date);
+                    const bookingTime = booking.time.split(':');
+                    bookingDate.setHours(parseInt(bookingTime[0]), parseInt(bookingTime[1]), 0, 0);
+                    
+                    // คำนวณเวลาที่เหลือจนถึงการนัดหมาย
+                    const timeDiff = bookingDate.getTime() - now.getTime();
+                    const minutesDiff = Math.floor(timeDiff / (1000 * 60));
+                    
+                    // ถ้าเหลืออีก 30 นาที ให้ส่งการแจ้งเตือน
+                    if (minutesDiff <= 30 && minutesDiff > 0) {
+                        console.log(`ส่งการแจ้งเตือนล่วงหน้าให้ ${booking.name} สำหรับการนัดหมายในอีก ${minutesDiff} นาที`);
+                        
+                        // ส่งอีเมลแจ้งเตือน
+                        const success = await sendEmailNotification("reminder", booking);
+                        
+                        if (success) {
+                            // อัปเดตสถานะการส่งการแจ้งเตือน
+                            booking.reminderSent = true;
+                            
+                            // อัปเดตใน Firebase (ถ้าเชื่อมต่อ)
+                            if (firebaseInitialized && booking.id) {
+                                try {
+                                    await db.collection('bookings').doc(booking.id).update({
+                                        reminderSent: true
+                                    });
+                                } catch (error) {
+                                    console.error("❌ เกิดข้อผิดพลาดในการอัปเดตสถานะการแจ้งเตือน:", error);
+                                }
+                            }
+                            
+                            console.log(`✅ ส่งการแจ้งเตือนล่วงหน้าให้ ${booking.name} สำเร็จ`);
+                        } else {
+                            console.error(`❌ ไม่สามารถส่งการแจ้งเตือนล่วงหน้าให้ ${booking.name} ได้`);
+                        }
+                    }
+                }
+            }
         }
     </script>
 </body>
