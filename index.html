@@ -1179,6 +1179,10 @@
         <div id="promo" class="page">
             <div class="box">
                 <h2>โปรโมชั่น</h2>
+                
+                <!-- แสดงข้อความวันหยุด -->
+                <div id="promoHolidayMessageContainer"></div>
+                
                 <div id="promoContent"></div>
 
                 <div class="admin-only">
@@ -1195,6 +1199,10 @@
         <div id="reviews" class="page">
             <div class="box">
                 <h2>รีวิวจากลูกค้า</h2>
+                
+                <!-- แสดงข้อความวันหยุด -->
+                <div id="reviewsHolidayMessageContainer"></div>
+                
                 <div id="reviewsList"></div>
             </div>
         </div>
@@ -1314,7 +1322,7 @@
         let booking = {};
         let bookingLocked = false;
         let currentRating = 0;
-        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' || false;
+        let isLoggedIn = false; // เปลี่ยนเป็น false เพื่อให้รีเซ็ททุกครั้ง
 
         // ข้อมูลเริ่มต้น - จะถูกโหลดจาก Firebase แทน localStorage
         let holidays = [];
@@ -1395,10 +1403,9 @@
             document.getElementById('emailJSTemplateID').value = emailConfig.templateID;
             document.getElementById('adminEmail').value = emailConfig.adminEmail;
             
-            // ล็อกอินอัตโนมัติหากเคยล็อกอินไว้
-            if (isLoggedIn) {
-                document.body.classList.add('logged-in');
-            }
+            // ไม่ล็อกอินอัตโนมัติเพื่อความปลอดภัย
+            document.body.classList.remove('logged-in');
+            localStorage.setItem('isLoggedIn', 'false');
             
             // โหลดข้อมูลจาก Firebase ถ้าเชื่อมต่อแล้ว
             if (firebaseInitialized) {
@@ -1612,6 +1619,8 @@
                         holidays.push({ id: doc.id, ...doc.data() });
                     });
                     renderHolidays();
+                    // อัปเดตข้อความวันหยุดทันทีหลังจากโหลดข้อมูล
+                    updateHolidayMessage();
                 })
                 .catch(error => {
                     console.error("❌ เกิดข้อผิดพลาดในการโหลดวันหยุด:", error);
@@ -1669,6 +1678,9 @@
             promotions = JSON.parse(localStorage.getItem('promotions')) || [];
             reviews = JSON.parse(localStorage.getItem('reviews')) || [];
             bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            
+            // อัปเดตข้อความวันหยุดทันทีหลังจากโหลดข้อมูล
+            updateHolidayMessage();
         }
 
         // ฟังก์ชันบันทึกข้อมูลไปยัง Firebase
@@ -1820,9 +1832,18 @@
                 renderServices();
                 updateHolidayMessage(); // อัปเดตข้อความวันหยุดในหน้าหลัก
             }
-            if (page === "promo") renderPromotions();
-            if (page === "reviews") renderReviews();
-            if (page === "manage") renderBookings();
+            if (page === "promo") {
+                renderPromotions();
+                updateHolidayMessage(); // อัปเดตข้อความวันหยุดในหน้าโปรโมชัน
+            }
+            if (page === "reviews") {
+                renderReviews();
+                updateHolidayMessage(); // อัปเดตข้อความวันหยุดในหน้ารีวิว
+            }
+            if (page === "manage") {
+                renderBookings();
+                renderReviewsManagement(); // ✅ แสดงการจัดการรีวิว
+            }
             
             // ปิดเมนูมือถือเมื่อเปลี่ยนหน้า
             if (window.innerWidth <= 767) {
@@ -2396,10 +2417,14 @@
         function updateHolidayMessage() {
             const homeContainer = document.getElementById("holidayMessageContainer");
             const bookingContainer = document.getElementById("bookingHolidayMessageContainer");
+            const promoContainer = document.getElementById("promoHolidayMessageContainer");
+            const reviewsContainer = document.getElementById("reviewsHolidayMessageContainer");
             
             // ล้างข้อความเก่า
             homeContainer.innerHTML = "";
             bookingContainer.innerHTML = "";
+            promoContainer.innerHTML = "";
+            reviewsContainer.innerHTML = "";
             
             // ถ้าไม่มีวันหยุด ไม่ต้องแสดงข้อความ
             if (holidays.length === 0) return;
@@ -2422,17 +2447,24 @@
             holidayMessage += "<p>กรุณาเลือกวันอื่นในการจองคิว</p>";
             holidayMessage += "</div>";
             
-            // แสดงข้อความในหน้าหลักและหน้าจอง
+            // แสดงข้อความในทุกหน้า
             homeContainer.innerHTML = holidayMessage;
             bookingContainer.innerHTML = holidayMessage;
+            promoContainer.innerHTML = holidayMessage;
+            reviewsContainer.innerHTML = holidayMessage;
         }
 
         // ฟังก์ชันเริ่มต้นการแสดงข้อความวันหยุดแบบวนซ้ำ
         function startHolidayMessageCycle() {
+            // แสดงข้อความวันหยุดทันทีเมื่อโหลดหน้า
+            updateHolidayMessage();
+            
             setInterval(() => {
                 // สลับการแสดงข้อความวันหยุด
                 const homeMessage = document.getElementById("holidayMessageContainer");
                 const bookingMessage = document.getElementById("bookingHolidayMessageContainer");
+                const promoMessage = document.getElementById("promoHolidayMessageContainer");
+                const reviewsMessage = document.getElementById("reviewsHolidayMessageContainer");
                 
                 if (homeMessage.innerHTML && holidays.length > 0) {
                     homeMessage.style.display = homeMessage.style.display === 'none' ? 'block' : 'none';
@@ -2441,7 +2473,15 @@
                 if (bookingMessage.innerHTML && holidays.length > 0) {
                     bookingMessage.style.display = bookingMessage.style.display === 'none' ? 'block' : 'none';
                 }
-            }, 10000); // 30 วินาที
+                
+                if (promoMessage.innerHTML && holidays.length > 0) {
+                    promoMessage.style.display = promoMessage.style.display === 'none' ? 'block' : 'none';
+                }
+                
+                if (reviewsMessage.innerHTML && holidays.length > 0) {
+                    reviewsMessage.style.display = reviewsMessage.style.display === 'none' ? 'block' : 'none';
+                }
+            }, 15000); // 30 วินาที
         }
 
         // ฟังก์ชันเพิ่มโปรโมชัน
@@ -2743,7 +2783,8 @@
         function showPage(page) {
             document.querySelectorAll(".page").forEach(p => p.classList.remove("activePage"));
             document.getElementById(page).classList.add("activePage");
-            document.querySelectorAll("nav button, .mobile-nav button").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".mobile-nav button").forEach(b => b.classList.remove("active"));
 
             // ตั้งค่าปุ่มที่ active
             const navButtons = document.querySelectorAll("nav button, .mobile-nav button");
@@ -2764,13 +2805,20 @@
                 renderServices();
                 updateHolidayMessage(); // อัปเดตข้อความวันหยุดในหน้าหลัก
             }
-            if (page === "promo") renderPromotions();
-            if (page === "reviews") renderReviews(); // ✅ แสดงรีวิวปกติ
+            if (page === "promo") {
+                renderPromotions();
+                updateHolidayMessage(); // อัปเดตข้อความวันหยุดในหน้าโปรโมชัน
+            }
+            if (page === "reviews") {
+                renderReviews();
+                updateHolidayMessage(); // อัปเดตข้อความวันหยุดในหน้ารีวิว
+            }
             if (page === "manage") {
                 renderBookings();
                 renderReviewsManagement(); // ✅ แสดงการจัดการรีวิว
             }
             
+            // ปิดเมนูมือถือเมื่อเปลี่ยนหน้า
             if (window.innerWidth <= 767) {
                 toggleMobileMenu();
             }
