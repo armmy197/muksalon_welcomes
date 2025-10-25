@@ -18,8 +18,8 @@
         }
         
         body {
-            background-color: #f9f0ff;
-            color: #4a154b;
+            background-color: #f5f5f5;
+            color: #333;
             line-height: 1.6;
             padding: 0;
             margin: 0;
@@ -34,6 +34,51 @@
             padding: 0 15px;
         }
         
+        /* เอฟเฟกต์ไว้อาลัย */
+        .mourning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9998;
+            display: none;
+        }
+        
+        .mourning-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            z-index: 9999;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border: 2px solid white;
+            display: none;
+        }
+        
+        .close-mourning-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: auto;
+        }
+        
+        .close-mourning-btn:hover {
+            color: #ccc;
+        }
+        
         /* ปุ่มล็อกอินด่วน */
         .quick-login {
             position: fixed;
@@ -46,7 +91,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: #4a154b;
+            background: #333;
             color: white;
             border: none;
             font-size: 20px;
@@ -58,12 +103,12 @@
         
         .quick-login-btn:hover {
             transform: scale(1.1);
-            background: #6a1b6d;
+            background: #555;
         }
         
         /* Header */
         header {
-            background: linear-gradient(135deg, #d291bc 0%, #ffdfd3 100%);
+            background: linear-gradient(135deg, #888 0%, #ddd 100%);
             padding: 15px 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             position: relative;
@@ -77,7 +122,7 @@
         
         .cute-float {
             animation: float 3s ease-in-out infinite;
-            color: #4a154b;
+            color: #333;
             font-size: 1.8rem;
             text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7);
             margin-bottom: 10px;
@@ -94,7 +139,7 @@
         }
         
         .login-btn {
-            background: #06C755;
+            background: #555;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -109,13 +154,13 @@
         }
         
         .login-btn:hover {
-            background: #05a848;
+            background: #777;
             transform: translateY(-2px);
         }
         
         .line-icon {
             background: white;
-            color: #06C755;
+            color: #555;
             width: 20px;
             height: 20px;
             border-radius: 50%;
@@ -136,7 +181,7 @@
         }
         
         .logout-btn {
-            background: #ff4757;
+            background: #666;
             color: white;
             border: none;
             padding: 6px 12px;
@@ -165,14 +210,14 @@
             margin: 0 5px;
             cursor: pointer;
             font-size: 0.9rem;
-            color: #4a154b;
+            color: #333;
             border-radius: 20px;
             transition: all 0.3s;
             white-space: nowrap;
         }
         
         nav button:hover, nav button.active {
-            background: #4a154b;
+            background: #333;
             color: white;
         }
         
@@ -182,7 +227,7 @@
             background: none;
             border: none;
             font-size: 1.5rem;
-            color: #4a154b;
+            color: #333;
             cursor: pointer;
             position: absolute;
             top: 15px;
@@ -233,16 +278,16 @@
         }
         
         .box h2 {
-            color: #4a154b;
+            color: #333;
             margin-bottom: 15px;
             text-align: center;
-            border-bottom: 2px solid #ffdfd3;
+            border-bottom: 2px solid #ddd;
             padding-bottom: 10px;
             font-size: 1.5rem;
         }
         
         .box h3 {
-            color: #6a1b6d;
+            color: #555;
             margin: 10px 0;
             font-size: 1.2rem;
         }
@@ -257,7 +302,7 @@
         }
         
         button {
-            background: #d291bc;
+            background: #888;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -270,16 +315,16 @@
         }
         
         button:hover {
-            background: #b76e94;
+            background: #666;
             transform: translateY(-2px);
         }
         
         .delete-btn {
-            background: #ff4757;
+            background: #666;
         }
         
         .delete-btn:hover {
-            background: #ff2e43;
+            background: #444;
         }
         
         .service-item, .holiday-item {
@@ -293,13 +338,13 @@
         .message {
             text-align: center;
             font-size: 1.1rem;
-            color: #4a154b;
+            color: #333;
             padding: 15px;
         }
         
         /* Review Stars */
         .stars {
-            color: #ffc107;
+            color: #666;
             font-size: 1.5rem;
             margin: 10px 0;
             text-align: center;
@@ -313,7 +358,7 @@
         
         .stars span:hover, .stars span.active {
             transform: scale(1.2);
-            text-shadow: 0 0 5px rgba(255, 193, 7, 0.8);
+            text-shadow: 0 0 5px rgba(102, 102, 102, 0.8);
         }
         
         /* Review Modal */
@@ -340,6 +385,18 @@
             text-align: center;
             position: relative;
             z-index: 1001;
+        }
+        
+        .review-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+            width: auto;
         }
         
         /* Gmail Configuration */
@@ -407,7 +464,7 @@
             border-radius: 12px;
             margin: 12px 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-left: 4px solid #d291bc;
+            border-left: 4px solid #888;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -429,7 +486,7 @@
         }
 
         .booking-content strong {
-            color: #4a154b;
+            color: #333;
             display: inline-block;
             min-width: 70px;
         }
@@ -439,7 +496,7 @@
         }
 
         .services-list {
-            background: #f9f0ff;
+            background: #f5f5f5;
             padding: 8px 12px;
             border-radius: 6px;
             margin: 4px 0;
@@ -456,7 +513,7 @@
 
         .services-list li:before {
             content: "•";
-            color: #d291bc;
+            color: #888;
             position: absolute;
             left: 0;
             font-size: 16px;
@@ -474,7 +531,7 @@
         }
 
         .delete-btn {
-            background: linear-gradient(135deg, #ff4757, #ff2e43);
+            background: linear-gradient(135deg, #666, #444);
             color: white;
             border: none;
             padding: 8px 16px;
@@ -490,9 +547,9 @@
         }
 
         .delete-btn:hover {
-            background: linear-gradient(135deg, #ff2e43, #ff1e36);
+            background: linear-gradient(135deg, #444, #222);
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+            box-shadow: 0 4px 10px rgba(102, 102, 102, 0.3);
         }
 
         /* การแจ้งเตือน */
@@ -515,15 +572,15 @@
         }
 
         .notification.success {
-            background: linear-gradient(135deg, #06C755, #05a848);
+            background: linear-gradient(135deg, #555, #333);
         }
 
         .notification.error {
-            background: linear-gradient(135deg, #ff4757, #ff2e43);
+            background: linear-gradient(135deg, #666, #444);
         }
 
         .notification.warning {
-            background: linear-gradient(135deg, #ffa502, #ff7e00);
+            background: linear-gradient(135deg, #777, #555);
         }
 
         .notification button {
@@ -555,7 +612,7 @@
             position: fixed;
             width: 8px;
             height: 8px;
-            background: #f00;
+            background: #333;
             top: -10px;
             z-index: 9999;
             pointer-events: none;
@@ -568,6 +625,7 @@
             z-index: -1;
             opacity: 0.7;
             animation: floatAround 20s infinite linear;
+            color: #888;
         }
 
         @keyframes floatAround {
@@ -600,7 +658,7 @@
         }
 
         .rotating-bg {
-            background: linear-gradient(45deg, #ffdfd3, #d291bc, #f9f0ff, #ffdfd3);
+            background: linear-gradient(45deg, #ddd, #888, #f5f5f5, #ddd);
             background-size: 400% 400%;
             animation: gradientRotate 15s ease infinite;
         }
@@ -640,11 +698,11 @@
         }
         
         .progress-step.active {
-            background: #d291bc;
+            background: #888;
         }
         
         .progress-step.completed {
-            background: #4a154b;
+            background: #333;
         }
         
         .progress-bar::before {
@@ -701,8 +759,8 @@
         }
         
         .service-option:hover {
-            background: #f9f0ff;
-            border-color: #d291bc;
+            background: #f5f5f5;
+            border-color: #888;
         }
         
         .service-option input {
@@ -757,13 +815,13 @@
             background: none;
             border-bottom: 1px solid #f0f0f0;
             font-size: 1rem;
-            color: #4a154b;
+            color: #333;
             cursor: pointer;
             transition: all 0.3s;
         }
         
         .mobile-nav button:hover, .mobile-nav button.active {
-            background: #4a154b;
+            background: #333;
             color: white;
         }
         
@@ -774,7 +832,7 @@
             background: none;
             border: none;
             font-size: 1.5rem;
-            color: #4a154b;
+            color: #333;
             cursor: pointer;
         }
 
@@ -785,7 +843,7 @@
     border-radius: 12px;
     margin: 12px 0;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border-left: 4px solid #ffc107;
+    border-left: 4px solid #666;
     position: relative;
 }
 
@@ -798,7 +856,7 @@
 
 .reviewer-name {
     font-weight: bold;
-    color: #4a154b;
+    color: #333;
     font-size: 1.1rem;
 }
 
@@ -850,25 +908,25 @@
         }
 
         .time-slot:hover {
-            background: #f9f0ff;
-            border-color: #d291bc;
+            background: #f5f5f5;
+            border-color: #888;
         }
 
         .time-slot.selected {
-            background: #d291bc;
+            background: #888;
             color: white;
-            border-color: #d291bc;
+            border-color: #888;
         }
 
         .time-slot.booked {
-            background: #ff6b6b;
+            background: #666;
             color: white;
-            border-color: #ff6b6b;
+            border-color: #666;
             cursor: not-allowed;
         }
 
         .time-slot.booked:hover {
-            background: #ff6b6b;
+            background: #666;
         }
 
         /* Promo Items Styling */
@@ -878,7 +936,7 @@
             border-radius: 12px;
             margin: 12px 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-left: 4px solid #d291bc;
+            border-left: 4px solid #888;
             position: relative;
         }
 
@@ -892,19 +950,19 @@
 
         .promo-title {
             font-weight: bold;
-            color: #4a154b;
+            color: #333;
             font-size: 1.2rem;
             margin-bottom: 8px;
         }
 
         .promo-description {
-            color: #6a1b6d;
+            color: #555;
             line-height: 1.5;
         }
 
         /* Holiday Message */
         .holiday-message {
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            background: linear-gradient(135deg, #666, #888);
             color: white;
             padding: 15px;
             border-radius: 12px;
@@ -1056,9 +1114,24 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+        
     </style>
 </head>
 <body>
+    <!-- เอฟเฟกต์ไว้อาลัย -->
+    <div class="mourning-overlay" id="mourningOverlay"></div>
+    <div class="mourning-message" id="mourningMessage">
+        <button class="close-mourning-btn" onclick="closeMourningEffect()">×</button>
+        <i class="fas fa-ribbon" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+       <div class="mourning-text">
+    <p>น้อมส่งเสด็จสู่สวรรคาลัย</p>
+    <p>สมเด็จพระนางเจ้าสิริกิติ์ พระบรมราชินีนาถ</p>
+    <p>พระบรมราชชนนีพันปีหลวง</p>
+  </div>
+
+  <span id="mourningDaysLeft"></span>
+</div>
+    
     <!-- Background Effects -->
     <div class="bg-effect rotating-bg"></div>
     
@@ -1070,7 +1143,7 @@
     
     <!-- Security Badge -->
     <div class="security-badge">
-        <i class="fas fa-shield-alt" style="color: #4a154b;"></i>
+        <i class="fas fa-shield-alt" style="color: #333;"></i>
         <span>ระบบปลอดภัย | ข้อมูลถูกเก็บเป็นความลับ</span>
     </div>
     
@@ -1129,7 +1202,7 @@
                 </div>
 
                 <h3>วันหยุดของร้าน</h3>
-                <ul id="holidayList" style="color:red; text-align:left; list-style-type: none; padding: 0;"></ul>
+                <ul id="holidayList" style="color:#666; text-align:left; list-style-type: none; padding: 0;"></ul>
                 <div class="admin-only">
                     <input type="date" id="newHoliday">
                     <input type="time" id="newHolidayStartTime" placeholder="เวลาเริ่มต้น (ไม่บังคับ)">
@@ -1275,6 +1348,7 @@
     <!-- Modal สำหรับรีวิว -->
     <div class="review-modal" id="reviewModal">
         <div class="review-modal-content">
+            <button class="review-modal-close" onclick="closeReviewModal()">×</button>
             <h2>รีวิวการใช้บริการ</h2>
             <input type="text" id="reviewerName" placeholder="ชื่อของคุณ (ไม่จำเป็น)">
             <div class="stars" id="modalStars">
@@ -1287,6 +1361,7 @@
             <textarea id="reviewComment" placeholder="ความคิดเห็น (ไม่จำเป็น)" rows="3"></textarea>
             <div class="button-group">
                 <button onclick="submitReview()">ส่งรีวิว</button>
+                <button onclick="closeReviewModal()" style="background: #666;">ปิด</button>
             </div>
             <p id="thanksMsg"></p>
         </div>
@@ -1369,6 +1444,58 @@
             }
         }
 
+        // ฟังก์ชันจัดการเอฟเฟกต์ไว้อาลัย
+        function setupMourningEffect() {
+            // ตั้งค่าวันที่เริ่มต้นไว้อาลัย (วันที่สมเด็จพระราชินีสิ้นพระชนม์)
+            const mourningStartDate = new Date('2025-10-24'); // วันที่สมเด็จพระราชินีสิ้นพระชนม์
+            const today = new Date();
+            
+            // คำนวณจำนวนวันที่ผ่านมา
+            const timeDiff = today.getTime() - mourningStartDate.getTime();
+            const daysPassed = Math.floor(timeDiff / (1000 * 3600 * 24));
+            
+            // ถ้ายังไม่ครบ 90 วัน ให้แสดงเอฟเฟกต์ไว้อาลัย
+            if (daysPassed < 90) {
+                document.getElementById('mourningOverlay').style.display = 'block';
+                document.getElementById('mourningMessage').style.display = 'block';
+                
+                // แสดงจำนวนวันที่เหลือ
+                const daysLeft = 90 - daysPassed;
+                document.getElementById('mourningDaysLeft').innerHTML = `อีก ${daysLeft} วัน`;
+                
+                console.log(`แสดงเอฟเฟกต์ไว้อาลัย: ${daysPassed} วันผ่านไป, เหลืออีก ${daysLeft} วัน`);
+            } else {
+                // ถ้าครบ 90 วันแล้ว ให้ซ่อนเอฟเฟกต์
+                document.getElementById('mourningOverlay').style.display = 'none';
+                document.getElementById('mourningMessage').style.display = 'none';
+                console.log("ครบ 90 วันแล้ว ไม่แสดงเอฟเฟกต์ไว้อาลัย");
+            }
+        }
+
+        // ฟังก์ชันปิดเอฟเฟกต์ไว้อาลัย
+        function closeMourningEffect() {
+            document.getElementById('mourningOverlay').style.display = 'none';
+            document.getElementById('mourningMessage').style.display = 'none';
+            
+            // บันทึกสถานะการปิดใน localStorage เพื่อไม่ให้แสดงอีกในวันนี้
+            const today = new Date().toDateString();
+            localStorage.setItem('mourningClosed', today);
+        }
+
+        // ตรวจสอบว่าผู้ใช้เคยปิดเอฟเฟกต์ไว้อาลัยในวันนี้แล้วหรือไม่
+        function checkMourningClosedToday() {
+            const today = new Date().toDateString();
+            const mourningClosed = localStorage.getItem('mourningClosed');
+            
+            if (mourningClosed === today) {
+                // ถ้าปิดไปแล้วในวันนี้ ให้ไม่แสดงอีก
+                document.getElementById('mourningOverlay').style.display = 'none';
+                document.getElementById('mourningMessage').style.display = 'none';
+                return true;
+            }
+            return false;
+        }
+
         // โหลดการตั้งค่าจาก localStorage ถ้ามี
         try {
             const savedConfig = localStorage.getItem('emailConfig');
@@ -1406,6 +1533,11 @@
             // ไม่ล็อกอินอัตโนมัติเพื่อความปลอดภัย
             document.body.classList.remove('logged-in');
             localStorage.setItem('isLoggedIn', 'false');
+            
+            // ตั้งค่าเอฟเฟกต์ไว้อาลัย - ตรวจสอบก่อนว่าผู้ใช้เคยปิดไปแล้วในวันนี้หรือไม่
+            if (!checkMourningClosedToday()) {
+                setupMourningEffect();
+            }
             
             // โหลดข้อมูลจาก Firebase ถ้าเชื่อมต่อแล้ว
             if (firebaseInitialized) {
@@ -1467,7 +1599,7 @@
             });
             
             if (isHoliday) {
-                timeSlotsContainer.innerHTML = '<p style="color: red; text-align: center;">วันนี้ร้านปิด กรุณาเลือกวันอื่น</p>';
+                timeSlotsContainer.innerHTML = '<p style="color: #666; text-align: center;">วันนี้ร้านปิด กรุณาเลือกวันอื่น</p>';
                 return;
             }
             
@@ -1736,14 +1868,14 @@
                 icon.style.top = Math.random() * 100 + 'vh';
                 icon.style.animationDelay = Math.random() * 20 + 's';
                 icon.style.fontSize = (Math.random() * 20 + 16) + 'px';
-                icon.style.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                icon.style.color = `hsl(0, 0%, ${Math.random() * 30 + 40}%)`;
                 container.appendChild(icon);
             }
         }
 
         // ฟังก์ชันสร้าง confetti
         function createConfetti() {
-            const colors = ['#d291bc', '#4a154b', '#ffdfd3', '#06C755', '#ffc107'];
+            const colors = ['#888', '#333', '#ddd', '#555', '#666'];
             const container = document.getElementById('confettiContainer');
             
             for (let i = 0; i < 150; i++) {
@@ -1949,8 +2081,8 @@
                 
                 showNotification('✅ การจองสำเร็จ!', 'success');
                 
-                // ส่งอีเมลแจ้งเตือน
-                sendEmailNotification("booking")
+                // ส่งอีเมลแจ้งเตือนทันทีเมื่อจองสำเร็จ
+                sendEmailNotification("booking", newBooking)
                     .then(success => {
                         if (success) {
                             console.log("✅ ส่ง Email การจองสำเร็จ");
@@ -2050,9 +2182,9 @@
         async function sendTestEmail() {
             const testHtml = `
                 <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
-                    <h2 style="color: #4a154b;">🔔 ทดสอบการแจ้งเตือนจากร้านเสริมสวยมุกซาลอน</h2>
+                    <h2 style="color: #333;">🔔 ทดสอบการแจ้งเตือนจากร้านเสริมสวยมุกซาลอน</h2>
                     <p>นี่คืออีเมลทดสอบเพื่อตรวจสอบว่าการตั้งค่า EmailJS ทำงานปกติ</p>
-                    <div style="background: #f9f0ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
                         <p><strong>📅 วันที่ทดสอบ:</strong> ${new Date().toLocaleString('th-TH')}</p>
                         <p><strong>✅ สถานะ:</strong> ระบบแจ้งเตือนทำงานปกติแล้ว</p>
                     </div>
@@ -2481,7 +2613,7 @@
                 if (reviewsMessage.innerHTML && holidays.length > 0) {
                     reviewsMessage.style.display = reviewsMessage.style.display === 'none' ? 'block' : 'none';
                 }
-            }, 15000); // 30 วินาที
+            }, 15000); // 15 วินาที
         }
 
         // ฟังก์ชันเพิ่มโปรโมชัน
@@ -2724,6 +2856,12 @@
             stars.forEach(star => {
                 star.classList.remove("active");
             });
+        }
+
+        // ฟังก์ชันปิด modal รีวิว
+        function closeReviewModal() {
+            document.getElementById("reviewModal").style.display = "none";
+            showPage("booking");
         }
 
         // ฟังก์ชันตั้งค่าคะแนนใน modal
