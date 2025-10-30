@@ -79,15 +79,88 @@
             color: #ccc;
         }
         
-        /* ปุ่มล็อกอินด่วน */
-        .quick-login {
+        /* เอฟเฟกต์โพสต์ประกาศโปรโมชัน */
+        .promo-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9998;
+            display: none;
+        }
+        
+        .promo-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1rem;
+            z-index: 9999;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            border: 2px solid #888;
+            display: none;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close-promo-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: auto;
+        }
+        
+        .close-promo-btn:hover {
+            color: #888;
+        }
+        
+        .promo-post-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .promo-post-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .promo-post-description {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        /* ปุ่มล็อกอินด่วนและช่องทางติดต่อ */
+        .quick-actions {
             position: fixed;
             bottom: 20px;
             right: 20px;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         
-        .quick-login-btn {
+        .quick-login-btn, .quick-contact-btn {
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -99,11 +172,108 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             transition: all 0.3s;
             z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .quick-login-btn:hover {
+        .quick-login-btn:hover, .quick-contact-btn:hover {
             transform: scale(1.1);
             background: #555;
+        }
+        
+        .contact-label {
+            position: absolute;
+            top: -30px;
+            right: 0;
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .quick-contact-btn:hover .contact-label {
+            opacity: 1;
+        }
+        
+        /* ช่องทางติดต่อ */
+        .contact-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9998;
+            display: none;
+        }
+        
+        .contact-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1rem;
+            z-index: 9999;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            border: 2px solid #888;
+            display: none;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .close-contact-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: auto;
+        }
+        
+        .close-contact-btn:hover {
+            color: #888;
+        }
+        
+        .contact-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .contact-btn {
+            background: #888;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .contact-btn:hover {
+            background: #666;
+            transform: translateY(-2px);
         }
         
         /* Header */
@@ -1131,6 +1301,28 @@
 
   <span id="mourningDaysLeft"></span>
 </div>
+
+    <!-- เอฟเฟกต์โพสต์ประกาศโปรโมชัน -->
+    <div class="promo-overlay" id="promoOverlay"></div>
+    <div class="promo-message" id="promoMessage">
+        <button class="close-promo-btn" onclick="closePromoEffect()">×</button>
+        <div id="promoPostContent"></div>
+    </div>
+
+    <!-- ช่องทางติดต่อ -->
+    <div class="contact-overlay" id="contactOverlay"></div>
+    <div class="contact-message" id="contactMessage">
+        <button class="close-contact-btn" onclick="closeContactEffect()">×</button>
+        <h3>ช่องทางติดต่อเพิ่มเติม</h3>
+        <div class="contact-buttons">
+            <a href="https://www.facebook.com/share/1BY8wEVxbg/?mibextid=wwXIfr" target="_blank" class="contact-btn">
+                <i class="fab fa-facebook"></i> เพจเฟสบุ๊ค
+            </a>
+            <a href="https://www.facebook.com/share/1BTWe7rma7/?mibextid=wwXIfr" target="_blank" class="contact-btn">
+                <i class="fab fa-facebook"></i> โปรไฟล์เฟสบุ๊ค
+            </a>
+        </div>
+    </div>
     
     <!-- Background Effects -->
     <div class="bg-effect rotating-bg"></div>
@@ -1147,8 +1339,12 @@
         <span>ระบบปลอดภัย | ข้อมูลถูกเก็บเป็นความลับ</span>
     </div>
     
-    <!-- ปุ่มล็อกอินด่วน -->
-    <div class="quick-login">
+    <!-- ปุ่มล็อกอินด่วนและช่องทางติดต่อ -->
+    <div class="quick-actions">
+        <button class="quick-contact-btn" onclick="showContactEffect()">
+            <i class="fas fa-phone-alt"></i>
+            <span class="contact-label">ช่องทางติดต่อเพิ่มเติม</span>
+        </button>
         <button class="quick-login-btn" onclick="quickLogin()">🔑</button>
     </div>
 
@@ -1480,6 +1676,56 @@
             // บันทึกสถานะการปิดใน localStorage เพื่อไม่ให้แสดงอีกในวันนี้
             const today = new Date().toDateString();
             localStorage.setItem('mourningClosed', today);
+            
+            // หลังจากปิดเอฟเฟกต์ไว้อาลัย ให้แสดงโพสต์โปรโมชัน
+            setTimeout(showPromoEffect, 500);
+        }
+
+        // ฟังก์ชันแสดงเอฟเฟกต์โพสต์โปรโมชัน
+        function showPromoEffect() {
+            // ตรวจสอบว่ามีโปรโมชันหรือไม่
+            if (promotions.length === 0) {
+                console.log("ไม่มีโปรโมชันที่จะแสดง");
+                return;
+            }
+            
+            // เลือกโปรโมชันล่าสุด
+            const latestPromo = promotions[promotions.length - 1];
+            
+            // สร้างเนื้อหาโพสต์โปรโมชัน
+            let promoContent = '';
+            
+            if (latestPromo.imageUrl) {
+                promoContent += `<img src="${latestPromo.imageUrl}" alt="${latestPromo.title}" class="promo-post-image">`;
+            }
+            
+            promoContent += `
+                <div class="promo-post-title">${latestPromo.title}</div>
+                <div class="promo-post-description">${latestPromo.description}</div>
+            `;
+            
+            // แสดงเอฟเฟกต์
+            document.getElementById('promoPostContent').innerHTML = promoContent;
+            document.getElementById('promoOverlay').style.display = 'block';
+            document.getElementById('promoMessage').style.display = 'block';
+        }
+
+        // ฟังก์ชันปิดเอฟเฟกต์โพสต์โปรโมชัน
+        function closePromoEffect() {
+            document.getElementById('promoOverlay').style.display = 'none';
+            document.getElementById('promoMessage').style.display = 'none';
+        }
+
+        // ฟังก์ชันแสดงช่องทางติดต่อ
+        function showContactEffect() {
+            document.getElementById('contactOverlay').style.display = 'block';
+            document.getElementById('contactMessage').style.display = 'block';
+        }
+
+        // ฟังก์ชันปิดช่องทางติดต่อ
+        function closeContactEffect() {
+            document.getElementById('contactOverlay').style.display = 'none';
+            document.getElementById('contactMessage').style.display = 'none';
         }
 
         // ตรวจสอบว่าผู้ใช้เคยปิดเอฟเฟกต์ไว้อาลัยในวันนี้แล้วหรือไม่
@@ -1491,6 +1737,13 @@
                 // ถ้าปิดไปแล้วในวันนี้ ให้ไม่แสดงอีก
                 document.getElementById('mourningOverlay').style.display = 'none';
                 document.getElementById('mourningMessage').style.display = 'none';
+                
+                // ตรวจสอบว่ามีโปรโมชันและยังไม่ได้แสดงในวันนี้
+                const promoClosed = localStorage.getItem('promoClosed');
+                if (promoClosed !== today && promotions.length > 0) {
+                    setTimeout(showPromoEffect, 1000);
+                }
+                
                 return true;
             }
             return false;
