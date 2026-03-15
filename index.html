@@ -18,8 +18,8 @@
         }
         
         body {
-            background-color: #f9f0ff;
-            color: #4a154b;
+            background-color: #f5f5f5;
+            color: #333;
             line-height: 1.6;
             padding: 0;
             margin: 0;
@@ -34,19 +34,137 @@
             padding: 0 15px;
         }
         
-        /* ปุ่มล็อกอินด่วน */
-        .quick-login {
+        /* เอฟเฟกต์ไว้อาลัย */
+        .mourning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9998;
+            display: none;
+        }
+        
+        .mourning-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            z-index: 9999;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border: 2px solid white;
+            display: none;
+        }
+        
+        .close-mourning-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: auto;
+        }
+        
+        .close-mourning-btn:hover {
+            color: #ccc;
+        }
+        
+        /* เอฟเฟกต์โพสต์ประกาศโปรโมชัน */
+        .promo-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9998;
+            display: none;
+        }
+        
+        .promo-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1rem;
+            z-index: 9999;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            border: 2px solid #888;
+            display: none;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close-promo-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: auto;
+        }
+        
+        .close-promo-btn:hover {
+            color: #888;
+        }
+        
+        .promo-post-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .promo-post-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .promo-post-description {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        /* ปุ่มล็อกอินด่วนและช่องทางติดต่อ */
+        .quick-actions {
             position: fixed;
             bottom: 20px;
             right: 20px;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         
-        .quick-login-btn {
+        .quick-login-btn, .quick-contact-btn {
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: #4a154b;
+            background: #333;
             color: white;
             border: none;
             font-size: 20px;
@@ -54,16 +172,113 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             transition: all 0.3s;
             z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .quick-login-btn:hover {
+        .quick-login-btn:hover, .quick-contact-btn:hover {
             transform: scale(1.1);
-            background: #6a1b6d;
+            background: #555;
+        }
+        
+        .contact-label {
+            position: absolute;
+            top: -30px;
+            right: 0;
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .quick-contact-btn:hover .contact-label {
+            opacity: 1;
+        }
+        
+        /* ช่องทางติดต่อ */
+        .contact-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9998;
+            display: none;
+        }
+        
+        .contact-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1rem;
+            z-index: 9999;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            border: 2px solid #888;
+            display: none;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .close-contact-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: auto;
+        }
+        
+        .close-contact-btn:hover {
+            color: #888;
+        }
+        
+        .contact-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .contact-btn {
+            background: #888;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .contact-btn:hover {
+            background: #666;
+            transform: translateY(-2px);
         }
         
         /* Header */
         header {
-            background: linear-gradient(135deg, #d291bc 0%, #ffdfd3 100%);
+            background: linear-gradient(135deg, #888 0%, #ddd 100%);
             padding: 15px 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             position: relative;
@@ -77,7 +292,7 @@
         
         .cute-float {
             animation: float 3s ease-in-out infinite;
-            color: #4a154b;
+            color: #333;
             font-size: 1.8rem;
             text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7);
             margin-bottom: 10px;
@@ -94,7 +309,7 @@
         }
         
         .login-btn {
-            background: #06C755;
+            background: #555;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -109,13 +324,13 @@
         }
         
         .login-btn:hover {
-            background: #05a848;
+            background: #777;
             transform: translateY(-2px);
         }
         
         .line-icon {
             background: white;
-            color: #06C755;
+            color: #555;
             width: 20px;
             height: 20px;
             border-radius: 50%;
@@ -136,7 +351,7 @@
         }
         
         .logout-btn {
-            background: #ff4757;
+            background: #666;
             color: white;
             border: none;
             padding: 6px 12px;
@@ -165,14 +380,14 @@
             margin: 0 5px;
             cursor: pointer;
             font-size: 0.9rem;
-            color: #4a154b;
+            color: #333;
             border-radius: 20px;
             transition: all 0.3s;
             white-space: nowrap;
         }
         
         nav button:hover, nav button.active {
-            background: #4a154b;
+            background: #333;
             color: white;
         }
         
@@ -182,7 +397,7 @@
             background: none;
             border: none;
             font-size: 1.5rem;
-            color: #4a154b;
+            color: #333;
             cursor: pointer;
             position: absolute;
             top: 15px;
@@ -233,16 +448,16 @@
         }
         
         .box h2 {
-            color: #4a154b;
+            color: #333;
             margin-bottom: 15px;
             text-align: center;
-            border-bottom: 2px solid #ffdfd3;
+            border-bottom: 2px solid #ddd;
             padding-bottom: 10px;
             font-size: 1.5rem;
         }
         
         .box h3 {
-            color: #6a1b6d;
+            color: #555;
             margin: 10px 0;
             font-size: 1.2rem;
         }
@@ -257,7 +472,7 @@
         }
         
         button {
-            background: #d291bc;
+            background: #888;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -270,16 +485,16 @@
         }
         
         button:hover {
-            background: #b76e94;
+            background: #666;
             transform: translateY(-2px);
         }
         
         .delete-btn {
-            background: #ff4757;
+            background: #666;
         }
         
         .delete-btn:hover {
-            background: #ff2e43;
+            background: #444;
         }
         
         .service-item, .holiday-item {
@@ -293,13 +508,13 @@
         .message {
             text-align: center;
             font-size: 1.1rem;
-            color: #4a154b;
+            color: #333;
             padding: 15px;
         }
         
         /* Review Stars */
         .stars {
-            color: #ffc107;
+            color: #666;
             font-size: 1.5rem;
             margin: 10px 0;
             text-align: center;
@@ -313,7 +528,7 @@
         
         .stars span:hover, .stars span.active {
             transform: scale(1.2);
-            text-shadow: 0 0 5px rgba(255, 193, 7, 0.8);
+            text-shadow: 0 0 5px rgba(102, 102, 102, 0.8);
         }
         
         /* Review Modal */
@@ -340,6 +555,18 @@
             text-align: center;
             position: relative;
             z-index: 1001;
+        }
+        
+        .review-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+            width: auto;
         }
         
         /* Gmail Configuration */
@@ -407,7 +634,7 @@
             border-radius: 12px;
             margin: 12px 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-left: 4px solid #d291bc;
+            border-left: 4px solid #888;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -429,7 +656,7 @@
         }
 
         .booking-content strong {
-            color: #4a154b;
+            color: #333;
             display: inline-block;
             min-width: 70px;
         }
@@ -439,7 +666,7 @@
         }
 
         .services-list {
-            background: #f9f0ff;
+            background: #f5f5f5;
             padding: 8px 12px;
             border-radius: 6px;
             margin: 4px 0;
@@ -456,7 +683,7 @@
 
         .services-list li:before {
             content: "•";
-            color: #d291bc;
+            color: #888;
             position: absolute;
             left: 0;
             font-size: 16px;
@@ -474,7 +701,7 @@
         }
 
         .delete-btn {
-            background: linear-gradient(135deg, #ff4757, #ff2e43);
+            background: linear-gradient(135deg, #666, #444);
             color: white;
             border: none;
             padding: 8px 16px;
@@ -490,9 +717,9 @@
         }
 
         .delete-btn:hover {
-            background: linear-gradient(135deg, #ff2e43, #ff1e36);
+            background: linear-gradient(135deg, #444, #222);
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+            box-shadow: 0 4px 10px rgba(102, 102, 102, 0.3);
         }
 
         /* การแจ้งเตือน */
@@ -515,15 +742,15 @@
         }
 
         .notification.success {
-            background: linear-gradient(135deg, #06C755, #05a848);
+            background: linear-gradient(135deg, #555, #333);
         }
 
         .notification.error {
-            background: linear-gradient(135deg, #ff4757, #ff2e43);
+            background: linear-gradient(135deg, #666, #444);
         }
 
         .notification.warning {
-            background: linear-gradient(135deg, #ffa502, #ff7e00);
+            background: linear-gradient(135deg, #777, #555);
         }
 
         .notification button {
@@ -555,7 +782,7 @@
             position: fixed;
             width: 8px;
             height: 8px;
-            background: #f00;
+            background: #333;
             top: -10px;
             z-index: 9999;
             pointer-events: none;
@@ -568,6 +795,7 @@
             z-index: -1;
             opacity: 0.7;
             animation: floatAround 20s infinite linear;
+            color: #888;
         }
 
         @keyframes floatAround {
@@ -600,7 +828,7 @@
         }
 
         .rotating-bg {
-            background: linear-gradient(45deg, #ffdfd3, #d291bc, #f9f0ff, #ffdfd3);
+            background: linear-gradient(45deg, #ddd, #888, #f5f5f5, #ddd);
             background-size: 400% 400%;
             animation: gradientRotate 15s ease infinite;
         }
@@ -640,11 +868,11 @@
         }
         
         .progress-step.active {
-            background: #d291bc;
+            background: #888;
         }
         
         .progress-step.completed {
-            background: #4a154b;
+            background: #333;
         }
         
         .progress-bar::before {
@@ -701,8 +929,8 @@
         }
         
         .service-option:hover {
-            background: #f9f0ff;
-            border-color: #d291bc;
+            background: #f5f5f5;
+            border-color: #888;
         }
         
         .service-option input {
@@ -757,13 +985,13 @@
             background: none;
             border-bottom: 1px solid #f0f0f0;
             font-size: 1rem;
-            color: #4a154b;
+            color: #333;
             cursor: pointer;
             transition: all 0.3s;
         }
         
         .mobile-nav button:hover, .mobile-nav button.active {
-            background: #4a154b;
+            background: #333;
             color: white;
         }
         
@@ -774,7 +1002,7 @@
             background: none;
             border: none;
             font-size: 1.5rem;
-            color: #4a154b;
+            color: #333;
             cursor: pointer;
         }
 
@@ -785,7 +1013,7 @@
     border-radius: 12px;
     margin: 12px 0;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border-left: 4px solid #ffc107;
+    border-left: 4px solid #666;
     position: relative;
 }
 
@@ -798,7 +1026,7 @@
 
 .reviewer-name {
     font-weight: bold;
-    color: #4a154b;
+    color: #333;
     font-size: 1.1rem;
 }
 
@@ -850,25 +1078,25 @@
         }
 
         .time-slot:hover {
-            background: #f9f0ff;
-            border-color: #d291bc;
+            background: #f5f5f5;
+            border-color: #888;
         }
 
         .time-slot.selected {
-            background: #d291bc;
+            background: #888;
             color: white;
-            border-color: #d291bc;
+            border-color: #888;
         }
 
         .time-slot.booked {
-            background: #ff6b6b;
+            background: #666;
             color: white;
-            border-color: #ff6b6b;
+            border-color: #666;
             cursor: not-allowed;
         }
 
         .time-slot.booked:hover {
-            background: #ff6b6b;
+            background: #666;
         }
 
         /* Promo Items Styling */
@@ -878,7 +1106,7 @@
             border-radius: 12px;
             margin: 12px 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-left: 4px solid #d291bc;
+            border-left: 4px solid #888;
             position: relative;
         }
 
@@ -892,19 +1120,19 @@
 
         .promo-title {
             font-weight: bold;
-            color: #4a154b;
+            color: #333;
             font-size: 1.2rem;
             margin-bottom: 8px;
         }
 
         .promo-description {
-            color: #6a1b6d;
+            color: #555;
             line-height: 1.5;
         }
 
         /* Holiday Message */
         .holiday-message {
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            background: linear-gradient(135deg, #666, #888);
             color: white;
             padding: 15px;
             border-radius: 12px;
@@ -1056,9 +1284,103 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+        
     </style>
+
+<style id="restored-color-theme">
+    :root{
+        --primary:#ff6fae;
+        --primary-dark:#e75496;
+        --secondary:#8b5cf6;
+        --secondary-dark:#6d28d9;
+        --accent:#ffd166;
+        --bg:#fff7fb;
+        --bg-soft:#fff0f7;
+        --text:#4b2e39;
+        --muted:#8a5d73;
+        --card:#ffffff;
+        --border:#ffd6e8;
+    }
+    body{background:linear-gradient(180deg,#fff8fc 0%,#fff1f7 100%) !important;color:var(--text) !important;}
+    .mourning-overlay,.mourning-message{display:none !important;visibility:hidden !important;}
+    .promo-overlay,.contact-overlay,.review-modal{background:rgba(120,60,120,.35) !important;}
+    header{background:linear-gradient(135deg,var(--primary) 0%,#ffb3d1 55%,#ffe2ef 100%) !important;}
+    .cute-float{color:#fff !important;text-shadow:0 3px 10px rgba(175,44,108,.35) !important;}
+    .login-btn,.quick-login-btn,.quick-contact-btn,nav button:hover,nav button.active,.mobile-nav button:hover,.mobile-nav button.active,
+    .progress-step.active,.time-slot.selected,.contact-btn,button,.service-option:hover{
+        background:linear-gradient(135deg,var(--primary),var(--secondary)) !important;
+        color:#fff !important;
+        border-color:transparent !important;
+    }
+    .quick-login-btn:hover,.quick-contact-btn:hover,.login-btn:hover,button:hover,.contact-btn:hover{
+        background:linear-gradient(135deg,var(--primary-dark),var(--secondary-dark)) !important;
+    }
+    nav, .mobile-nav, .box, .review-modal-content, .promo-message, .contact-message, .security-badge {
+        background:rgba(255,255,255,.95) !important;
+        backdrop-filter: blur(6px);
+    }
+    nav button,.mobile-menu-btn,.mobile-nav button,.mobile-nav-close,.box h2,.box h3,.promo-title,.promo-post-title,.reviewer-name,.booking-content strong,.message,.promo-message,.contact-message,.review-modal-close{color:var(--text) !important;}
+    .box{border:1px solid var(--border) !important;box-shadow:0 10px 30px rgba(231,84,150,.12) !important;}
+    .box h2{border-bottom:2px solid #ffd8e7 !important;}
+    input,select,textarea,.service-option,.time-slot{border:1px solid #f3bfd6 !important;}
+    .service-option:hover,.time-slot:hover{background:#fff0f7 !important;border-color:var(--primary) !important;}
+    .time-slot.booked{background:#ffd6e8 !important;color:#8f4c69 !important;border-color:#ffbfd8 !important;}
+    .delete-btn{background:linear-gradient(135deg,#ff8fab,#fb7185) !important;}
+    .delete-btn:hover{background:linear-gradient(135deg,#fb7185,#e11d48) !important;}
+    .booking-item,.review-item,.promo-item{border-left:4px solid var(--primary) !important;background:linear-gradient(135deg,#ffffff,#fff5fa) !important;}
+    .holiday-message{background:linear-gradient(135deg,#ff8fb8,#b388ff) !important;color:#fff !important;}
+    .notification.success{background:linear-gradient(135deg,#ff6fae,#8b5cf6) !important;}
+    .notification.error{background:linear-gradient(135deg,#fb7185,#ef4444) !important;}
+    .notification.warning{background:linear-gradient(135deg,#f59e0b,#fb7185) !important;}
+    .rotating-bg{background:linear-gradient(45deg,#ffd6e8,#ffe8a3,#e9d5ff,#ffc2dd,#ffe5f1) !important;background-size:400% 400% !important;}
+    .floating-icon{color:#ff7eb6 !important;opacity:.45 !important;}
+    .confetti{background:var(--primary) !important;}
+    .progress-step.completed{background:var(--secondary) !important;}
+    .progress-step{background:#f3bfd6 !important;color:#fff !important;}
+    .security-badge i{color:var(--primary) !important;}
+    .contact-label{background:linear-gradient(135deg,var(--primary),var(--secondary)) !important;}
+    .line-icon{background:#fff !important;color:var(--primary-dark) !important;}
+    a.contact-btn{color:#fff !important;}
+</style>
+
 </head>
 <body>
+    <!-- เอฟเฟกต์ไว้อาลัย -->
+    <div class="mourning-overlay" id="mourningOverlay"></div>
+    <div class="mourning-message" id="mourningMessage">
+        <button class="close-mourning-btn" onclick="closeMourningEffect()">×</button>
+        <i class="fas fa-ribbon" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+       <div class="mourning-text">
+    <p>น้อมส่งเสด็จสู่สวรรคาลัย</p>
+    <p>สมเด็จพระนางเจ้าสิริกิติ์ พระบรมราชินีนาถ</p>
+    <p>พระบรมราชชนนีพันปีหลวง</p>
+  </div>
+
+  <span id="mourningDaysLeft"></span>
+</div>
+
+    <!-- เอฟเฟกต์โพสต์ประกาศโปรโมชัน -->
+    <div class="promo-overlay" id="promoOverlay"></div>
+    <div class="promo-message" id="promoMessage">
+        <button class="close-promo-btn" onclick="closePromoEffect()">×</button>
+        <div id="promoPostContent"></div>
+    </div>
+
+    <!-- ช่องทางติดต่อ -->
+    <div class="contact-overlay" id="contactOverlay"></div>
+    <div class="contact-message" id="contactMessage">
+        <button class="close-contact-btn" onclick="closeContactEffect()">×</button>
+        <h3>ช่องทางติดต่อเพิ่มเติม</h3>
+        <div class="contact-buttons">
+            <a href="https://www.facebook.com/share/1BY8wEVxbg/?mibextid=wwXIfr" target="_blank" class="contact-btn">
+                <i class="fab fa-facebook"></i> เพจเฟสบุ๊ค
+            </a>
+            <a href="https://www.facebook.com/share/1BTWe7rma7/?mibextid=wwXIfr" target="_blank" class="contact-btn">
+                <i class="fab fa-facebook"></i> โปรไฟล์เฟสบุ๊ค
+            </a>
+        </div>
+    </div>
+    
     <!-- Background Effects -->
     <div class="bg-effect rotating-bg"></div>
     
@@ -1070,12 +1392,16 @@
     
     <!-- Security Badge -->
     <div class="security-badge">
-        <i class="fas fa-shield-alt" style="color: #4a154b;"></i>
+        <i class="fas fa-shield-alt" style="color: #333;"></i>
         <span>ระบบปลอดภัย | ข้อมูลถูกเก็บเป็นความลับ</span>
     </div>
     
-    <!-- ปุ่มล็อกอินด่วน -->
-    <div class="quick-login">
+    <!-- ปุ่มล็อกอินด่วนและช่องทางติดต่อ -->
+    <div class="quick-actions">
+        <button class="quick-contact-btn" onclick="showContactEffect()">
+            <i class="fas fa-phone-alt"></i>
+            <span class="contact-label">ช่องทางติดต่อเพิ่มเติม</span>
+        </button>
         <button class="quick-login-btn" onclick="quickLogin()">🔑</button>
     </div>
 
@@ -1129,7 +1455,7 @@
                 </div>
 
                 <h3>วันหยุดของร้าน</h3>
-                <ul id="holidayList" style="color:red; text-align:left; list-style-type: none; padding: 0;"></ul>
+                <ul id="holidayList" style="color:#666; text-align:left; list-style-type: none; padding: 0;"></ul>
                 <div class="admin-only">
                     <input type="date" id="newHoliday">
                     <input type="time" id="newHolidayStartTime" placeholder="เวลาเริ่มต้น (ไม่บังคับ)">
@@ -1275,6 +1601,7 @@
     <!-- Modal สำหรับรีวิว -->
     <div class="review-modal" id="reviewModal">
         <div class="review-modal-content">
+            <button class="review-modal-close" onclick="closeReviewModal()">×</button>
             <h2>รีวิวการใช้บริการ</h2>
             <input type="text" id="reviewerName" placeholder="ชื่อของคุณ (ไม่จำเป็น)">
             <div class="stars" id="modalStars">
@@ -1287,6 +1614,7 @@
             <textarea id="reviewComment" placeholder="ความคิดเห็น (ไม่จำเป็น)" rows="3"></textarea>
             <div class="button-group">
                 <button onclick="submitReview()">ส่งรีวิว</button>
+                <button onclick="closeReviewModal()" style="background: #666;">ปิด</button>
             </div>
             <p id="thanksMsg"></p>
         </div>
@@ -1369,6 +1697,115 @@
             }
         }
 
+        // ฟังก์ชันจัดการเอฟเฟกต์ไว้อาลัย
+        function setupMourningEffect() {
+            // ตั้งค่าวันที่เริ่มต้นไว้อาลัย (วันที่สมเด็จพระราชินีสิ้นพระชนม์)
+            const mourningStartDate = new Date('2025-10-24'); // วันที่สมเด็จพระราชินีสิ้นพระชนม์
+            const today = new Date();
+            
+            // คำนวณจำนวนวันที่ผ่านมา
+            const timeDiff = today.getTime() - mourningStartDate.getTime();
+            const daysPassed = Math.floor(timeDiff / (1000 * 3600 * 24));
+            
+            // ถ้ายังไม่ครบ 90 วัน ให้แสดงเอฟเฟกต์ไว้อาลัย
+            if (daysPassed < 90) {
+                document.getElementById('mourningOverlay').style.display = 'block';
+                document.getElementById('mourningMessage').style.display = 'block';
+                
+                // แสดงจำนวนวันที่เหลือ
+                const daysLeft = 90 - daysPassed;
+                document.getElementById('mourningDaysLeft').innerHTML = `อีก ${daysLeft} วัน`;
+                
+                console.log(`แสดงเอฟเฟกต์ไว้อาลัย: ${daysPassed} วันผ่านไป, เหลืออีก ${daysLeft} วัน`);
+            } else {
+                // ถ้าครบ 90 วันแล้ว ให้ซ่อนเอฟเฟกต์
+                document.getElementById('mourningOverlay').style.display = 'none';
+                document.getElementById('mourningMessage').style.display = 'none';
+                console.log("ครบ 90 วันแล้ว ไม่แสดงเอฟเฟกต์ไว้อาลัย");
+            }
+        }
+
+        // ฟังก์ชันปิดเอฟเฟกต์ไว้อาลัย
+        function closeMourningEffect() {
+            document.getElementById('mourningOverlay').style.display = 'none';
+            document.getElementById('mourningMessage').style.display = 'none';
+            
+            // บันทึกสถานะการปิดใน localStorage เพื่อไม่ให้แสดงอีกในวันนี้
+            const today = new Date().toDateString();
+            localStorage.setItem('mourningClosed', today);
+            
+            // หลังจากปิดเอฟเฟกต์ไว้อาลัย ให้แสดงโพสต์โปรโมชัน
+            setTimeout(showPromoEffect, 500);
+        }
+
+        // ฟังก์ชันแสดงเอฟเฟกต์โพสต์โปรโมชัน
+        function showPromoEffect() {
+            // ตรวจสอบว่ามีโปรโมชันหรือไม่
+            if (promotions.length === 0) {
+                console.log("ไม่มีโปรโมชันที่จะแสดง");
+                return;
+            }
+            
+            // เลือกโปรโมชันล่าสุด
+            const latestPromo = promotions[promotions.length - 1];
+            
+            // สร้างเนื้อหาโพสต์โปรโมชัน
+            let promoContent = '';
+            
+            if (latestPromo.imageUrl) {
+                promoContent += `<img src="${latestPromo.imageUrl}" alt="${latestPromo.title}" class="promo-post-image">`;
+            }
+            
+            promoContent += `
+                <div class="promo-post-title">${latestPromo.title}</div>
+                <div class="promo-post-description">${latestPromo.description}</div>
+            `;
+            
+            // แสดงเอฟเฟกต์
+            document.getElementById('promoPostContent').innerHTML = promoContent;
+            document.getElementById('promoOverlay').style.display = 'block';
+            document.getElementById('promoMessage').style.display = 'block';
+        }
+
+        // ฟังก์ชันปิดเอฟเฟกต์โพสต์โปรโมชัน
+        function closePromoEffect() {
+            document.getElementById('promoOverlay').style.display = 'none';
+            document.getElementById('promoMessage').style.display = 'none';
+        }
+
+        // ฟังก์ชันแสดงช่องทางติดต่อ
+        function showContactEffect() {
+            document.getElementById('contactOverlay').style.display = 'block';
+            document.getElementById('contactMessage').style.display = 'block';
+        }
+
+        // ฟังก์ชันปิดช่องทางติดต่อ
+        function closeContactEffect() {
+            document.getElementById('contactOverlay').style.display = 'none';
+            document.getElementById('contactMessage').style.display = 'none';
+        }
+
+        // ตรวจสอบว่าผู้ใช้เคยปิดเอฟเฟกต์ไว้อาลัยในวันนี้แล้วหรือไม่
+        function checkMourningClosedToday() {
+            const today = new Date().toDateString();
+            const mourningClosed = localStorage.getItem('mourningClosed');
+            
+            if (mourningClosed === today) {
+                // ถ้าปิดไปแล้วในวันนี้ ให้ไม่แสดงอีก
+                document.getElementById('mourningOverlay').style.display = 'none';
+                document.getElementById('mourningMessage').style.display = 'none';
+                
+                // ตรวจสอบว่ามีโปรโมชันและยังไม่ได้แสดงในวันนี้
+                const promoClosed = localStorage.getItem('promoClosed');
+                if (promoClosed !== today && promotions.length > 0) {
+                    setTimeout(showPromoEffect, 1000);
+                }
+                
+                return true;
+            }
+            return false;
+        }
+
         // โหลดการตั้งค่าจาก localStorage ถ้ามี
         try {
             const savedConfig = localStorage.getItem('emailConfig');
@@ -1406,6 +1843,11 @@
             // ไม่ล็อกอินอัตโนมัติเพื่อความปลอดภัย
             document.body.classList.remove('logged-in');
             localStorage.setItem('isLoggedIn', 'false');
+            
+            // ตั้งค่าเอฟเฟกต์ไว้อาลัย - ตรวจสอบก่อนว่าผู้ใช้เคยปิดไปแล้วในวันนี้หรือไม่
+            if (!checkMourningClosedToday()) {
+                setupMourningEffect();
+            }
             
             // โหลดข้อมูลจาก Firebase ถ้าเชื่อมต่อแล้ว
             if (firebaseInitialized) {
@@ -1467,7 +1909,7 @@
             });
             
             if (isHoliday) {
-                timeSlotsContainer.innerHTML = '<p style="color: red; text-align: center;">วันนี้ร้านปิด กรุณาเลือกวันอื่น</p>';
+                timeSlotsContainer.innerHTML = '<p style="color: #666; text-align: center;">วันนี้ร้านปิด กรุณาเลือกวันอื่น</p>';
                 return;
             }
             
@@ -1736,14 +2178,14 @@
                 icon.style.top = Math.random() * 100 + 'vh';
                 icon.style.animationDelay = Math.random() * 20 + 's';
                 icon.style.fontSize = (Math.random() * 20 + 16) + 'px';
-                icon.style.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                icon.style.color = `hsl(0, 0%, ${Math.random() * 30 + 40}%)`;
                 container.appendChild(icon);
             }
         }
 
         // ฟังก์ชันสร้าง confetti
         function createConfetti() {
-            const colors = ['#d291bc', '#4a154b', '#ffdfd3', '#06C755', '#ffc107'];
+            const colors = ['#888', '#333', '#ddd', '#555', '#666'];
             const container = document.getElementById('confettiContainer');
             
             for (let i = 0; i < 150; i++) {
@@ -1949,8 +2391,8 @@
                 
                 showNotification('✅ การจองสำเร็จ!', 'success');
                 
-                // ส่งอีเมลแจ้งเตือน
-                sendEmailNotification("booking")
+                // ส่งอีเมลแจ้งเตือนทันทีเมื่อจองสำเร็จ
+                sendEmailNotification("booking", newBooking)
                     .then(success => {
                         if (success) {
                             console.log("✅ ส่ง Email การจองสำเร็จ");
@@ -2050,9 +2492,9 @@
         async function sendTestEmail() {
             const testHtml = `
                 <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
-                    <h2 style="color: #4a154b;">🔔 ทดสอบการแจ้งเตือนจากร้านเสริมสวยมุกซาลอน</h2>
+                    <h2 style="color: #333;">🔔 ทดสอบการแจ้งเตือนจากร้านเสริมสวยมุกซาลอน</h2>
                     <p>นี่คืออีเมลทดสอบเพื่อตรวจสอบว่าการตั้งค่า EmailJS ทำงานปกติ</p>
-                    <div style="background: #f9f0ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
                         <p><strong>📅 วันที่ทดสอบ:</strong> ${new Date().toLocaleString('th-TH')}</p>
                         <p><strong>✅ สถานะ:</strong> ระบบแจ้งเตือนทำงานปกติแล้ว</p>
                     </div>
@@ -2481,7 +2923,7 @@
                 if (reviewsMessage.innerHTML && holidays.length > 0) {
                     reviewsMessage.style.display = reviewsMessage.style.display === 'none' ? 'block' : 'none';
                 }
-            }, 15000); // 30 วินาที
+            }, 15000); // 15 วินาที
         }
 
         // ฟังก์ชันเพิ่มโปรโมชัน
@@ -2726,6 +3168,12 @@
             });
         }
 
+        // ฟังก์ชันปิด modal รีวิว
+        function closeReviewModal() {
+            document.getElementById("reviewModal").style.display = "none";
+            showPage("booking");
+        }
+
         // ฟังก์ชันตั้งค่าคะแนนใน modal
         function setModalRating(rating) {
             currentRating = rating;
@@ -2907,5 +3355,64 @@
             }
         }
     </script>
+
+<script id="disable-mourning-and-restore-effects">
+    // ปิดโหมดขาว-ดำ/ไว้อาลัย และคืนธีมสีสดใส
+    window.setupMourningEffect = function() {
+        const overlay = document.getElementById('mourningOverlay');
+        const message = document.getElementById('mourningMessage');
+        if (overlay) overlay.style.display = 'none';
+        if (message) message.style.display = 'none';
+    };
+    window.checkMourningClosedToday = function() { return true; };
+    window.closeMourningEffect = function() {
+        const overlay = document.getElementById('mourningOverlay');
+        const message = document.getElementById('mourningMessage');
+        if (overlay) overlay.style.display = 'none';
+        if (message) message.style.display = 'none';
+    };
+    window.createFloatingIcons = function() {
+        const icons = ['💇‍♀️','💅','💖','✨','🌸','🎀','🪞','💄','🌷'];
+        const colors = ['#ff6fae','#8b5cf6','#f59e0b','#fb7185','#ec4899'];
+        const container = document.getElementById('floatingIcons');
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 0; i < 15; i++) {
+            const icon = document.createElement('div');
+            icon.className = 'floating-icon';
+            icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+            icon.style.left = Math.random() * 100 + 'vw';
+            icon.style.top = Math.random() * 100 + 'vh';
+            icon.style.animationDelay = Math.random() * 20 + 's';
+            icon.style.fontSize = (Math.random() * 20 + 16) + 'px';
+            icon.style.color = colors[Math.floor(Math.random() * colors.length)];
+            container.appendChild(icon);
+        }
+    };
+    window.createConfetti = function() {
+        const colors = ['#ff6fae','#8b5cf6','#ffd166','#fb7185','#f9a8d4'];
+        const container = document.getElementById('confettiContainer');
+        if (!container) return;
+        for (let i = 0; i < 120; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.width = Math.random() * 10 + 5 + 'px';
+            confetti.style.height = Math.random() * 10 + 5 + 'px';
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            container.appendChild(confetti);
+            const animation = confetti.animate([
+                { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+            ], {
+                duration: Math.random() * 3000 + 2000,
+                easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
+            });
+            animation.onfinish = () => confetti.remove();
+        }
+    };
+</script>
+
 </body>
 </html>
