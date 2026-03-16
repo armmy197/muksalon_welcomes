@@ -1343,6 +1343,212 @@
     a.contact-btn{color:#fff !important;}
 </style>
 
+
+<style id="mobile-premium-upgrade">
+    :root{
+        --brand1:#ff5fa2;
+        --brand2:#ff8ec2;
+        --brand3:#8b5cf6;
+        --card-shadow:0 14px 40px rgba(231,84,150,.16);
+    }
+    html{scroll-behavior:smooth;}
+    body.menu-open{overflow:hidden !important;}
+    header{
+        position:relative;
+        overflow:hidden;
+    }
+    header::before,
+    header::after{
+        content:"";
+        position:absolute;
+        border-radius:50%;
+        background:rgba(255,255,255,.16);
+        pointer-events:none;
+    }
+    header::before{width:220px;height:220px;right:-70px;top:-90px;}
+    header::after{width:140px;height:140px;left:-40px;bottom:-60px;}
+    .header-content{position:relative;z-index:2;}
+    .box{
+        border-radius:22px !important;
+    }
+    .mobile-menu-btn{
+        width:48px !important;
+        height:48px !important;
+        border-radius:14px !important;
+        background:rgba(255,255,255,.88) !important;
+        box-shadow:0 10px 24px rgba(0,0,0,.12) !important;
+        display:flex !important;
+        align-items:center;
+        justify-content:center;
+        backdrop-filter:blur(10px);
+        transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+    }
+    .mobile-menu-btn:hover,.mobile-menu-btn:active{
+        transform:translateY(-1px) scale(1.03);
+        background:#fff !important;
+    }
+    .mobile-nav{
+        width:min(84vw,340px) !important;
+        background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,245,250,.97)) !important;
+        box-shadow:-16px 0 42px rgba(0,0,0,.14) !important;
+        border-left:1px solid rgba(255,255,255,.85);
+        padding:84px 18px 20px !important;
+    }
+    .mobile-nav::before{
+        content:"เมนูร้านมุกซาลอน";
+        position:absolute;
+        top:24px;
+        left:18px;
+        font-size:1rem;
+        font-weight:700;
+        color:var(--text);
+    }
+    .mobile-nav button{
+        border-radius:16px !important;
+        margin:6px 0 !important;
+        font-weight:600;
+        box-shadow:none !important;
+    }
+    .mobile-nav-close{
+        width:42px !important;
+        height:42px !important;
+        border-radius:12px !important;
+        background:#fff0f7 !important;
+        display:flex !important;
+        align-items:center;
+        justify-content:center;
+    }
+    .overlay.active{
+        backdrop-filter:blur(3px);
+        background:rgba(52,19,35,.28) !important;
+    }
+    .promo-overlay{
+        background:rgba(35,12,28,.56) !important;
+        backdrop-filter:blur(4px);
+    }
+    .promo-message{
+        padding:0 !important;
+        overflow:hidden !important;
+        border:none !important;
+        max-width:440px !important;
+        border-radius:28px !important;
+        box-shadow:0 22px 60px rgba(34,11,28,.30) !important;
+    }
+    .promo-popup-shell{
+        position:relative;
+        background:linear-gradient(180deg,#fff 0%,#fff6fb 100%);
+    }
+    .promo-popup-top{
+        background:linear-gradient(135deg,var(--brand1),var(--brand3));
+        padding:14px 18px 16px;
+        color:#fff;
+        text-align:left;
+    }
+    .promo-badge{
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        padding:6px 12px;
+        border-radius:999px;
+        background:rgba(255,255,255,.18);
+        font-size:.82rem;
+        font-weight:700;
+        letter-spacing:.2px;
+    }
+    .promo-popup-body{padding:16px 16px 18px;}
+    .promo-popup-image{
+        width:100%;
+        aspect-ratio:4/5;
+        max-height:360px;
+        object-fit:cover;
+        border-radius:20px;
+        box-shadow:var(--card-shadow);
+        margin-top:-36px;
+        border:4px solid rgba(255,255,255,.85);
+        background:#fff6fb;
+    }
+    .promo-popup-title{
+        font-size:1.3rem;
+        font-weight:700;
+        margin:14px 0 8px;
+        line-height:1.3;
+        color:var(--text);
+    }
+    .promo-popup-desc{
+        color:var(--muted);
+        line-height:1.65;
+        font-size:.98rem;
+    }
+    .promo-popup-actions{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+        margin-top:16px;
+    }
+    .promo-primary-btn,
+    .promo-secondary-btn{
+        width:100% !important;
+        margin:0 !important;
+        border-radius:16px !important;
+        padding:12px 14px !important;
+        font-weight:700;
+    }
+    .promo-primary-btn{
+        background:linear-gradient(135deg,var(--brand1),var(--brand3)) !important;
+        color:#fff !important;
+    }
+    .promo-secondary-btn{
+        background:#fff0f7 !important;
+        color:var(--text) !important;
+    }
+    .quick-actions{gap:12px !important;}
+    .quick-contact-btn,.quick-login-btn{
+        box-shadow:0 12px 24px rgba(0,0,0,.14) !important;
+    }
+    button, .time-slot, .service-option, .login-btn, .quick-login-btn, .quick-contact-btn, nav button, .mobile-nav button, .contact-btn{
+        transition:transform .18s ease, box-shadow .18s ease, filter .18s ease, background .25s ease !important;
+        -webkit-tap-highlight-color: transparent;
+    }
+    button:active, .time-slot:active, .service-option:active, .contact-btn:active{
+        transform:scale(.98) !important;
+    }
+    .ripple-host{position:relative;overflow:hidden;}
+    .ripple-dot{
+        position:absolute;
+        border-radius:50%;
+        transform:scale(0);
+        animation:rippleEffect .55s ease-out;
+        background:rgba(255,255,255,.42);
+        pointer-events:none;
+    }
+    @keyframes rippleEffect{
+        to{transform:scale(4);opacity:0;}
+    }
+    @media (max-width: 767px){
+        body{font-size:15px;}
+        header{padding:18px 0 16px !important;}
+        .header-content{padding-top:6px;}
+        .container{padding:0 12px !important;}
+        .box{padding:16px 14px !important;margin:12px auto !important;border-radius:20px !important;}
+        .box h2{font-size:1.3rem !important;}
+        .box h3{font-size:1.02rem !important;}
+        input, select, textarea, button{font-size:16px !important;}
+        .button-group{display:flex;flex-direction:column;gap:10px;}
+        .button-group button{width:100% !important;min-width:unset !important;margin:0 !important;}
+        .booking-item,.review-item,.promo-item{padding:14px 12px !important;}
+        .service-item,.holiday-item{flex-direction:column;align-items:flex-start;gap:8px;}
+        .quick-actions{right:12px !important;bottom:12px !important;}
+        .quick-contact-btn,.quick-login-btn{width:54px !important;height:54px !important;}
+        .security-badge{left:12px !important;right:78px !important;bottom:14px !important;padding:10px 12px !important;border-radius:16px !important;}
+        .promo-message{width:calc(100% - 24px) !important;max-height:min(86vh,760px) !important;}
+        .promo-popup-actions{grid-template-columns:1fr;}
+        .promo-post-image,.promo-image{border-radius:16px !important;}
+        .time-slots{grid-template-columns:repeat(2,1fr) !important;gap:8px !important;}
+        .time-slot{padding:12px 8px !important;font-size:.96rem !important;border-radius:12px !important;}
+        .notification{top:10px !important;right:10px !important;left:10px !important;min-width:auto !important;border-radius:14px !important;}
+    }
+</style>
+
 </head>
 <body>
     <!-- เอฟเฟกต์ไว้อาลัย -->
@@ -3412,6 +3618,161 @@
             animation.onfinish = () => confetti.remove();
         }
     };
+</script>
+
+
+<script id="mobile-premium-upgrade-script">
+(function(){
+    function qs(sel){ return document.querySelector(sel); }
+    function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
+
+    window.openMobileMenu = function(){
+        const mobileNav = document.getElementById('mobileNav');
+        const overlay = document.getElementById('overlay');
+        if(!mobileNav || !overlay) return;
+        mobileNav.classList.add('active');
+        overlay.classList.add('active');
+        document.body.classList.add('menu-open');
+    };
+
+    window.closeMobileMenu = function(){
+        const mobileNav = document.getElementById('mobileNav');
+        const overlay = document.getElementById('overlay');
+        if(!mobileNav || !overlay) return;
+        mobileNav.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.classList.remove('menu-open');
+    };
+
+    window.toggleMobileMenu = function(force){
+        const mobileNav = document.getElementById('mobileNav');
+        if(!mobileNav) return;
+        const shouldOpen = typeof force === 'boolean' ? force : !mobileNav.classList.contains('active');
+        if(shouldOpen) openMobileMenu();
+        else closeMobileMenu();
+    };
+
+    const originalShowPage = window.showPage;
+    window.showPage = function(page){
+        if (typeof originalShowPage === 'function') {
+            originalShowPage(page);
+        }
+        if (window.innerWidth <= 767) closeMobileMenu();
+    };
+
+    function addRipple(el){
+        if(!el || el.classList.contains('ripple-host')) return;
+        el.classList.add('ripple-host');
+        el.addEventListener('click', function(e){
+            const rect = el.getBoundingClientRect();
+            const dot = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            dot.className = 'ripple-dot';
+            dot.style.width = dot.style.height = size + 'px';
+            dot.style.left = (e.clientX - rect.left - size/2) + 'px';
+            dot.style.top = (e.clientY - rect.top - size/2) + 'px';
+            el.appendChild(dot);
+            setTimeout(()=>dot.remove(), 650);
+        }, {passive:true});
+    }
+
+    function enhanceButtons(){
+        qsa('button, .time-slot:not(.booked), .service-option, .contact-btn, nav button, .mobile-nav button').forEach(addRipple);
+    }
+
+    function buildPromoPopupContent(promo){
+        const image = promo && (promo.imageUrl || promo.image || promo.imageBase64 || promo.imageSrc);
+        const title = promo && (promo.title || 'โปรโมชันพิเศษสำหรับคุณ');
+        const desc = promo && (promo.description || promo.desc || 'แวะดูโปรโมชันล่าสุดจากทางร้านได้เลยค่ะ');
+        return `
+            <div class="promo-popup-shell">
+                <div class="promo-popup-top">
+                    <div class="promo-badge"><i class="fas fa-gift"></i> ดีลพิเศษสำหรับลูกค้าใหม่</div>
+                    <div style="margin-top:10px;font-size:1.08rem;font-weight:700;">โปรโมชั่นเด่นของร้านวันนี้</div>
+                </div>
+                <div class="promo-popup-body">
+                    ${image ? `<img src="${image}" alt="${title}" class="promo-popup-image">` : ''}
+                    <div class="promo-popup-title">${title}</div>
+                    <div class="promo-popup-desc">${desc}</div>
+                    <div class="promo-popup-actions">
+                        <button class="promo-primary-btn" onclick="closePromoEffect(); showPage('promo');">ดูโปรโมชั่น</button>
+                        <button class="promo-secondary-btn" onclick="closePromoEffect();">ปิดหน้าต่าง</button>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    window.showPromoEffect = function(force){
+        try {
+            const hasPromos = Array.isArray(window.promotions) && window.promotions.length > 0;
+            if (!hasPromos) return;
+            const latestPromo = window.promotions[window.promotions.length - 1];
+            const promoKey = latestPromo.id || latestPromo.title || 'latest-promo';
+            const seenKey = localStorage.getItem('mukSalonPromoSeenKey');
+            const hasVisited = localStorage.getItem('mukSalonVisited') === 'yes';
+            if (!force && hasVisited && seenKey === String(promoKey)) return;
+            const holder = document.getElementById('promoPostContent');
+            const overlay = document.getElementById('promoOverlay');
+            const modal = document.getElementById('promoMessage');
+            if (!holder || !overlay || !modal) return;
+            holder.innerHTML = buildPromoPopupContent(latestPromo);
+            overlay.style.display = 'block';
+            modal.style.display = 'block';
+            localStorage.setItem('mukSalonVisited', 'yes');
+            localStorage.setItem('mukSalonPromoSeenKey', String(promoKey));
+            document.body.classList.add('menu-open');
+            enhanceButtons();
+        } catch (err) {
+            console.error('Promo popup error:', err);
+        }
+    };
+
+    window.closePromoEffect = function(){
+        const overlay = document.getElementById('promoOverlay');
+        const modal = document.getElementById('promoMessage');
+        if (overlay) overlay.style.display = 'none';
+        if (modal) modal.style.display = 'none';
+        document.body.classList.remove('menu-open');
+        localStorage.setItem('promoClosed', new Date().toDateString());
+    };
+
+    function maybeShowPromoAfterData(){
+        setTimeout(()=>window.showPromoEffect(false), 700);
+    }
+
+    const wait = setInterval(function(){
+        if(typeof window.renderPromotions === 'function'){
+            clearInterval(wait);
+            const originalRenderPromotions = window.renderPromotions;
+            window.renderPromotions = function(){
+                const result = originalRenderPromotions.apply(this, arguments);
+                maybeShowPromoAfterData();
+                enhanceButtons();
+                return result;
+            };
+        }
+    }, 120);
+
+    document.addEventListener('DOMContentLoaded', function(){
+        enhanceButtons();
+        qsa('.mobile-nav button').forEach(btn=>{
+            if(!btn.classList.contains('mobile-nav-close')){
+                btn.addEventListener('click', ()=>setTimeout(closeMobileMenu, 10));
+            }
+        });
+        const promoOverlay = document.getElementById('promoOverlay');
+        if (promoOverlay) promoOverlay.addEventListener('click', closePromoEffect);
+        const contactOverlay = document.getElementById('contactOverlay');
+        if (contactOverlay) contactOverlay.addEventListener('click', closeContactEffect);
+        const normalOverlay = document.getElementById('overlay');
+        if (normalOverlay) normalOverlay.addEventListener('click', closeMobileMenu);
+        if (window.innerWidth <= 767) {
+            const bookingPage = document.getElementById('booking');
+            if (bookingPage) bookingPage.style.paddingBottom = '88px';
+        }
+        setTimeout(maybeShowPromoAfterData, 1800);
+    });
+})();
 </script>
 
 </body>
